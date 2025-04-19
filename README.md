@@ -9,6 +9,7 @@
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Commands](#root-typer)
 - [License](#license)
 
 ## Requirements
