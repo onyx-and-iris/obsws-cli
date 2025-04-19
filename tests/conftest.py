@@ -1,0 +1,74 @@
+"""pytest configuration file."""
+
+import os
+
+import obsws_python as obsws
+
+
+def pytest_configure(config):
+    """Call after command line options are parsed.
+
+    All plugins and initial conftest files are loaded.
+    """
+
+
+def pytest_sessionstart(session):
+    """Call after the Session object is created.
+
+    Before performing collection and entering the run test loop.
+    """
+    # Initialize the OBS WebSocket client
+    session.obsws = obsws.ReqClient(
+        host=os.environ['OBSWS_HOST'],
+        port=os.environ['OBSWS_PORT'],
+        password=os.environ['OBSWS_PASSWORD'],
+        timeout=5,
+    )
+    resp = session.obsws.get_version()
+
+    out = (
+        'Running tests with:',
+        f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}',
+    )
+    print(' '.join(out))
+
+    session.obsws.create_scene('pytest')
+    session.obsws.create_input(
+        sceneName='pytest',
+        inputName='pytest_input',
+        inputKind='color_source_v3',
+        inputSettings={
+            'color': 3279460728,
+            'width': 1920,
+            'height': 1080,
+            'visible': True,
+        },
+        sceneItemEnabled=True,
+    )
+    session.obsws.create_input(
+        sceneName='pytest',
+        inputName='pytest_input_2',
+        inputKind='color_source_v3',
+        inputSettings={
+            'color': 1789347616,
+            'width': 720,
+            'height': 480,
+            'visible': True,
+        },
+        sceneItemEnabled=True,
+    )
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Call after the whole test run finishes.
+
+    Return the exit status to the system.
+    """
+    session.obsws.remove_scene('pytest')
+
+    # Close the OBS WebSocket client connection
+    session.obsws.disconnect()
+
+
+def pytest_unconfigure(config):
+    """Call before test process is exited."""
