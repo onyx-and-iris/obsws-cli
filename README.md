@@ -90,6 +90,13 @@ obsws-cli scene switch LIVE
 
 #### Scene Item
 
+-   list: List all items in a scene.
+    -   args: <scene_name>
+
+```console
+obsws-cli scene-item list LIVE
+```
+
 -   show: Show an item in a scene.
     -   args: <scene_name> <item_name>
 
@@ -104,14 +111,28 @@ obsws-cli scene-item show START "Colour Source"
 obsws-cli scene-item hide START "Colour Source"
 ```
 
--   list: List all items in a scene.
-    -   args: <scene_name>
+-   toggle: Toggle an item in a scene.
+    -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item list LIVE
+obsws-cli scene-item toggle START "Colour Source"
+```
+
+-   visible: Check if an item in a scene is visible.
+    -   args: <scene_name> <item_name>
+
+```console
+obsws-cli scene-item visible START "Colour Source"
 ```
 
 #### Group
+
+-   list: List groups in a scene.
+    -   args: <scene_name>
+
+```console
+obsws-cli group list START
+```
 
 -   show: Show a group in a scene.
     -   args: <scene_name> <group_name>
@@ -125,13 +146,6 @@ obsws-cli group show START "test_group"
 
 ```console
 obsws-cli group hide START "test_group"
-```
-
--   list: List groups in a scene.
-    -   args: <scene_name>
-
-```console
-obsws-cli group list START
 ```
 
 #### Input

@@ -14,6 +14,19 @@ def main():
     """Control items in OBS scenes."""
 
 
+@app.command('list | ls')
+def list(ctx: typer.Context, scene_name: str):
+    """List all items in a scene."""
+    try:
+        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+        items = (item.get('sourceName') for item in resp.scene_items)
+        typer.echo('\n'.join(items))
+    except obsws.error.OBSSDKRequestError as e:
+        if e.code == 600:
+            raise ObswsCliBadParameter(str(e)) from e
+        raise
+
+
 @app.command()
 def show(ctx: typer.Context, scene_name: str, item_name: str):
     """Show an item in a scene."""
@@ -48,13 +61,40 @@ def hide(ctx: typer.Context, scene_name: str, item_name: str):
         raise
 
 
-@app.command('list | ls')
-def list(ctx: typer.Context, scene_name: str):
-    """List all items in a scene."""
+@app.command('toggle | tg')
+def toggle(ctx: typer.Context, scene_name: str, item_name: str):
+    """Toggle an item in a scene."""
     try:
-        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-        items = (item.get('sourceName') for item in resp.scene_items)
-        typer.echo('\n'.join(items))
+        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+        enabled = ctx.obj['obsws'].get_scene_item_enabled(
+            scene_name=scene_name,
+            item_id=int(resp.scene_item_id),
+        )
+
+        new_state = not enabled.scene_item_enabled
+        ctx.obj['obsws'].set_scene_item_enabled(
+            scene_name=scene_name,
+            item_id=int(resp.scene_item_id),
+            enabled=new_state,
+        )
+    except obsws.error.OBSSDKRequestError as e:
+        if e.code == 600:
+            raise ObswsCliBadParameter(str(e)) from e
+        raise
+
+
+@app.command()
+def visible(ctx: typer.Context, scene_name: str, item_name: str):
+    """Check if an item in a scene is visible."""
+    try:
+        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+        enabled = ctx.obj['obsws'].get_scene_item_enabled(
+            scene_name=scene_name,
+            item_id=int(resp.scene_item_id),
+        )
+        typer.echo(
+            f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
+        )
     except obsws.error.OBSSDKRequestError as e:
         if e.code == 600:
             raise ObswsCliBadParameter(str(e)) from e

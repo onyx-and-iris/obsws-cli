@@ -15,6 +15,21 @@ def main():
     """Control groups in OBS scenes."""
 
 
+@app.command('list | ls')
+def list(ctx: typer.Context, scene_name: str):
+    """List groups in a scene."""
+    try:
+        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+        groups = (
+            item.get('sourceName') for item in resp.scene_items if item.get('isGroup')
+        )
+        typer.echo('\n'.join(groups))
+    except obsws.error.OBSSDKRequestError as e:
+        if e.code == 600:
+            raise ObswsCliBadParameter(str(e)) from e
+        raise
+
+
 def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
     """Get a group from the scene item list response."""
     group = next(
@@ -60,21 +75,6 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
             item_id=int(group.get('sceneItemId')),
             enabled=False,
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
-
-
-@app.command('list | ls')
-def list(ctx: typer.Context, scene_name: str):
-    """List groups in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-        groups = (
-            item.get('sourceName') for item in resp.scene_items if item.get('isGroup')
-        )
-        typer.echo('\n'.join(groups))
     except obsws.error.OBSSDKRequestError as e:
         if e.code == 600:
             raise ObswsCliBadParameter(str(e)) from e

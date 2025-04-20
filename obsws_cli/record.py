@@ -58,7 +58,7 @@ def status(ctx: typer.Context):
         typer.echo('Recording is not in progress.')
 
 
-@app.command()
+@app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle recording."""
     active, _ = _get_recording_status(ctx)
