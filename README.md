@@ -88,27 +88,27 @@ obsws-cli scene current
 obsws-cli scene switch LIVE
 ```
 
-#### Item
+#### Scene Item
 
 -   show: Show an item in a scene.
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli item show START "Colour Source"
+obsws-cli scene-item show START "Colour Source"
 ```
 
 -   hide: Hide an item in a scene.
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli item hide START "Colour Source"
+obsws-cli scene-item hide START "Colour Source"
 ```
 
 -   list: List all items in a scene.
     -   args: <scene_name>
 
 ```console
-obsws-cli item list LIVE
+obsws-cli scene-item list LIVE
 ```
 
 #### Group
