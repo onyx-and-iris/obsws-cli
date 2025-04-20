@@ -2,11 +2,10 @@
 
 from typing import Annotated
 
-import obsws_python as obsws
 import typer
 
+from . import validate
 from .alias import AliasGroup
-from .errors import ObswsCliBadParameter, ObswsCliError
 
 app = typer.Typer(cls=AliasGroup)
 
@@ -24,6 +23,12 @@ def list(ctx: typer.Context):
     typer.echo('\n'.join(scenes))
 
 
+def _studio_mode_enabled(ctx: typer.Context) -> bool:
+    """Check if studio mode is enabled."""
+    resp = ctx.obj['obsws'].get_studio_mode_enabled()
+    return resp.studio_mode_enabled
+
+
 @app.command('current | get')
 def current(
     ctx: typer.Context,
@@ -32,20 +37,16 @@ def current(
     ] = False,
 ):
     """Get the current program scene or preview scene."""
-    try:
-        if preview:
-            resp = ctx.obj['obsws'].get_current_preview_scene()
-            typer.echo(resp.current_preview_scene_name)
-        else:
-            resp = ctx.obj['obsws'].get_current_program_scene()
-            typer.echo(resp.current_program_scene_name)
-    except obsws.error.OBSSDKRequestError as e:
-        match e.code:
-            case 506:
-                raise ObswsCliError(
-                    'Not in studio mode, cannot get preview scene.'
-                ) from e
-        raise
+    if preview and not _studio_mode_enabled(ctx):
+        typer.echo('Studio mode is not enabled, cannot get preview scene.')
+        raise typer.Exit(1)
+
+    if preview:
+        resp = ctx.obj['obsws'].get_current_preview_scene()
+        typer.echo(resp.current_preview_scene_name)
+    else:
+        resp = ctx.obj['obsws'].get_current_program_scene()
+        typer.echo(resp.current_program_scene_name)
 
 
 @app.command('switch | set')
@@ -58,17 +59,18 @@ def switch(
     ] = False,
 ):
     """Switch to a scene."""
-    try:
-        if preview:
-            ctx.obj['obsws'].set_current_preview_scene(scene_name)
-        else:
-            ctx.obj['obsws'].set_current_program_scene(scene_name)
-    except obsws.error.OBSSDKRequestError as e:
-        match e.code:
-            case 506:
-                raise ObswsCliError(
-                    'Not in studio mode, cannot set preview scene.'
-                ) from e
-            case 600:
-                raise ObswsCliBadParameter(f"Scene '{scene_name}' not found.") from e
-        raise
+    if preview and not _studio_mode_enabled(ctx):
+        typer.echo('Studio mode is not enabled, cannot set the preview scene.')
+        raise typer.Exit(1)
+
+    if not validate.scene_in_scenes(ctx, scene_name):
+        typer.echo(
+            f"Scene '{scene_name}' not found.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    if preview:
+        ctx.obj['obsws'].set_current_preview_scene(scene_name)
+    else:
+        ctx.obj['obsws'].set_current_program_scene(scene_name)
