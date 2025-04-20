@@ -39,6 +39,7 @@ obsws-cli = "obsws_cli:app"
 path = "obsws_cli/__about__.py"
 
 [tool.hatch.envs.default.scripts]
+cli = "obsws-cli {args:obsws_cli}"
 test = "pytest {args:obsws_cli tests}"
 
 [tool.hatch.envs.hatch-test]

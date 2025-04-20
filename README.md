@@ -125,6 +125,34 @@ obsws-cli scene-item toggle START "Colour Source"
 obsws-cli scene-item visible START "Colour Source"
 ```
 
+#### Scene Collections
+
+-   list: List all scene collections.
+
+```console
+obsws-cli scene-collection list
+```
+
+-   current: Get the current scene collection.
+
+```console
+obsws-cli scene-collection current
+```
+
+-   switch: Switch to a scene collection.
+    -   args: <scene_collection_name>
+
+```console
+obsws-cli scene-collection switch LIVE
+```
+
+-   create: Create a new scene collection.
+    -   args: <scene_collection_name>
+
+```console
+obsws-cli scene-collection switch LIVE
+```
+
 #### Group
 
 -   list: List groups in a scene.

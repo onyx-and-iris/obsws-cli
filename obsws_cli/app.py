@@ -8,7 +8,7 @@ import typer
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
-from . import group, input, record, scene, sceneitem, stream
+from . import group, input, record, scene, scenecollection, sceneitem, stream
 
 
 class Settings(BaseSettings):
@@ -36,6 +36,7 @@ app.add_typer(group.app, name='group')
 app.add_typer(input.app, name='input')
 app.add_typer(record.app, name='record')
 app.add_typer(stream.app, name='stream')
+app.add_typer(scenecollection.app, name='scene-collection')
 
 
 @app.command()
