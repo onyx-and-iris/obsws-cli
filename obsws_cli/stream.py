@@ -1,11 +1,10 @@
 """module for controlling OBS stream functionality."""
 
-import obsws_python as obsws
 import typer
 
-from .errors import ObswsCliError
+from .alias import AliasGroup
 
-app = typer.Typer()
+app = typer.Typer(cls=AliasGroup)
 
 
 @app.callback()
@@ -13,36 +12,34 @@ def main():
     """Control OBS stream functionality."""
 
 
+def _get_streaming_status(ctx: typer.Context) -> tuple:
+    """Get streaming status."""
+    resp = ctx.obj['obsws'].get_stream_status()
+    return resp.output_active, resp.output_duration
+
+
 @app.command()
 def start(ctx: typer.Context):
     """Start streaming."""
-    try:
-        ctx.obj['obsws'].start_stream()
-        typer.echo('Streaming started successfully.')
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 500:
-            raise ObswsCliError(
-                'Streaming is already in progress, cannot start.'
-            ) from e
-        raise
+    active, _ = _get_streaming_status(ctx)
+    if active:
+        typer.echo('Streaming is already in progress, cannot start.')
+        raise typer.Exit(code=1)
+
+    ctx.obj['obsws'].start_stream()
+    typer.echo('Streaming started successfully.')
 
 
 @app.command()
 def stop(ctx: typer.Context):
     """Stop streaming."""
-    try:
-        ctx.obj['obsws'].stop_stream()
-        typer.echo('Streaming stopped successfully.')
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 501:
-            raise ObswsCliError('Streaming is not in progress, cannot stop.') from e
-        raise
+    active, _ = _get_streaming_status(ctx)
+    if not active:
+        typer.echo('Streaming is not in progress, cannot stop.')
+        raise typer.Exit(code=1)
 
-
-def _get_streaming_status(ctx: typer.Context) -> tuple:
-    """Get streaming status."""
-    resp = ctx.obj['obsws'].get_stream_status()
-    return resp.output_active, resp.output_duration
+    ctx.obj['obsws'].stop_stream()
+    typer.echo('Streaming stopped successfully.')
 
 
 @app.command()
@@ -74,14 +71,6 @@ def toggle(ctx: typer.Context):
     """Toggle streaming."""
     active, _ = _get_streaming_status(ctx)
     if active:
-        try:
-            ctx.obj['obsws'].stop_stream()
-            typer.echo('Streaming stopped successfully.')
-        except obsws.error.OBSSDKRequestError as e:
-            raise ObswsCliError(str(e)) from e
+        ctx.invoke(stop, ctx=ctx)
     else:
-        try:
-            ctx.obj['obsws'].start_stream()
-            typer.echo('Streaming started successfully.')
-        except obsws.error.OBSSDKRequestError as e:
-            raise ObswsCliError(str(e)) from e
+        ctx.invoke(start, ctx=ctx)
