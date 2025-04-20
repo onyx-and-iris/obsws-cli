@@ -2,6 +2,7 @@
 
 import typer
 
+from . import validate
 from .alias import AliasGroup
 from .protocols import DataclassProtocol
 
@@ -13,16 +14,10 @@ def main():
     """Control groups in OBS scenes."""
 
 
-def _scene_in_scenes(ctx: typer.Context, scene_name: str) -> bool:
-    """Check if a scene exists in the list of scenes."""
-    resp = ctx.obj['obsws'].get_scene_list()
-    return any(scene.get('sceneName') == scene_name for scene in resp.scenes)
-
-
 @app.command('list | ls')
 def list(ctx: typer.Context, scene_name: str):
     """List groups in a scene."""
-    if not _scene_in_scenes(ctx, scene_name):
+    if not validate.scene_in_scenes(ctx, scene_name):
         typer.echo(
             f"Scene '{scene_name}' not found.",
             err=True,
@@ -52,7 +47,7 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
 @app.command()
 def show(ctx: typer.Context, scene_name: str, group_name: str):
     """Show a group in a scene."""
-    if not _scene_in_scenes(ctx, scene_name):
+    if not validate.scene_in_scenes(ctx, scene_name):
         typer.echo(
             f"Scene '{scene_name}' not found.",
             err=True,
@@ -77,7 +72,7 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
 @app.command()
 def hide(ctx: typer.Context, scene_name: str, group_name: str):
     """Hide a group in a scene."""
-    if not _scene_in_scenes(ctx, scene_name):
+    if not validate.scene_in_scenes(ctx, scene_name):
         typer.echo(
             f"Scene '{scene_name}' not found.",
             err=True,

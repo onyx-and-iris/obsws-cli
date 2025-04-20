@@ -4,6 +4,7 @@ from typing import Annotated
 
 import typer
 
+from . import validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
@@ -39,16 +40,10 @@ def list(
     typer.echo('\n'.join(input_.get('inputName') for input_ in inputs))
 
 
-def _input_in_inputs(ctx: typer.Context, input_name: str) -> bool:
-    """Check if an input is in the input list."""
-    inputs = ctx.obj['obsws'].get_input_list().inputs
-    return any(input_.get('inputName') == input_name for input_ in inputs)
-
-
 @app.command()
 def mute(ctx: typer.Context, input_name: str):
     """Mute an input."""
-    if not _input_in_inputs(ctx, input_name):
+    if not validate.input_in_inputs(ctx, input_name):
         typer.echo(
             f"Input '{input_name}' not found.",
             err=True,
@@ -64,7 +59,7 @@ def mute(ctx: typer.Context, input_name: str):
 @app.command()
 def unmute(ctx: typer.Context, input_name: str):
     """Unmute an input."""
-    if not _input_in_inputs(ctx, input_name):
+    if not validate.input_in_inputs(ctx, input_name):
         typer.echo(
             f"Input '{input_name}' not found.",
             err=True,
@@ -80,7 +75,7 @@ def unmute(ctx: typer.Context, input_name: str):
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context, input_name: str):
     """Toggle an input."""
-    if not _input_in_inputs(ctx, input_name):
+    if not validate.input_in_inputs(ctx, input_name):
         typer.echo(
             f"Input '{input_name}' not found.",
             err=True,

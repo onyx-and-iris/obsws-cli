@@ -23,12 +23,6 @@ def list(ctx: typer.Context):
     typer.echo('\n'.join(scenes))
 
 
-def _studio_mode_enabled(ctx: typer.Context) -> bool:
-    """Check if studio mode is enabled."""
-    resp = ctx.obj['obsws'].get_studio_mode_enabled()
-    return resp.studio_mode_enabled
-
-
 @app.command('current | get')
 def current(
     ctx: typer.Context,
@@ -37,7 +31,7 @@ def current(
     ] = False,
 ):
     """Get the current program scene or preview scene."""
-    if preview and not _studio_mode_enabled(ctx):
+    if preview and not validate.studio_mode_enabled(ctx):
         typer.echo('Studio mode is not enabled, cannot get preview scene.')
         raise typer.Exit(1)
 
@@ -59,7 +53,7 @@ def switch(
     ] = False,
 ):
     """Switch to a scene."""
-    if preview and not _studio_mode_enabled(ctx):
+    if preview and not validate.studio_mode_enabled(ctx):
         typer.echo('Studio mode is not enabled, cannot set the preview scene.')
         raise typer.Exit(1)
 
