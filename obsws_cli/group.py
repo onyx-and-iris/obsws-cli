@@ -1,10 +1,8 @@
 """module containing commands for manipulating groups in scenes."""
 
-import obsws_python as obsws
 import typer
 
 from .alias import AliasGroup
-from .errors import ObswsCliBadParameter
 from .protocols import DataclassProtocol
 
 app = typer.Typer(cls=AliasGroup)
@@ -15,19 +13,27 @@ def main():
     """Control groups in OBS scenes."""
 
 
+def _scene_in_scenes(ctx: typer.Context, scene_name: str) -> bool:
+    """Check if a scene exists in the list of scenes."""
+    resp = ctx.obj['obsws'].get_scene_list()
+    return any(scene.get('sceneName') == scene_name for scene in resp.scenes)
+
+
 @app.command('list | ls')
 def list(ctx: typer.Context, scene_name: str):
     """List groups in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-        groups = (
-            item.get('sourceName') for item in resp.scene_items if item.get('isGroup')
+    if not _scene_in_scenes(ctx, scene_name):
+        typer.echo(
+            f"Scene '{scene_name}' not found.",
+            err=True,
         )
-        typer.echo('\n'.join(groups))
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    groups = (
+        item.get('sourceName') for item in resp.scene_items if item.get('isGroup')
+    )
+    typer.echo('\n'.join(groups))
 
 
 def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
@@ -46,36 +52,48 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
 @app.command()
 def show(ctx: typer.Context, scene_name: str, group_name: str):
     """Show a group in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-        if (group := _get_group(group_name, resp)) is None:
-            raise ObswsCliBadParameter(f"Group '{group_name}' not found in scene.")
-
-        ctx.obj['obsws'].set_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(group.get('sceneItemId')),
-            enabled=True,
+    if not _scene_in_scenes(ctx, scene_name):
+        typer.echo(
+            f"Scene '{scene_name}' not found.",
+            err=True,
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        typer.echo(
+            f"Group '{group_name}' not found in scene {scene_name}.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    ctx.obj['obsws'].set_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(group.get('sceneItemId')),
+        enabled=True,
+    )
 
 
 @app.command()
 def hide(ctx: typer.Context, scene_name: str, group_name: str):
     """Hide a group in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-        if (group := _get_group(group_name, resp)) is None:
-            raise ObswsCliBadParameter(f"Group '{group_name}' not found in scene.")
-
-        ctx.obj['obsws'].set_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(group.get('sceneItemId')),
-            enabled=False,
+    if not _scene_in_scenes(ctx, scene_name):
+        typer.echo(
+            f"Scene '{scene_name}' not found.",
+            err=True,
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        typer.echo(
+            f"Group '{group_name}' not found in scene {scene_name}.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    ctx.obj['obsws'].set_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(group.get('sceneItemId')),
+        enabled=False,
+    )
