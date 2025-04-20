@@ -1,11 +1,10 @@
 """module containing commands for manipulating inputs."""
 
-import obsws_python as obsws
+from typing import Annotated
+
 import typer
 
 from .alias import AliasGroup
-from .errors import ObswsCliBadParameter
-from .protocols import DataclassProtocol
 
 app = typer.Typer(cls=AliasGroup)
 
@@ -15,75 +14,84 @@ def main():
     """Control inputs in OBS."""
 
 
-@app.command('ls')
-def list(ctx: typer.Context):
+@app.command('list | ls')
+def list(
+    ctx: typer.Context,
+    input: Annotated[bool, typer.Option(help='Filter by input type.')] = False,
+    output: Annotated[bool, typer.Option(help='Filter by output type.')] = False,
+    colour: Annotated[bool, typer.Option(help='Filter by colour source type.')] = False,
+):
     """List all inputs."""
     resp = ctx.obj['obsws'].get_input_list()
-    inputs = (input.get('inputName') for input in resp.inputs)
-    typer.echo('\n'.join(inputs))
 
+    filters = []
+    if input:
+        filters.append('input')
+    if output:
+        filters.append('output')
+    if colour:
+        filters.append('color')
 
-def _get_input(input_name: str, resp: DataclassProtocol) -> dict | None:
-    """Get an input from the input list response."""
-    input_ = next(
-        (input_ for input_ in resp.inputs if input_.get('inputName') == input_name),
-        None,
+    inputs = filter(
+        lambda input_: any(kind in input_.get('inputKind') for kind in filters),
+        resp.inputs,
     )
+    typer.echo('\n'.join(input_.get('inputName') for input_ in inputs))
 
-    return input_
+
+def _input_in_inputs(ctx: typer.Context, input_name: str) -> bool:
+    """Check if an input is in the input list."""
+    inputs = ctx.obj['obsws'].get_input_list().inputs
+    return any(input_.get('inputName') == input_name for input_ in inputs)
 
 
 @app.command()
 def mute(ctx: typer.Context, input_name: str):
     """Mute an input."""
-    try:
-        resp = ctx.obj['obsws'].get_input_list()
-        if (input_ := _get_input(input_name, resp)) is None:
-            raise ObswsCliBadParameter(f"Input '{input_name}' not found.")
-
-        ctx.obj['obsws'].set_input_mute(
-            name=input_.get('inputName'),
-            muted=True,
+    if not _input_in_inputs(ctx, input_name):
+        typer.echo(
+            f"Input '{input_name}' not found.",
+            err=True,
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        raise typer.Exit(code=1)
+
+    ctx.obj['obsws'].set_input_mute(
+        name=input_name,
+        muted=True,
+    )
 
 
 @app.command()
 def unmute(ctx: typer.Context, input_name: str):
     """Unmute an input."""
-    try:
-        resp = ctx.obj['obsws'].get_input_list()
-        if (input_ := _get_input(input_name, resp)) is None:
-            raise ObswsCliBadParameter(f"Input '{input_name}' not found.")
-
-        ctx.obj['obsws'].set_input_mute(
-            name=input_.get('inputName'),
-            muted=False,
+    if not _input_in_inputs(ctx, input_name):
+        typer.echo(
+            f"Input '{input_name}' not found.",
+            err=True,
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        raise typer.Exit(code=1)
+
+    ctx.obj['obsws'].set_input_mute(
+        name=input_name,
+        muted=False,
+    )
 
 
 @app.command()
 def toggle(ctx: typer.Context, input_name: str):
     """Toggle an input."""
-    try:
-        resp = ctx.obj['obsws'].get_input_list()
-        if (input_ := _get_input(input_name, resp)) is None:
-            raise ObswsCliBadParameter(f"Input '{input_name}' not found.")
-
-        resp = ctx.obj['obsws'].get_input_mute(name=input_.get('inputName'))
-
-        ctx.obj['obsws'].set_input_mute(
-            name=input_.get('inputName'),
-            muted=not resp.input_muted,
+    if not _input_in_inputs(ctx, input_name):
+        typer.echo(
+            f"Input '{input_name}' not found.",
+            err=True,
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        raise typer.Exit(code=1)
+
+    # Get the current mute state
+    resp = ctx.obj['obsws'].get_input_mute(name=input_name)
+    new_state = not resp.input_muted
+
+    ctx.obj['obsws'].set_input_mute(
+        name=input_name,
+        muted=new_state,
+    )
