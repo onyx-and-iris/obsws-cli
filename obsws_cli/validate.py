@@ -2,6 +2,9 @@
 
 import typer
 
+# type alias for an option that is skipped when the command is run
+skipped_option = typer.Option(parser=lambda _: _, hidden=True, expose_value=False)
+
 
 def input_in_inputs(ctx: typer.Context, input_name: str) -> bool:
     """Check if an input is in the input list."""
@@ -29,3 +32,11 @@ def scene_collection_in_scene_collections(
     return any(
         collection == scene_collection_name for collection in resp.scene_collections
     )
+
+
+def item_in_scene_item_list(
+    ctx: typer.Context, scene_name: str, item_name: str
+) -> bool:
+    """Check if an item exists in a scene."""
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    return any(item.get('sourceName') == item_name for item in resp.scene_items)

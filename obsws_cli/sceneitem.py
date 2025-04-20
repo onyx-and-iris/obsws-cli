@@ -1,10 +1,11 @@
 """module containing commands for manipulating items in scenes."""
 
-import obsws_python as obsws
+from typing import Annotated
+
 import typer
 
+from . import validate
 from .alias import AliasGroup
-from .errors import ObswsCliBadParameter
 
 app = typer.Typer(cls=AliasGroup)
 
@@ -17,85 +18,108 @@ def main():
 @app.command('list | ls')
 def list(ctx: typer.Context, scene_name: str):
     """List all items in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-        items = (item.get('sourceName') for item in resp.scene_items)
-        typer.echo('\n'.join(items))
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+    if not validate.scene_in_scenes(ctx, scene_name):
+        typer.echo(f"Scene '{scene_name}' not found.")
+        typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    items = (item.get('sourceName') for item in resp.scene_items)
+    typer.echo('\n'.join(items))
 
 
 @app.command()
-def show(ctx: typer.Context, scene_name: str, item_name: str):
+def show(
+    ctx: typer.Context,
+    scene_name: str,
+    item_name: str,
+    validated: Annotated[bool, validate.skipped_option] = False,
+):
     """Show an item in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+    if not validated:
+        if not validate.scene_in_scenes(ctx, scene_name):
+            typer.echo(f"Scene '{scene_name}' not found.")
+            raise typer.Exit(code=1)
 
-        ctx.obj['obsws'].set_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(resp.scene_item_id),
-            enabled=True,
-        )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+            typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+            raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+
+    ctx.obj['obsws'].set_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(resp.scene_item_id),
+        enabled=True,
+    )
 
 
 @app.command()
-def hide(ctx: typer.Context, scene_name: str, item_name: str):
+def hide(
+    ctx: typer.Context,
+    scene_name: str,
+    item_name: str,
+    validated: Annotated[bool, validate.skipped_option] = False,
+):
     """Hide an item in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+    if not validated:
+        if not validate.scene_in_scenes(ctx, scene_name):
+            typer.echo(f"Scene '{scene_name}' not found.")
+            raise typer.Exit(code=1)
 
-        ctx.obj['obsws'].set_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(resp.scene_item_id),
-            enabled=False,
-        )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+        if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+            typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+            raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+    ctx.obj['obsws'].set_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(resp.scene_item_id),
+        enabled=False,
+    )
 
 
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context, scene_name: str, item_name: str):
     """Toggle an item in a scene."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
-        enabled = ctx.obj['obsws'].get_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(resp.scene_item_id),
-        )
+    if not validate.scene_in_scenes(ctx, scene_name):
+        typer.echo(f"Scene '{scene_name}' not found.")
+        raise typer.Exit(code=1)
 
-        new_state = not enabled.scene_item_enabled
-        ctx.obj['obsws'].set_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(resp.scene_item_id),
-            enabled=new_state,
+    if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+        typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(resp.scene_item_id),
+    )
+    if enabled.scene_item_enabled:
+        ctx.invoke(
+            hide, ctx=ctx, scene_name=scene_name, item_name=item_name, validated=True
         )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+    else:
+        ctx.invoke(
+            show, ctx=ctx, scene_name=scene_name, item_name=item_name, validated=True
+        )
 
 
 @app.command()
 def visible(ctx: typer.Context, scene_name: str, item_name: str):
     """Check if an item in a scene is visible."""
-    try:
-        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
-        enabled = ctx.obj['obsws'].get_scene_item_enabled(
-            scene_name=scene_name,
-            item_id=int(resp.scene_item_id),
-        )
-        typer.echo(
-            f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
-        )
-    except obsws.error.OBSSDKRequestError as e:
-        if e.code == 600:
-            raise ObswsCliBadParameter(str(e)) from e
-        raise
+    if not validate.scene_in_scenes(ctx, scene_name):
+        typer.echo(f"Scene '{scene_name}' not found.")
+        raise typer.Exit(code=1)
+
+    if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+        typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(resp.scene_item_id),
+    )
+    typer.echo(
+        f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
+    )
