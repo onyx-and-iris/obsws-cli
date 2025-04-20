@@ -77,7 +77,7 @@ def unmute(ctx: typer.Context, input_name: str):
     )
 
 
-@app.command()
+@app.command('toggle | tg')
 def toggle(ctx: typer.Context, input_name: str):
     """Toggle an input."""
     if not _input_in_inputs(ctx, input_name):

@@ -69,7 +69,7 @@ def status(ctx: typer.Context):
         typer.echo('Streaming is not in progress.')
 
 
-@app.command()
+@app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle streaming."""
     active, _ = _get_streaming_status(ctx)
