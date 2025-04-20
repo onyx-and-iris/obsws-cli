@@ -2,6 +2,7 @@
 
 import typer
 
+from . import validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
@@ -26,20 +27,10 @@ def current(ctx: typer.Context):
     typer.echo(resp.current_scene_collection_name)
 
 
-def _scene_collection_in_scene_collections(
-    ctx: typer.Context, scene_collection_name: str
-) -> bool:
-    """Check if a scene collection exists."""
-    resp = ctx.obj['obsws'].get_scene_collection_list()
-    return any(
-        collection == scene_collection_name for collection in resp.scene_collections
-    )
-
-
 @app.command('switch | set')
 def switch(ctx: typer.Context, scene_collection_name: str):
     """Switch to a scene collection."""
-    if not _scene_collection_in_scene_collections(ctx, scene_collection_name):
+    if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
         typer.echo(f"Scene collection '{scene_collection_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
@@ -59,7 +50,7 @@ def switch(ctx: typer.Context, scene_collection_name: str):
 @app.command('create | new')
 def create(ctx: typer.Context, scene_collection_name: str):
     """Create a new scene collection."""
-    if _scene_collection_in_scene_collections(ctx, scene_collection_name):
+    if validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
         typer.echo(
             f"Scene collection '{scene_collection_name}' already exists.", err=True
         )

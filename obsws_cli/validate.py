@@ -1,4 +1,4 @@
-"""module containing functions to validate input parameters."""
+"""module containing validation functions."""
 
 import typer
 
@@ -19,3 +19,13 @@ def studio_mode_enabled(ctx: typer.Context) -> bool:
     """Check if studio mode is enabled."""
     resp = ctx.obj['obsws'].get_studio_mode_enabled()
     return resp.studio_mode_enabled
+
+
+def scene_collection_in_scene_collections(
+    ctx: typer.Context, scene_collection_name: str
+) -> bool:
+    """Check if a scene collection exists."""
+    resp = ctx.obj['obsws'].get_scene_collection_list()
+    return any(
+        collection == scene_collection_name for collection in resp.scene_collections
+    )
