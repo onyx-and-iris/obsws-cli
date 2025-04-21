@@ -159,14 +159,14 @@ obsws-cli scene-collection current
     -   args: <scene_collection_name>
 
 ```console
-obsws-cli scene-collection switch LIVE
+obsws-cli scene-collection switch test-collection
 ```
 
 -   create: Create a new scene collection.
     -   args: <scene_collection_name>
 
 ```console
-obsws-cli scene-collection switch LIVE
+obsws-cli scene-collection create test-collection
 ```
 
 #### Group
