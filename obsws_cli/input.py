@@ -57,6 +57,8 @@ def mute(ctx: typer.Context, input_name: str):
         muted=True,
     )
 
+    typer.echo(f"Input '{input_name}' muted.")
+
 
 @app.command()
 def unmute(ctx: typer.Context, input_name: str):
@@ -72,6 +74,8 @@ def unmute(ctx: typer.Context, input_name: str):
         name=input_name,
         muted=False,
     )
+
+    typer.echo(f"Input '{input_name}' unmuted.")
 
 
 @app.command('toggle | tg')
@@ -91,4 +95,8 @@ def toggle(ctx: typer.Context, input_name: str):
     ctx.obj['obsws'].set_input_mute(
         name=input_name,
         muted=new_state,
+    )
+
+    typer.echo(
+        f"Input '{input_name}' {'muted' if new_state else 'unmuted'}.",
     )
