@@ -10,6 +10,11 @@ class AliasGroup(typer.core.TyperGroup):
 
     _CMD_SPLIT_P = re.compile(r' ?[,|] ?')
 
+    def __init__(self, *args, **kwargs):
+        """Initialize the AliasGroup."""
+        super().__init__(*args, **kwargs)
+        self.no_args_is_help = True
+
     def get_command(self, ctx, cmd_name):
         """Get a command by name."""
         cmd_name = self._group_cmd_name(cmd_name)

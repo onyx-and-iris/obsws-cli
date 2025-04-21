@@ -9,6 +9,7 @@ from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 from . import group, input, record, scene, scenecollection, sceneitem, stream
+from .alias import AliasGroup
 
 
 class Settings(BaseSettings):
@@ -29,7 +30,7 @@ class Settings(BaseSettings):
     TIMEOUT: int = 5  # Timeout for requests in seconds
 
 
-app = typer.Typer()
+app = typer.Typer(cls=AliasGroup)
 app.add_typer(scene.app, name='scene')
 app.add_typer(sceneitem.app, name='scene-item')
 app.add_typer(group.app, name='group')
