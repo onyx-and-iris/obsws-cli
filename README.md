@@ -127,14 +127,18 @@ obsws-cli scene-item hide START "Colour Source"
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item toggle --parent=test_group START "Colour Source 4"
+obsws-cli scene-item toggle --parent=test_group START "Colour Source 3"
 ```
 
 -   visible: Check if an item in a scene is visible.
+    -   flags:
+
+        *optional*
+        -   --parent: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item visible START "Colour Source"
+obsws-cli scene-item visible --parent=test_group START "Colour Source 4"
 ```
 
 #### Scene Collections

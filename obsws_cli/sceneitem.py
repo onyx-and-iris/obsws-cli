@@ -150,21 +150,41 @@ def toggle(
 
 
 @app.command()
-def visible(ctx: typer.Context, scene_name: str, item_name: str):
+def visible(
+    ctx: typer.Context,
+    scene_name: str,
+    item_name: str,
+    parent: Annotated[str, typer.Option(help='Parent group name')] = None,
+):
     """Check if an item in a scene is visible."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(code=1)
+    if parent:
+        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+            typer.echo(f"Parent group '{parent}' not found in scene '{scene_name}'.")
+            raise typer.Exit(code=1)
+    else:
+        if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+            typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+            raise typer.Exit(code=1)
 
-    if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-        typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
-        raise typer.Exit(code=1)
+    old_scene_name = scene_name
+    scene_name, scene_item_id = _get_scene_name_and_item_id(
+        ctx, scene_name, item_name, parent
+    )
 
-    resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
     enabled = ctx.obj['obsws'].get_scene_item_enabled(
         scene_name=scene_name,
-        item_id=int(resp.scene_item_id),
+        item_id=int(scene_item_id),
     )
-    typer.echo(
-        f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
-    )
+
+    if parent:
+        typer.echo(
+            f"Item '{item_name}' in group '{parent}' in scene '{old_scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
+        )
+    else:
+        # If not in a parent group, just show the scene name
+        # This is to avoid confusion with the parent group name
+        # which is not the same as the scene name
+        # and is not needed in this case
+        typer.echo(
+            f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
+        )
