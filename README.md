@@ -101,7 +101,7 @@ obsws-cli scene-item list LIVE
     -   flags:
 
         *optional*
-        -   `--parent`: Parent group name
+        -   --parent: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
@@ -112,7 +112,7 @@ obsws-cli scene-item show START "Colour Source"
     -   flags:
 
         *optional*
-        -   `--parent`: Parent group name
+        -   --parent: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
@@ -123,11 +123,11 @@ obsws-cli scene-item hide START "Colour Source"
     -   flags:
 
         *optional*
-        -   `--parent`: Parent group name
+        -   --parent: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item toggle START "Colour Source"
+obsws-cli scene-item toggle --parent=test_group START "Colour Source 4"
 ```
 
 -   visible: Check if an item in a scene is visible.
