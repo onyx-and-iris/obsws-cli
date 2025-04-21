@@ -1,5 +1,6 @@
 """module containing commands for manipulating items in scenes."""
 
+from collections.abc import Callable
 from typing import Annotated
 
 import typer
@@ -27,6 +28,34 @@ def list(ctx: typer.Context, scene_name: str):
     typer.echo('\n'.join(items))
 
 
+def _validate_scene_name_and_item_name(
+    func: Callable,
+):
+    """Validate the scene name and item name."""
+
+    def wrapper(
+        ctx: typer.Context, scene_name: str, item_name: str, parent: bool = False
+    ):
+        if not validate.scene_in_scenes(ctx, scene_name):
+            typer.echo(f"Scene '{scene_name}' not found.")
+            raise typer.Exit(code=1)
+
+        if parent:
+            if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+                typer.echo(
+                    f"Parent group '{parent}' not found in scene '{scene_name}'."
+                )
+                raise typer.Exit(code=1)
+        else:
+            if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+                typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+                raise typer.Exit(code=1)
+
+        return func(ctx, scene_name, item_name, parent)
+
+    return wrapper
+
+
 def _get_scene_name_and_item_id(
     ctx: typer.Context, scene_name: str, item_name: str, parent: bool = False
 ):
@@ -47,6 +76,7 @@ def _get_scene_name_and_item_id(
     return scene_name, scene_item_id
 
 
+@_validate_scene_name_and_item_name
 @app.command()
 def show(
     ctx: typer.Context,
@@ -55,19 +85,6 @@ def show(
     parent: Annotated[str, typer.Option(help='Parent group name')] = None,
 ):
     """Show an item in a scene."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(code=1)
-
-    if parent:
-        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
-            typer.echo(f"Parent group '{parent}' not found in scene '{scene_name}'.")
-            raise typer.Exit(code=1)
-    else:
-        if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
-            raise typer.Exit(code=1)
-
     scene_name, scene_item_id = _get_scene_name_and_item_id(
         ctx, scene_name, item_name, parent
     )
@@ -78,7 +95,10 @@ def show(
         enabled=True,
     )
 
+    typer.echo(f"Item '{item_name}' in scene '{scene_name}' has been shown.")
 
+
+@_validate_scene_name_and_item_name
 @app.command()
 def hide(
     ctx: typer.Context,
@@ -87,19 +107,6 @@ def hide(
     parent: Annotated[str, typer.Option(help='Parent group name')] = None,
 ):
     """Hide an item in a scene."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(code=1)
-
-    if parent:
-        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
-            typer.echo(f"Parent group '{parent}' not found in scene '{scene_name}'.")
-            raise typer.Exit(code=1)
-    else:
-        if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
-            raise typer.Exit(code=1)
-
     scene_name, scene_item_id = _get_scene_name_and_item_id(
         ctx, scene_name, item_name, parent
     )
@@ -110,7 +117,10 @@ def hide(
         enabled=False,
     )
 
+    typer.echo(f"Item '{item_name}' in scene '{scene_name}' has been hidden.")
 
+
+@_validate_scene_name_and_item_name
 @app.command('toggle | tg')
 def toggle(
     ctx: typer.Context,
@@ -148,7 +158,12 @@ def toggle(
         enabled=new_state,
     )
 
+    typer.echo(
+        f"Item '{item_name}' in scene '{scene_name}' has been {'shown' if new_state else 'hidden'}."
+    )
 
+
+@_validate_scene_name_and_item_name
 @app.command()
 def visible(
     ctx: typer.Context,
