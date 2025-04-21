@@ -205,7 +205,7 @@ obsws-cli group hide START "test_group"
 ```console
 obsws-cli input list
 
-obsws-cli input --input --colour list
+obsws-cli input list --input --colour
 ```
 
 -   mute: Mute an input.
