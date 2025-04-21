@@ -25,16 +25,24 @@ def list(
     """List all inputs."""
     resp = ctx.obj['obsws'].get_input_list()
 
-    filters = []
-    if input:
-        filters.append('input')
-    if output:
-        filters.append('output')
-    if colour:
-        filters.append('color')
+    # For each kind flag, if it is set to True, add it to the kinds list.
+    # If no flags are set, default to all kinds.
+    # Define a mapping of kind names to their corresponding flags
+    kind_flags = {
+        'input': input,
+        'output': output,
+        'color': colour,
+    }
+
+    # Collect all kinds where the corresponding flag is set to True
+    kinds = [kind for kind, flag in kind_flags.items() if flag]
+
+    # If no flags are set, default to all kinds
+    if not kinds:
+        kinds = list(kind_flags.keys())
 
     inputs = filter(
-        lambda input_: any(kind in input_.get('inputKind') for kind in filters),
+        lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
         resp.inputs,
     )
     typer.echo('\n'.join(input_.get('inputName') for input_ in inputs))
