@@ -195,9 +195,17 @@ obsws-cli group hide START "test_group"
 #### Input
 
 -   list: List all inputs.
+    -   flags:
+
+        *optional*
+        -   --input: Filter by input type.
+        -   --output: Filter by output type.
+        -   --colour: Filter by colour source type.
 
 ```console
 obsws-cli input list
+
+obsws-cli input --input --colour list
 ```
 
 -   mute: Mute an input.
