@@ -98,6 +98,10 @@ obsws-cli scene-item list LIVE
 ```
 
 -   show: Show an item in a scene.
+    -   flags:
+
+        *optional*
+        -   `--parent`: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
@@ -105,6 +109,10 @@ obsws-cli scene-item show START "Colour Source"
 ```
 
 -   hide: Hide an item in a scene.
+    -   flags:
+
+        *optional*
+        -   `--parent`: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
@@ -112,6 +120,10 @@ obsws-cli scene-item hide START "Colour Source"
 ```
 
 -   toggle: Toggle an item in a scene.
+    -   flags:
+
+        *optional*
+        -   `--parent`: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
