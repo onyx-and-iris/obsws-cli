@@ -32,6 +32,8 @@ def pytest_sessionstart(session):
     )
     print(' '.join(out))
 
+    session.obsws.set_current_scene_collection('test-collection')
+
     session.obsws.create_scene('pytest')
     session.obsws.create_input(
         sceneName='pytest',

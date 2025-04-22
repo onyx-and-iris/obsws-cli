@@ -68,6 +68,8 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
         enabled=True,
     )
 
+    typer.echo(f"Group '{group_name}' is now visible.")
+
 
 @app.command()
 def hide(ctx: typer.Context, scene_name: str, group_name: str):
@@ -92,3 +94,63 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
         item_id=int(group.get('sceneItemId')),
         enabled=False,
     )
+
+    typer.echo(f"Group '{group_name}' is now hidden.")
+
+
+@app.command('toggle | tg')
+def toggle(ctx: typer.Context, scene_name: str, group_name: str):
+    """Toggle a group in a scene."""
+    if not validate.scene_in_scenes(ctx, scene_name):
+        typer.echo(
+            f"Scene '{scene_name}' not found.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        typer.echo(
+            f"Group '{group_name}' not found in scene {scene_name}.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(group.get('sceneItemId')),
+    )
+
+    if enabled.scene_item_enabled:
+        ctx.invoke(hide, ctx=ctx, scene_name=scene_name, group_name=group_name)
+    else:
+        ctx.invoke(show, ctx=ctx, scene_name=scene_name, group_name=group_name)
+
+
+@app.command()
+def status(ctx: typer.Context, scene_name: str, group_name: str):
+    """Get the status of a group in a scene."""
+    if not validate.scene_in_scenes(ctx, scene_name):
+        typer.echo(
+            f"Scene '{scene_name}' not found.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        typer.echo(
+            f"Group '{group_name}' not found in scene {scene_name}.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+        scene_name=scene_name,
+        item_id=int(group.get('sceneItemId')),
+    )
+
+    if enabled.scene_item_enabled:
+        typer.echo(f"Group '{group_name}' is now visible.")
+    else:
+        typer.echo(f"Group '{group_name}' is now hidden.")

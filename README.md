@@ -192,6 +192,20 @@ obsws-cli group show START "test_group"
 obsws-cli group hide START "test_group"
 ```
 
+-   toggle: Toggle a group in a scene.
+    -   args: <scene_name> <group_name>
+
+```console
+obsws-cli group toggle START "test_group"
+```
+
+-   status: Get the status of a group in a scene.
+    -   args: <scene_name> <group_name>
+
+```console
+obsws-cli group status START "test_group"
+```
+
 #### Input
 
 -   list: List all inputs.
