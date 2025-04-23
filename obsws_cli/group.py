@@ -116,15 +116,12 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    new_state = not group.get('sceneItemEnabled')
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
+        enabled=new_state,
     )
-
-    if enabled.scene_item_enabled:
-        ctx.invoke(hide, ctx=ctx, scene_name=scene_name, group_name=group_name)
-    else:
-        ctx.invoke(show, ctx=ctx, scene_name=scene_name, group_name=group_name)
 
 
 @app.command()
