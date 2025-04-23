@@ -123,6 +123,11 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
         enabled=new_state,
     )
 
+    if new_state:
+        typer.echo(f"Group '{group_name}' is now visible.")
+    else:
+        typer.echo(f"Group '{group_name}' is now hidden.")
+
 
 @app.command()
 def status(ctx: typer.Context, scene_name: str, group_name: str):
