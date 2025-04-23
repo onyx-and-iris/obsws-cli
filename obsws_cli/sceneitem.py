@@ -57,7 +57,7 @@ def _validate_scene_name_and_item_name(
 
 
 def _get_scene_name_and_item_id(
-    ctx: typer.Context, scene_name: str, item_name: str, parent: bool = False
+    ctx: typer.Context, scene_name: str, item_name: str, parent: str
 ):
     if parent:
         resp = ctx.obj['obsws'].get_group_scene_item_list(parent)
