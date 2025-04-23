@@ -23,7 +23,7 @@ def list(
     colour: Annotated[bool, typer.Option(help='Filter by colour source type.')] = False,
 ):
     """List all inputs."""
-    resp = ctx.obj['obsws'].get_input_list()
+    resp = ctx.obj.get_input_list()
 
     kinds = []
     if input:
@@ -52,7 +52,7 @@ def mute(ctx: typer.Context, input_name: str):
         )
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].set_input_mute(
+    ctx.obj.set_input_mute(
         name=input_name,
         muted=True,
     )
@@ -70,7 +70,7 @@ def unmute(ctx: typer.Context, input_name: str):
         )
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].set_input_mute(
+    ctx.obj.set_input_mute(
         name=input_name,
         muted=False,
     )
@@ -89,10 +89,10 @@ def toggle(ctx: typer.Context, input_name: str):
         raise typer.Exit(code=1)
 
     # Get the current mute state
-    resp = ctx.obj['obsws'].get_input_mute(name=input_name)
+    resp = ctx.obj.get_input_mute(name=input_name)
     new_state = not resp.input_muted
 
-    ctx.obj['obsws'].set_input_mute(
+    ctx.obj.set_input_mute(
         name=input_name,
         muted=new_state,
     )

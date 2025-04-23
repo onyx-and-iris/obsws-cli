@@ -23,7 +23,7 @@ def list(ctx: typer.Context, scene_name: str):
         typer.echo(f"Scene '{scene_name}' not found.")
         typer.Exit(code=1)
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.obj.get_scene_item_list(scene_name)
     items = (item.get('sourceName') for item in resp.scene_items)
     typer.echo('\n'.join(items))
 
@@ -60,7 +60,7 @@ def _get_scene_name_and_item_id(
     ctx: typer.Context, scene_name: str, item_name: str, parent: str
 ):
     if parent:
-        resp = ctx.obj['obsws'].get_group_scene_item_list(parent)
+        resp = ctx.obj.get_group_scene_item_list(parent)
         for item in resp.scene_items:
             if item.get('sourceName') == item_name:
                 scene_name = parent
@@ -70,7 +70,7 @@ def _get_scene_name_and_item_id(
             typer.echo(f"Item '{item_name}' not found in group '{parent}'.")
             raise typer.Exit(code=1)
     else:
-        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+        resp = ctx.obj.get_scene_item_id(scene_name, item_name)
         scene_item_id = resp.scene_item_id
 
     return scene_name, scene_item_id
@@ -89,7 +89,7 @@ def show(
         ctx, scene_name, item_name, parent
     )
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.obj.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=True,
@@ -111,7 +111,7 @@ def hide(
         ctx, scene_name, item_name, parent
     )
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.obj.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=False,
@@ -146,13 +146,13 @@ def toggle(
         ctx, scene_name, item_name, parent
     )
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    enabled = ctx.obj.get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
     )
     new_state = not enabled.scene_item_enabled
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.obj.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=new_state,
@@ -186,7 +186,7 @@ def visible(
         ctx, scene_name, item_name, parent
     )
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    enabled = ctx.obj.get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
     )

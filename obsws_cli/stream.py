@@ -14,7 +14,7 @@ def main():
 
 def _get_streaming_status(ctx: typer.Context) -> tuple:
     """Get streaming status."""
-    resp = ctx.obj['obsws'].get_stream_status()
+    resp = ctx.obj.get_stream_status()
     return resp.output_active, resp.output_duration
 
 
@@ -26,7 +26,7 @@ def start(ctx: typer.Context):
         typer.echo('Streaming is already in progress, cannot start.')
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].start_stream()
+    ctx.obj.start_stream()
     typer.echo('Streaming started successfully.')
 
 
@@ -38,7 +38,7 @@ def stop(ctx: typer.Context):
         typer.echo('Streaming is not in progress, cannot stop.')
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].stop_stream()
+    ctx.obj.stop_stream()
     typer.echo('Streaming stopped successfully.')
 
 

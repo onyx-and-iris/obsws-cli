@@ -14,7 +14,7 @@ def main():
 
 def _get_recording_status(ctx: typer.Context) -> tuple:
     """Get recording status."""
-    resp = ctx.obj['obsws'].get_record_status()
+    resp = ctx.obj.get_record_status()
     return resp.output_active, resp.output_paused
 
 
@@ -30,7 +30,7 @@ def start(ctx: typer.Context):
         typer.echo(err_msg)
         raise typer.Exit(1)
 
-    ctx.obj['obsws'].start_record()
+    ctx.obj.start_record()
     typer.echo('Recording started successfully.')
 
 
@@ -42,7 +42,7 @@ def stop(ctx: typer.Context):
         typer.echo('Recording is not in progress, cannot stop.')
         raise typer.Exit(1)
 
-    ctx.obj['obsws'].stop_record()
+    ctx.obj.stop_record()
     typer.echo('Recording stopped successfully.')
 
 
@@ -80,7 +80,7 @@ def resume(ctx: typer.Context):
         typer.echo('Recording is in progress but not paused, cannot resume.')
         raise typer.Exit(1)
 
-    ctx.obj['obsws'].resume_record()
+    ctx.obj.resume_record()
     typer.echo('Recording resumed successfully.')
 
 
@@ -95,5 +95,5 @@ def pause(ctx: typer.Context):
         typer.echo('Recording is in progress but already paused, cannot pause.')
         raise typer.Exit(1)
 
-    ctx.obj['obsws'].pause_record()
+    ctx.obj.pause_record()
     typer.echo('Recording paused successfully.')

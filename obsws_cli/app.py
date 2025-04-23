@@ -43,7 +43,7 @@ app.add_typer(scenecollection.app, name='scene-collection')
 @app.command()
 def version(ctx: typer.Context):
     """Get the OBS Client and WebSocket versions."""
-    resp = ctx.obj['obsws'].get_version()
+    resp = ctx.obj.get_version()
     typer.echo(
         f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}'
     )
@@ -69,8 +69,7 @@ def main(
     if timeout:
         settings.TIMEOUT = timeout
 
-    ctx.obj = ctx.ensure_object(dict)
-    ctx.obj['obsws'] = ctx.with_resource(
+    ctx.obj = ctx.with_resource(
         obsws.ReqClient(
             host=settings.HOST,
             port=settings.PORT,

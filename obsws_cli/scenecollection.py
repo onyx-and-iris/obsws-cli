@@ -16,14 +16,14 @@ def main():
 @app.command('list | ls')
 def list(ctx: typer.Context):
     """List all scene collections."""
-    resp = ctx.obj['obsws'].get_scene_collection_list()
+    resp = ctx.obj.get_scene_collection_list()
     typer.echo('\n'.join(resp.scene_collections))
 
 
 @app.command('current | get')
 def current(ctx: typer.Context):
     """Get the current scene collection."""
-    resp = ctx.obj['obsws'].get_scene_collection_list()
+    resp = ctx.obj.get_scene_collection_list()
     typer.echo(resp.current_scene_collection_name)
 
 
@@ -35,7 +35,7 @@ def switch(ctx: typer.Context, scene_collection_name: str):
         raise typer.Exit(code=1)
 
     current_scene_collection = (
-        ctx.obj['obsws'].get_scene_collection_list().current_scene_collection_name
+        ctx.obj.get_scene_collection_list().current_scene_collection_name
     )
     if scene_collection_name == current_scene_collection:
         typer.echo(
@@ -43,7 +43,7 @@ def switch(ctx: typer.Context, scene_collection_name: str):
         )
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].set_current_scene_collection(scene_collection_name)
+    ctx.obj.set_current_scene_collection(scene_collection_name)
     typer.echo(f"Switched to scene collection '{scene_collection_name}'")
 
 
@@ -56,5 +56,5 @@ def create(ctx: typer.Context, scene_collection_name: str):
         )
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].create_scene_collection(scene_collection_name)
+    ctx.obj.create_scene_collection(scene_collection_name)
     typer.echo(f'Created scene collection {scene_collection_name}')

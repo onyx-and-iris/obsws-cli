@@ -24,7 +24,7 @@ def list(ctx: typer.Context, scene_name: str):
         )
         raise typer.Exit(code=1)
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.obj.get_scene_item_list(scene_name)
     groups = (
         item.get('sourceName') for item in resp.scene_items if item.get('isGroup')
     )
@@ -54,7 +54,7 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         typer.echo(
             f"Group '{group_name}' not found in scene {scene_name}.",
@@ -62,7 +62,7 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.obj.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=True,
@@ -81,7 +81,7 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         typer.echo(
             f"Group '{group_name}' not found in scene {scene_name}.",
@@ -89,7 +89,7 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.obj.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=False,
@@ -108,7 +108,7 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         typer.echo(
             f"Group '{group_name}' not found in scene {scene_name}.",
@@ -117,7 +117,7 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
         raise typer.Exit(code=1)
 
     new_state = not group.get('sceneItemEnabled')
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.obj.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=new_state,
@@ -139,7 +139,7 @@ def status(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         typer.echo(
             f"Group '{group_name}' not found in scene {scene_name}.",
@@ -147,7 +147,7 @@ def status(ctx: typer.Context, scene_name: str, group_name: str):
         )
         raise typer.Exit(code=1)
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    enabled = ctx.obj.get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
     )

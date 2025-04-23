@@ -18,7 +18,7 @@ def main():
 @app.command('list | ls')
 def list(ctx: typer.Context):
     """List all scenes."""
-    resp = ctx.obj['obsws'].get_scene_list()
+    resp = ctx.obj.get_scene_list()
     scenes = (scene.get('sceneName') for scene in reversed(resp.scenes))
     typer.echo('\n'.join(scenes))
 
@@ -36,10 +36,10 @@ def current(
         raise typer.Exit(1)
 
     if preview:
-        resp = ctx.obj['obsws'].get_current_preview_scene()
+        resp = ctx.obj.get_current_preview_scene()
         typer.echo(resp.current_preview_scene_name)
     else:
-        resp = ctx.obj['obsws'].get_current_program_scene()
+        resp = ctx.obj.get_current_program_scene()
         typer.echo(resp.current_program_scene_name)
 
 
@@ -65,6 +65,6 @@ def switch(
         raise typer.Exit(code=1)
 
     if preview:
-        ctx.obj['obsws'].set_current_preview_scene(scene_name)
+        ctx.obj.set_current_preview_scene(scene_name)
     else:
-        ctx.obj['obsws'].set_current_program_scene(scene_name)
+        ctx.obj.set_current_program_scene(scene_name)
