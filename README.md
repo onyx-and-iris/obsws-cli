@@ -141,6 +141,19 @@ obsws-cli scene-item toggle --parent=test_group START "Colour Source 3"
 obsws-cli scene-item visible --parent=test_group START "Colour Source 4"
 ```
 
+-   transform: Set the transform of an item in a scene.
+    -   flags:
+
+        *optional*
+        -   --position-x: X position of the item in the scene
+        -   --position-y: Y position of the item in the scene
+        -   --scale-x: X scale of the item in the scene
+        -   --scale-y: Y scale of the item in the scene
+
+```console
+obsws-cli scene-item transform --position-x=556.0 --scale-x=0.7946954965591431 --scale-y=0.7948529124259949 LIVE "Window Capture"
+```
+
 #### Scene Collections
 
 -   list: List all scene collections.

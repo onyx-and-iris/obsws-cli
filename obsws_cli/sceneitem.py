@@ -203,3 +203,70 @@ def visible(
         typer.echo(
             f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
         )
+
+
+@_validate_scene_name_and_item_name
+@app.command()
+def transform(
+    ctx: typer.Context,
+    scene_name: str,
+    item_name: str,
+    parent: Annotated[str, typer.Option(help='Parent group name')] = None,
+    position_x: Annotated[
+        float, typer.Option(help='X position of the item in the scene')
+    ] = None,
+    position_y: Annotated[
+        float, typer.Option(help='Y position of the item in the scene')
+    ] = None,
+    scale_x: Annotated[
+        float, typer.Option(help='X scale of the item in the scene')
+    ] = None,
+    scale_y: Annotated[
+        float, typer.Option(help='Y scale of the item in the scene')
+    ] = None,
+):
+    """Set the transform of an item in a scene."""
+    if parent:
+        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+            typer.echo(f"Parent group '{parent}' not found in scene '{scene_name}'.")
+            raise typer.Exit(code=1)
+    else:
+        if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
+            typer.echo(f"Item '{item_name}' not found in scene '{scene_name}'.")
+            raise typer.Exit(code=1)
+
+    old_scene_name = scene_name
+    scene_name, scene_item_id = _get_scene_name_and_item_id(
+        ctx, scene_name, item_name, parent
+    )
+
+    transform = {}
+    if position_x is not None:
+        transform['positionX'] = position_x
+    if position_y is not None:
+        transform['positionY'] = position_y
+    if scale_x is not None:
+        transform['scaleX'] = scale_x
+    if scale_y is not None:
+        transform['scaleY'] = scale_y
+
+    if not transform:
+        typer.echo('No transform options provided.')
+        raise typer.Exit(code=1)
+
+    transform = ctx.obj.set_scene_item_transform(
+        scene_name=scene_name,
+        item_id=int(scene_item_id),
+        transform=transform,
+    )
+
+    if parent:
+        typer.echo(
+            f"Item '{item_name}' in group '{parent}' in scene '{old_scene_name}' has been transformed."
+        )
+    else:
+        # If not in a parent group, just show the scene name
+        # This is to avoid confusion with the parent group name
+        # which is not the same as the scene name
+        # and is not needed in this case
+        typer.echo(f"Item '{item_name}' in scene '{scene_name}' has been transformed.")
