@@ -31,9 +31,9 @@ def list(
     if output:
         kinds.append('output')
     if colour:
-        kinds.append('colour')
+        kinds.append('color')
     if not any([input, output, colour]):
-        kinds = ['input', 'output', 'colour']
+        kinds = ['input', 'output', 'color']
 
     inputs = filter(
         lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
