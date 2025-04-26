@@ -3,6 +3,11 @@
 [![Hatch project](https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg)](https://github.com/pypa/hatch)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+
+A command line interface for OBS Websocket v5
+
+For an outline of past/future changes refer to: [CHANGELOG](CHANGELOG.md)
+
 -----
 
 ## Table of Contents
