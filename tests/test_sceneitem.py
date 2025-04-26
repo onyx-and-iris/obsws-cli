@@ -9,7 +9,7 @@ runner = CliRunner()
 
 def test_item_list():
     """Test the item list command."""
-    result = runner.invoke(app, ['scene-item', 'list', 'pytest'])
+    result = runner.invoke(app, ['sceneitem', 'list', 'pytest'])
     assert result.exit_code == 0
     assert 'pytest_input' in result.stdout
     assert 'pytest_input_2' in result.stdout
