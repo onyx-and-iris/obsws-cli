@@ -8,7 +8,18 @@ import typer
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
-from . import group, input, record, scene, scenecollection, sceneitem, stream
+from . import (
+    group,
+    input,
+    profile,
+    record,
+    replaybuffer,
+    scene,
+    scenecollection,
+    sceneitem,
+    studiomode,
+    virtualcam,
+)
 from .alias import AliasGroup
 
 
@@ -31,13 +42,19 @@ class Settings(BaseSettings):
 
 
 app = typer.Typer(cls=AliasGroup)
-app.add_typer(scene.app, name='scene')
-app.add_typer(sceneitem.app, name='scene-item')
-app.add_typer(group.app, name='group')
-app.add_typer(input.app, name='input')
-app.add_typer(record.app, name='record')
-app.add_typer(stream.app, name='stream')
-app.add_typer(scenecollection.app, name='scene-collection')
+for module in (
+    group,
+    input,
+    profile,
+    record,
+    replaybuffer,
+    scene,
+    scenecollection,
+    sceneitem,
+    studiomode,
+    virtualcam,
+):
+    app.add_typer(module.app, name=module.__name__.split('.')[-1])
 
 
 @app.command()

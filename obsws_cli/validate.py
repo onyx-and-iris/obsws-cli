@@ -40,3 +40,9 @@ def item_in_scene_item_list(
     """Check if an item exists in a scene."""
     resp = ctx.obj.get_scene_item_list(scene_name)
     return any(item.get('sourceName') == item_name for item in resp.scene_items)
+
+
+def profile_exists(ctx: typer.Context, profile_name: str) -> bool:
+    """Check if a profile exists."""
+    resp = ctx.obj.get_profile_list()
+    return any(profile == profile_name for profile in resp.profiles)
