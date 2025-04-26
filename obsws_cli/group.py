@@ -44,7 +44,7 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
     return group
 
 
-@app.command()
+@app.command('show | sh')
 def show(ctx: typer.Context, scene_name: str, group_name: str):
     """Show a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
@@ -71,7 +71,7 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
     typer.echo(f"Group '{group_name}' is now visible.")
 
 
-@app.command()
+@app.command('hide | h')
 def hide(ctx: typer.Context, scene_name: str, group_name: str):
     """Hide a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
@@ -129,7 +129,7 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
         typer.echo(f"Group '{group_name}' is now hidden.")
 
 
-@app.command()
+@app.command('status | ss')
 def status(ctx: typer.Context, scene_name: str, group_name: str):
     """Get the status of a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):

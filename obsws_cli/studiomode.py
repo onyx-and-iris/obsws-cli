@@ -12,19 +12,19 @@ def main():
     """Control studio mode in OBS."""
 
 
-@app.command()
+@app.command('enable | on')
 def enable(ctx: typer.Context):
     """Enable studio mode."""
     ctx.obj.set_studio_mode_enabled(True)
 
 
-@app.command()
+@app.command('disable | off')
 def disable(ctx: typer.Context):
     """Disable studio mode."""
     ctx.obj.set_studio_mode_enabled(False)
 
 
-@app.command()
+@app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle studio mode."""
     resp = ctx.obj.get_studio_mode_enabled()
@@ -36,7 +36,7 @@ def toggle(ctx: typer.Context):
         typer.echo('Studio mode is now enabled.')
 
 
-@app.command()
+@app.command('status | ss')
 def status(ctx: typer.Context):
     """Get the status of studio mode."""
     resp = ctx.obj.get_studio_mode_enabled()

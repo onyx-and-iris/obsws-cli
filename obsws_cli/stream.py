@@ -18,7 +18,7 @@ def _get_streaming_status(ctx: typer.Context) -> tuple:
     return resp.output_active, resp.output_duration
 
 
-@app.command()
+@app.command('start | s')
 def start(ctx: typer.Context):
     """Start streaming."""
     active, _ = _get_streaming_status(ctx)
@@ -30,7 +30,7 @@ def start(ctx: typer.Context):
     typer.echo('Streaming started successfully.')
 
 
-@app.command()
+@app.command('stop | st')
 def stop(ctx: typer.Context):
     """Stop streaming."""
     active, _ = _get_streaming_status(ctx)
@@ -42,7 +42,7 @@ def stop(ctx: typer.Context):
     typer.echo('Streaming stopped successfully.')
 
 
-@app.command()
+@app.command('status | ss')
 def status(ctx: typer.Context):
     """Get streaming status."""
     active, duration = _get_streaming_status(ctx)

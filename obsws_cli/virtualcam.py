@@ -12,28 +12,28 @@ def main():
     """Control virtual camera in OBS."""
 
 
-@app.command()
+@app.command('start | s')
 def start(ctx: typer.Context):
     """Start the virtual camera."""
     ctx.obj.start_virtual_cam()
     typer.echo('Virtual camera started.')
 
 
-@app.command()
+@app.command('stop | p')
 def stop(ctx: typer.Context):
     """Stop the virtual camera."""
     ctx.obj.stop_virtual_cam()
     typer.echo('Virtual camera stopped.')
 
 
-@app.command()
+@app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle the virtual camera."""
     ctx.obj.toggle_virtual_cam()
     typer.echo('Virtual camera toggled.')
 
 
-@app.command()
+@app.command('status | ss')
 def status(ctx: typer.Context):
     """Get the status of the virtual camera."""
     resp = ctx.obj.get_virtual_cam_status()

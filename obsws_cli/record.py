@@ -18,7 +18,7 @@ def _get_recording_status(ctx: typer.Context) -> tuple:
     return resp.output_active, resp.output_paused
 
 
-@app.command()
+@app.command('start | s')
 def start(ctx: typer.Context):
     """Start recording."""
     active, paused = _get_recording_status(ctx)
@@ -34,7 +34,7 @@ def start(ctx: typer.Context):
     typer.echo('Recording started successfully.')
 
 
-@app.command()
+@app.command('stop | st')
 def stop(ctx: typer.Context):
     """Stop recording."""
     active, _ = _get_recording_status(ctx)
@@ -46,7 +46,7 @@ def stop(ctx: typer.Context):
     typer.echo('Recording stopped successfully.')
 
 
-@app.command()
+@app.command('status | ss')
 def status(ctx: typer.Context):
     """Get recording status."""
     active, paused = _get_recording_status(ctx)
@@ -69,7 +69,7 @@ def toggle(ctx: typer.Context):
         ctx.invoke(start, ctx=ctx)
 
 
-@app.command()
+@app.command('resume | r')
 def resume(ctx: typer.Context):
     """Resume recording."""
     active, paused = _get_recording_status(ctx)
@@ -84,7 +84,7 @@ def resume(ctx: typer.Context):
     typer.echo('Recording resumed successfully.')
 
 
-@app.command()
+@app.command('pause | p')
 def pause(ctx: typer.Context):
     """Pause recording."""
     active, paused = _get_recording_status(ctx)

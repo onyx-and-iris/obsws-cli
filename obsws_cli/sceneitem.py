@@ -77,7 +77,7 @@ def _get_scene_name_and_item_id(
 
 
 @_validate_scene_name_and_item_name
-@app.command()
+@app.command('show | sh')
 def show(
     ctx: typer.Context,
     scene_name: str,
@@ -99,7 +99,7 @@ def show(
 
 
 @_validate_scene_name_and_item_name
-@app.command()
+@app.command('hide | h')
 def hide(
     ctx: typer.Context,
     scene_name: str,
@@ -164,7 +164,7 @@ def toggle(
 
 
 @_validate_scene_name_and_item_name
-@app.command()
+@app.command('visible | v')
 def visible(
     ctx: typer.Context,
     scene_name: str,
@@ -206,7 +206,7 @@ def visible(
 
 
 @_validate_scene_name_and_item_name
-@app.command()
+@app.command('transform | t')
 def transform(
     ctx: typer.Context,
     scene_name: str,

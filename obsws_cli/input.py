@@ -42,7 +42,7 @@ def list(
     typer.echo('\n'.join(input_.get('inputName') for input_ in inputs))
 
 
-@app.command()
+@app.command('mute | m')
 def mute(ctx: typer.Context, input_name: str):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
@@ -60,7 +60,7 @@ def mute(ctx: typer.Context, input_name: str):
     typer.echo(f"Input '{input_name}' muted.")
 
 
-@app.command()
+@app.command('unmute | um')
 def unmute(ctx: typer.Context, input_name: str):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):

@@ -21,14 +21,14 @@ def list(ctx: typer.Context):
         typer.echo(profile)
 
 
-@app.command()
+@app.command('current | get')
 def current(ctx: typer.Context):
     """Get the current profile."""
     resp = ctx.obj.get_profile_list()
     typer.echo(resp.current_profile_name)
 
 
-@app.command()
+@app.command('switch | set')
 def switch(ctx: typer.Context, profile_name: str):
     """Switch to a profile."""
     if not validate.profile_exists(ctx, profile_name):
@@ -50,7 +50,7 @@ def switch(ctx: typer.Context, profile_name: str):
     typer.echo(f"Switched to profile '{profile_name}'.")
 
 
-@app.command()
+@app.command('create | new')
 def create(ctx: typer.Context, profile_name: str):
     """Create a new profile."""
     if validate.profile_exists(ctx, profile_name):
@@ -64,7 +64,7 @@ def create(ctx: typer.Context, profile_name: str):
     typer.echo(f"Created profile '{profile_name}'.")
 
 
-@app.command()
+@app.command('remove | rm')
 def remove(ctx: typer.Context, profile_name: str):
     """Remove a profile."""
     if not validate.profile_exists(ctx, profile_name):

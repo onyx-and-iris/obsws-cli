@@ -12,21 +12,21 @@ def main():
     """Control profiles in OBS."""
 
 
-@app.command()
+@app.command('start | s')
 def start(ctx: typer.Context):
     """Start the replay buffer."""
     ctx.obj.start_replay_buffer()
     typer.echo('Replay buffer started.')
 
 
-@app.command()
+@app.command('stop | st')
 def stop(ctx: typer.Context):
     """Stop the replay buffer."""
     ctx.obj.stop_replay_buffer()
     typer.echo('Replay buffer stopped.')
 
 
-@app.command()
+@app.command('status | ss')
 def status(ctx: typer.Context):
     """Get the status of the replay buffer."""
     resp = ctx.obj.get_replay_buffer_status()
@@ -36,7 +36,7 @@ def status(ctx: typer.Context):
         typer.echo('Replay buffer is not active.')
 
 
-@app.command()
+@app.command('save | sv')
 def save(ctx: typer.Context):
     """Save the replay buffer."""
     ctx.obj.save_replay_buffer()
