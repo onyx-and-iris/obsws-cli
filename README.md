@@ -50,9 +50,9 @@ Store and load environment variables from:
 -   `user home directory / .config / obsws-cli / obsws.env`
 
 ```env
-OBSWS_HOST=localhost
-OBSWS_PORT=4455
-OBSWS_PASSWORD=<websocket password>
+OBS_HOST=localhost
+OBS_PORT=4455
+OBS_PASSWORD=<websocket password>
 ```
 
 Flags can be used to override environment variables.

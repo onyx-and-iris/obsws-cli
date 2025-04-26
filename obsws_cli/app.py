@@ -17,6 +17,7 @@ from . import (
     scene,
     scenecollection,
     sceneitem,
+    stream,
     studiomode,
     virtualcam,
 )
@@ -32,7 +33,7 @@ class Settings(BaseSettings):
             Path.home() / '.config' / 'obsws-cli' / 'obsws.env',
         ),
         env_file_encoding='utf-8',
-        env_prefix='OBSWS_',
+        env_prefix='OBS_',
     )
 
     HOST: str = 'localhost'
@@ -51,6 +52,7 @@ for module in (
     scene,
     scenecollection,
     sceneitem,
+    stream,
     studiomode,
     virtualcam,
 ):
