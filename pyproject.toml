@@ -40,10 +40,9 @@ path = "obsws_cli/__about__.py"
 
 [tool.hatch.envs.default.scripts]
 cli = "obsws-cli {args:}"
-test = "pytest {args:obsws_cli tests}"
 
 [tool.hatch.envs.hatch-test]
-dependencies = ["pytest>=8.3.5", "pytest-dotenv"]
+dependencies = ["pytest>=8.3.5"]
 
 [tool.hatch.envs.types]
 extra-dependencies = ["mypy>=1.0.0"]

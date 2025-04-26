@@ -131,6 +131,7 @@ ENV/
 env.bak/
 venv.bak/
 .hatch
+.test.env
 
 # Spyder project settings
 .spyderproject

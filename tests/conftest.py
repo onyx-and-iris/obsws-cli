@@ -3,6 +3,7 @@
 import os
 
 import obsws_python as obsws
+from dotenv import find_dotenv, load_dotenv
 
 
 def pytest_configure(config):
@@ -19,9 +20,9 @@ def pytest_sessionstart(session):
     """
     # Initialize the OBS WebSocket client
     session.obsws = obsws.ReqClient(
-        host=os.environ['OBSWS_HOST'],
-        port=os.environ['OBSWS_PORT'],
-        password=os.environ['OBSWS_PASSWORD'],
+        host=os.environ['OBS_HOST'],
+        port=os.environ['OBS_PORT'],
+        password=os.environ['OBS_PASSWORD'],
         timeout=5,
     )
     resp = session.obsws.get_version()
@@ -31,6 +32,17 @@ def pytest_sessionstart(session):
         f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}',
     )
     print(' '.join(out))
+
+    load_dotenv(find_dotenv('.test.env'))
+
+    session.obsws.set_stream_service_settings(
+        'rtmp_common',
+        {
+            'service': 'Twitch',
+            'server': 'auto',
+            'key': os.environ['OBS_STREAM_KEY'],
+        },
+    )
 
     session.obsws.set_current_scene_collection('test-collection')
 
@@ -67,6 +79,10 @@ def pytest_sessionfinish(session, exitstatus):
     Return the exit status to the system.
     """
     session.obsws.remove_scene('pytest')
+
+    resp = session.obsws.get_stream_status()
+    if resp.output_active:
+        session.obsws.stop_stream()
 
     # Close the OBS WebSocket client connection
     session.obsws.disconnect()

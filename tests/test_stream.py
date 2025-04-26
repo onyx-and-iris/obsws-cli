@@ -1,0 +1,43 @@
+"""Unit tests for the stream commands in the OBS WebSocket CLI."""
+
+import time
+
+from typer.testing import CliRunner
+
+from obsws_cli.app import app
+
+runner = CliRunner()
+
+
+def test_stream_start():
+    """Test the stream start command."""
+    result = runner.invoke(app, ['stream', 'status'])
+    assert result.exit_code == 0
+    active = 'Streaming is in progress' in result.stdout
+
+    result = runner.invoke(app, ['stream', 'start'])
+    assert result.exit_code == 0
+
+    time.sleep(1)  # Wait for the stream to start
+
+    if active:
+        assert 'Streaming is already in progress, cannot start.' in result.stdout
+    else:
+        assert 'Streaming started successfully.' in result.stdout
+
+
+def test_stream_stop():
+    """Test the stream stop command."""
+    result = runner.invoke(app, ['stream', 'status'])
+    assert result.exit_code == 0
+    active = 'Streaming is in progress' in result.stdout
+
+    result = runner.invoke(app, ['stream', 'stop'])
+    assert result.exit_code == 0
+
+    time.sleep(1)  # Wait for the stream to stop
+
+    if active:
+        assert 'Streaming stopped successfully.' in result.stdout
+    else:
+        assert 'Streaming is not in progress, cannot stop.' in result.stdout
