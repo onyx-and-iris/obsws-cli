@@ -319,6 +319,120 @@ obsws-cli stream status
 obsws-cli stream toggle
 ```
 
+#### Profile
+
+-   list: List profiles.
+
+```console
+obsws-cli profile list
+```
+
+-   current: Get the current profile.
+
+```console
+obsws-cli profile current
+```
+
+-   switch: Switch to a profile.
+    -   args: <profile_name>
+
+```console
+obsws-cli profile switch test-profile
+```
+
+-   create: Create a new profile.
+    -   args: <profile_name>
+
+```console
+obsws-cli profile create test-profile
+```
+
+-   remove: Remove a profile.
+    -   args: <profile_name>
+
+```console
+obsws-cli profile remove test-profile
+```
+
+#### Replay Buffer
+
+-   start: Start the replay buffer.
+
+```console
+obsws-cli replaybuffer start
+```
+
+-   stop: Stop the replay buffer.
+
+```console
+obsws-cli replaybuffer stop
+```
+
+-   status: Get the status of the replay buffer.
+
+```console
+obsws-cli replaybuffer status
+```
+
+-   save: Save the replay buffer.
+
+```console
+obsws-cli replaybuffer save
+```
+
+#### Studio Mode
+
+-   enable: Enable studio mode.
+
+```console
+obsws-cli studiomode enable
+```
+
+-   disable: Disable studio mode.
+
+```console
+obsws-cli studiomode disable
+```
+
+-   toggle: Toggle studio mode.
+
+```console
+obsws-cli studiomode toggle
+```
+
+-   status: Get the status of studio mode.
+
+```console
+obsws-cli studiomode status
+```
+
+#### Virtual Cam
+
+-   start: Start virtual camera.
+
+```console
+obsws-cli virtualcam start
+```
+
+-   stop: Stop virtual camera.
+
+```console
+obsws-cli virtualcam stop
+```
+
+-   toggle: Toggle virtual camera.
+
+```console
+obsws-cli virtualcam toggle
+```
+
+-   status: Get the status of the virtual camera.
+
+```console
+obsws-cli virtualcam status
+```
+
+
 ## License
 
 `obsws-cli` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
