@@ -94,7 +94,7 @@ obsws-cli scene switch LIVE
     -   args: <scene_name>
 
 ```console
-obsws-cli scene-item list LIVE
+obsws-cli sceneitem list LIVE
 ```
 
 -   show: Show an item in a scene.
@@ -105,7 +105,7 @@ obsws-cli scene-item list LIVE
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item show START "Colour Source"
+obsws-cli sceneitem show START "Colour Source"
 ```
 
 -   hide: Hide an item in a scene.
@@ -116,7 +116,7 @@ obsws-cli scene-item show START "Colour Source"
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item hide START "Colour Source"
+obsws-cli sceneitem hide START "Colour Source"
 ```
 
 -   toggle: Toggle an item in a scene.
@@ -127,7 +127,7 @@ obsws-cli scene-item hide START "Colour Source"
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item toggle --parent=test_group START "Colour Source 3"
+obsws-cli sceneitem toggle --parent=test_group START "Colour Source 3"
 ```
 
 -   visible: Check if an item in a scene is visible.
@@ -138,7 +138,7 @@ obsws-cli scene-item toggle --parent=test_group START "Colour Source 3"
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli scene-item visible --parent=test_group START "Colour Source 4"
+obsws-cli sceneitem visible --parent=test_group START "Colour Source 4"
 ```
 
 -   transform: Set the transform of an item in a scene.
@@ -151,7 +151,7 @@ obsws-cli scene-item visible --parent=test_group START "Colour Source 4"
         -   --scale-y: Y scale of the item in the scene
 
 ```console
-obsws-cli scene-item transform --position-x=556.0 --scale-x=0.7946954965591431 --scale-y=0.7948529124259949 LIVE "Window Capture"
+obsws-cli sceneitem transform --position-x=556.0 --scale-x=0.7946954965591431 --scale-y=0.7948529124259949 LIVE "Window Capture"
 ```
 
 #### Scene Collections
@@ -159,27 +159,27 @@ obsws-cli scene-item transform --position-x=556.0 --scale-x=0.7946954965591431 -
 -   list: List all scene collections.
 
 ```console
-obsws-cli scene-collection list
+obsws-cli scenecollection list
 ```
 
 -   current: Get the current scene collection.
 
 ```console
-obsws-cli scene-collection current
+obsws-cli scenecollection current
 ```
 
 -   switch: Switch to a scene collection.
     -   args: <scene_collection_name>
 
 ```console
-obsws-cli scene-collection switch test-collection
+obsws-cli scenecollection switch test-collection
 ```
 
 -   create: Create a new scene collection.
     -   args: <scene_collection_name>
 
 ```console
-obsws-cli scene-collection create test-collection
+obsws-cli scenecollection create test-collection
 ```
 
 #### Group
