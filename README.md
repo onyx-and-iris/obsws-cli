@@ -148,15 +148,30 @@ obsws-cli sceneitem visible --parent=test_group START "Colour Source 4"
 
 -   transform: Set the transform of an item in a scene.
     -   flags:
-
         *optional*
+        -   --parent: Parent group name.
+
+        -   --alignment: Alignment of the item in the scene
+        -   --bounds-alignment: Bounds alignment of the item in the scene
+        -   --bounds-height: Height of the item in the scene
+        -   --bounds-type: Type of bounds for the item in the scene
+        -   --bounds-width: Width of the item in the scene
+        -   --crop-to-bounds: Crop the item to the bounds
+        -   --crop-bottom: Bottom crop of the item in the scene
+        -   --crop-left: Left crop of the item in the scene
+        -   --crop-right: Right crop of the item in the scene
+        -   --crop-top: Top crop of the item in the scene
         -   --position-x: X position of the item in the scene
         -   --position-y: Y position of the item in the scene
         -   --scale-x: X scale of the item in the scene
         -   --scale-y: Y scale of the item in the scene
+    -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli sceneitem transform --position-x=556.0 --scale-x=0.7946954965591431 --scale-y=0.7948529124259949 LIVE "Window Capture"
+obsws-cli sceneitem transform \
+    --rotation=5 \
+    --position-x=250.8 \
+    Scene "Colour Source 3"
 ```
 
 #### Scene Collections

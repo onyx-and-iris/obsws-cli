@@ -18,7 +18,7 @@ def test_stream_start():
     result = runner.invoke(app, ['stream', 'start'])
     assert result.exit_code == 0
 
-    time.sleep(1)  # Wait for the stream to start
+    time.sleep(2)  # Wait for the stream to start
 
     if active:
         assert 'Streaming is already in progress, cannot start.' in result.stdout
@@ -35,7 +35,7 @@ def test_stream_stop():
     result = runner.invoke(app, ['stream', 'stop'])
     assert result.exit_code == 0
 
-    time.sleep(1)  # Wait for the stream to stop
+    time.sleep(2)  # Wait for the stream to stop
 
     if active:
         assert 'Streaming stopped successfully.' in result.stdout

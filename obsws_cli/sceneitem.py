@@ -212,11 +212,44 @@ def transform(
     scene_name: str,
     item_name: str,
     parent: Annotated[str, typer.Option(help='Parent group name')] = None,
+    alignment: Annotated[
+        int, typer.Option(help='Alignment of the item in the scene')
+    ] = None,
+    bounds_alignment: Annotated[
+        int, typer.Option(help='Bounds alignment of the item in the scene')
+    ] = None,
+    bounds_height: Annotated[
+        float, typer.Option(help='Height of the item in the scene')
+    ] = None,
+    bounds_type: Annotated[
+        str, typer.Option(help='Type of bounds for the item in the scene')
+    ] = None,
+    bounds_width: Annotated[
+        float, typer.Option(help='Width of the item in the scene')
+    ] = None,
+    crop_to_bounds: Annotated[
+        bool, typer.Option(help='Crop the item to the bounds')
+    ] = None,
+    crop_bottom: Annotated[
+        float, typer.Option(help='Bottom crop of the item in the scene')
+    ] = None,
+    crop_left: Annotated[
+        float, typer.Option(help='Left crop of the item in the scene')
+    ] = None,
+    crop_right: Annotated[
+        float, typer.Option(help='Right crop of the item in the scene')
+    ] = None,
+    crop_top: Annotated[
+        float, typer.Option(help='Top crop of the item in the scene')
+    ] = None,
     position_x: Annotated[
         float, typer.Option(help='X position of the item in the scene')
     ] = None,
     position_y: Annotated[
         float, typer.Option(help='Y position of the item in the scene')
+    ] = None,
+    rotation: Annotated[
+        float, typer.Option(help='Rotation of the item in the scene')
     ] = None,
     scale_x: Annotated[
         float, typer.Option(help='X scale of the item in the scene')
@@ -241,10 +274,32 @@ def transform(
     )
 
     transform = {}
+    if alignment is not None:
+        transform['alignment'] = alignment
+    if bounds_alignment is not None:
+        transform['boundsAlignment'] = bounds_alignment
+    if bounds_height is not None:
+        transform['boundsHeight'] = bounds_height
+    if bounds_type is not None:
+        transform['boundsType'] = bounds_type
+    if bounds_width is not None:
+        transform['boundsWidth'] = bounds_width
+    if crop_to_bounds is not None:
+        transform['cropToBounds'] = crop_to_bounds
+    if crop_bottom is not None:
+        transform['cropBottom'] = crop_bottom
+    if crop_left is not None:
+        transform['cropLeft'] = crop_left
+    if crop_right is not None:
+        transform['cropRight'] = crop_right
+    if crop_top is not None:
+        transform['cropTop'] = crop_top
     if position_x is not None:
         transform['positionX'] = position_x
     if position_y is not None:
         transform['positionY'] = position_y
+    if rotation is not None:
+        transform['rotation'] = rotation
     if scale_x is not None:
         transform['scaleX'] = scale_x
     if scale_y is not None:

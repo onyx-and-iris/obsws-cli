@@ -71,6 +71,17 @@ def pytest_sessionstart(session):
         },
         sceneItemEnabled=True,
     )
+    resp = session.obsws.get_scene_item_list('pytest')
+    for item in resp.scene_items:
+        if item['sourceName'] == 'pytest_input_2':
+            session.obsws.set_scene_item_transform(
+                'pytest',
+                item['sceneItemId'],
+                {
+                    'rotation': 0,
+                },
+            )
+            break
 
 
 def pytest_sessionfinish(session, exitstatus):
