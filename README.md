@@ -27,13 +27,13 @@ For an outline of past/future changes refer to: [CHANGELOG](CHANGELOG.md)
 ##### *with uv*
 
 ```console
-uv tool install .
+uv tool install obsws-cli
 ```
 
 ##### *with pipx*
 
 ```console
-pipx install .
+pipx install obsws-cli
 ```
 
 The CLI should now be discoverable as `obsws-cli`
