@@ -27,6 +27,7 @@ dependencies = [
   "pydantic-settings>=2.9.1",
 ]
 
+
 [project.urls]
 Documentation = "https://github.com/onyx-and-iris/obsws-cli#readme"
 Issues = "https://github.com/onyx-and-iris/obsws-cli/issues"
@@ -38,8 +39,12 @@ obsws-cli = "obsws_cli:app"
 [tool.hatch.version]
 path = "obsws_cli/__about__.py"
 
+[tool.hatch.envs.default]
+dependencies = ["click-man>=0.5.1"]
+
 [tool.hatch.envs.default.scripts]
 cli = "obsws-cli {args:}"
+man = "python man/generate.py"
 
 [tool.hatch.envs.hatch-test]
 dependencies = ["pytest>=8.3.5"]

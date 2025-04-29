@@ -176,4 +176,5 @@ pyrightconfig.json
 
 # End of gignore: github.com/onyx-and-iris/gignore
 
+man/*.1
 test-*.py
