@@ -1,12 +1,11 @@
 """Command line interface for the OBS WebSocket API."""
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Optional
 
 import obsws_python as obsws
 import typer
-from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from . import (
     group,
@@ -27,7 +26,7 @@ from .alias import AliasGroup
 class Settings(BaseSettings):
     """Settings for the OBS WebSocket client."""
 
-    model_config = ConfigDict(
+    model_config = SettingsConfigDict(
         env_file=(
             '.env',
             Path.home() / '.config' / 'obsws-cli' / 'obsws.env',
@@ -71,10 +70,10 @@ def version(ctx: typer.Context):
 @app.callback()
 def main(
     ctx: typer.Context,
-    host: Annotated[str, typer.Option(help='WebSocket host')] = None,
-    port: Annotated[int, typer.Option(help='WebSocket port')] = None,
-    password: Annotated[str, typer.Option(help='WebSocket password')] = None,
-    timeout: Annotated[int, typer.Option(help='WebSocket timeout')] = None,
+    host: Annotated[Optional[str], typer.Option(help='WebSocket host')] = None,
+    port: Annotated[Optional[int], typer.Option(help='WebSocket port')] = None,
+    password: Annotated[Optional[str], typer.Option(help='WebSocket password')] = None,
+    timeout: Annotated[Optional[int], typer.Option(help='WebSocket timeout')] = None,
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     settings = Settings()
