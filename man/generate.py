@@ -14,7 +14,6 @@ def make_man():
     version = __version__
     target_dir = './man'
     write_man_pages(name, cli, version=version, target_dir=target_dir)
-    return
 
 
 if __name__ == '__main__':
