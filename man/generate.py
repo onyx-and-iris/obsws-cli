@@ -1,5 +1,13 @@
 """script for generating man pages for the CLI."""
 
+# /// script
+# dependencies = [
+#   "typer>=0.15.2",
+#   "click-man>=0.5.1",
+#   "obsws-cli",
+# ]
+# ///
+
 import argparse
 
 import typer
