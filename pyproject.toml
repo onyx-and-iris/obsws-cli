@@ -44,7 +44,7 @@ dependencies = ["click-man>=0.5.1"]
 
 [tool.hatch.envs.default.scripts]
 cli = "obsws-cli {args:}"
-man = "python man/generate.py"
+man = "python man/generate.py --output=./man"
 
 [tool.hatch.envs.hatch-test]
 dependencies = ["pytest>=8.3.5"]

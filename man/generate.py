@@ -1,5 +1,7 @@
 """script for generating man pages for the CLI."""
 
+import argparse
+
 import typer
 from click_man.core import write_man_pages
 
@@ -7,14 +9,24 @@ from obsws_cli import app
 from obsws_cli.__about__ import __version__
 
 
-def make_man():
+def main(target_dir: str):
     """Generate man pages for the CLI."""
     cli = typer.main.get_command(app)
     name = 'obsws-cli'
     version = __version__
-    target_dir = './man'
     write_man_pages(name, cli, version=version, target_dir=target_dir)
 
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='Generate man pages for the CLI.')
+    parser.add_argument(
+        '--output', type=str, default='.', help='Directory to save man pages'
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    make_man()
+    args = parse_args()
+
+    main(args.output)
