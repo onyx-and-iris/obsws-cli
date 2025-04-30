@@ -58,15 +58,6 @@ for module in (
     app.add_typer(module.app, name=module.__name__.split('.')[-1])
 
 
-@app.command()
-def version(ctx: typer.Context):
-    """Get the OBS Client and WebSocket versions."""
-    resp = ctx.obj.get_version()
-    typer.echo(
-        f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}'
-    )
-
-
 @app.callback()
 def main(
     ctx: typer.Context,
@@ -94,4 +85,13 @@ def main(
             password=settings.PASSWORD,
             timeout=settings.TIMEOUT,
         )
+    )
+
+
+@app.command()
+def version(ctx: typer.Context):
+    """Get the OBS Client and WebSocket versions."""
+    resp = ctx.obj.get_version()
+    typer.echo(
+        f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}'
     )
