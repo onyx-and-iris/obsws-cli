@@ -6,6 +6,9 @@
 #   "click-man>=0.5.1",
 #   "obsws-cli",
 # ]
+#
+# [tool.uv.sources]
+# obsws-cli = { path = "../" }
 # ///
 
 import argparse
