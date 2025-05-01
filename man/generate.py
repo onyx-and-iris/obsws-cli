@@ -12,6 +12,7 @@
 # ///
 
 import argparse
+from pathlib import Path
 
 import typer
 from click_man.core import write_man_pages
@@ -32,7 +33,10 @@ def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Generate man pages for the CLI.')
     parser.add_argument(
-        '--output', type=str, default='.', help='Directory to save man pages'
+        '--output',
+        type=str,
+        default=str(Path(__file__).parent),
+        help='Directory to save man pages',
     )
     return parser.parse_args()
 
