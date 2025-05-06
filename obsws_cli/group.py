@@ -18,10 +18,7 @@ def main():
 def list(ctx: typer.Context, scene_name: str):
     """List groups in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(
-            f"Scene '{scene_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Scene '{scene_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
@@ -48,18 +45,12 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
 def show(ctx: typer.Context, scene_name: str, group_name: str):
     """Show a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(
-            f"Scene '{scene_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Scene '{scene_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(
-            f"Group '{group_name}' not found in scene {scene_name}.",
-            err=True,
-        )
+        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.set_scene_item_enabled(
@@ -75,18 +66,12 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
 def hide(ctx: typer.Context, scene_name: str, group_name: str):
     """Hide a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(
-            f"Scene '{scene_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Scene '{scene_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(
-            f"Group '{group_name}' not found in scene {scene_name}.",
-            err=True,
-        )
+        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.set_scene_item_enabled(
@@ -102,18 +87,12 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
 def toggle(ctx: typer.Context, scene_name: str, group_name: str):
     """Toggle a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(
-            f"Scene '{scene_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Scene '{scene_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(
-            f"Group '{group_name}' not found in scene {scene_name}.",
-            err=True,
-        )
+        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
         raise typer.Exit(code=1)
 
     new_state = not group.get('sceneItemEnabled')
@@ -133,18 +112,12 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
 def status(ctx: typer.Context, scene_name: str, group_name: str):
     """Get the status of a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(
-            f"Scene '{scene_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Scene '{scene_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(
-            f"Group '{group_name}' not found in scene {scene_name}.",
-            err=True,
-        )
+        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
         raise typer.Exit(code=1)
 
     enabled = ctx.obj.get_scene_item_enabled(
