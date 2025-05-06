@@ -60,10 +60,7 @@ def switch(
         raise typer.Exit(1)
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(
-            f"Scene '{scene_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Scene '{scene_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     if preview:

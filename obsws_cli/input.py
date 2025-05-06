@@ -46,10 +46,7 @@ def list(
 def mute(ctx: typer.Context, input_name: str):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        typer.echo(
-            f"Input '{input_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Input '{input_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.set_input_mute(
@@ -64,10 +61,7 @@ def mute(ctx: typer.Context, input_name: str):
 def unmute(ctx: typer.Context, input_name: str):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        typer.echo(
-            f"Input '{input_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Input '{input_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.set_input_mute(
@@ -82,10 +76,7 @@ def unmute(ctx: typer.Context, input_name: str):
 def toggle(ctx: typer.Context, input_name: str):
     """Toggle an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        typer.echo(
-            f"Input '{input_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Input '{input_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     # Get the current mute state

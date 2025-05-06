@@ -32,17 +32,13 @@ def current(ctx: typer.Context):
 def switch(ctx: typer.Context, profile_name: str):
     """Switch to a profile."""
     if not validate.profile_exists(ctx, profile_name):
-        typer.echo(
-            f"Profile '{profile_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Profile '{profile_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     resp = ctx.obj.get_profile_list()
     if resp.current_profile_name == profile_name:
         typer.echo(
-            f"Profile '{profile_name}' is already the current profile.",
-            err=True,
+            f"Profile '{profile_name}' is already the current profile.", err=True
         )
         raise typer.Exit(code=1)
 
@@ -54,10 +50,7 @@ def switch(ctx: typer.Context, profile_name: str):
 def create(ctx: typer.Context, profile_name: str):
     """Create a new profile."""
     if validate.profile_exists(ctx, profile_name):
-        typer.echo(
-            f"Profile '{profile_name}' already exists.",
-            err=True,
-        )
+        typer.echo(f"Profile '{profile_name}' already exists.", err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.create_profile(profile_name)
@@ -68,10 +61,7 @@ def create(ctx: typer.Context, profile_name: str):
 def remove(ctx: typer.Context, profile_name: str):
     """Remove a profile."""
     if not validate.profile_exists(ctx, profile_name):
-        typer.echo(
-            f"Profile '{profile_name}' not found.",
-            err=True,
-        )
+        typer.echo(f"Profile '{profile_name}' not found.", err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.remove_profile(profile_name)
