@@ -23,7 +23,7 @@ def start(ctx: typer.Context):
     """Start streaming."""
     active, _ = _get_streaming_status(ctx)
     if active:
-        typer.echo('Streaming is already in progress, cannot start.')
+        typer.echo('Streaming is already in progress, cannot start.', err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.start_stream()
@@ -35,7 +35,7 @@ def stop(ctx: typer.Context):
     """Stop streaming."""
     active, _ = _get_streaming_status(ctx)
     if not active:
-        typer.echo('Streaming is not in progress, cannot stop.')
+        typer.echo('Streaming is not in progress, cannot stop.', err=True)
         raise typer.Exit(code=1)
 
     ctx.obj.stop_stream()

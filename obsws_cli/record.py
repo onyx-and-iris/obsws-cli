@@ -27,7 +27,7 @@ def start(ctx: typer.Context):
         if paused:
             err_msg += ' Try resuming it.'
 
-        typer.echo(err_msg)
+        typer.echo(err_msg, err=True)
         raise typer.Exit(1)
 
     ctx.obj.start_record()
@@ -39,7 +39,7 @@ def stop(ctx: typer.Context):
     """Stop recording."""
     active, _ = _get_recording_status(ctx)
     if not active:
-        typer.echo('Recording is not in progress, cannot stop.')
+        typer.echo('Recording is not in progress, cannot stop.', err=True)
         raise typer.Exit(1)
 
     ctx.obj.stop_record()
@@ -74,10 +74,10 @@ def resume(ctx: typer.Context):
     """Resume recording."""
     active, paused = _get_recording_status(ctx)
     if not active:
-        typer.echo('Recording is not in progress, cannot resume.')
+        typer.echo('Recording is not in progress, cannot resume.', err=True)
         raise typer.Exit(1)
     if not paused:
-        typer.echo('Recording is in progress but not paused, cannot resume.')
+        typer.echo('Recording is in progress but not paused, cannot resume.', err=True)
         raise typer.Exit(1)
 
     ctx.obj.resume_record()
@@ -89,10 +89,12 @@ def pause(ctx: typer.Context):
     """Pause recording."""
     active, paused = _get_recording_status(ctx)
     if not active:
-        typer.echo('Recording is not in progress, cannot pause.')
+        typer.echo('Recording is not in progress, cannot pause.', err=True)
         raise typer.Exit(1)
     if paused:
-        typer.echo('Recording is in progress but already paused, cannot pause.')
+        typer.echo(
+            'Recording is in progress but already paused, cannot pause.', err=True
+        )
         raise typer.Exit(1)
 
     ctx.obj.pause_record()

@@ -32,7 +32,7 @@ def current(
 ):
     """Get the current program scene or preview scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        typer.echo('Studio mode is not enabled, cannot get preview scene.')
+        typer.echo('Studio mode is not enabled, cannot get preview scene.', err=True)
         raise typer.Exit(1)
 
     if preview:
@@ -54,7 +54,9 @@ def switch(
 ):
     """Switch to a scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        typer.echo('Studio mode is not enabled, cannot set the preview scene.')
+        typer.echo(
+            'Studio mode is not enabled, cannot set the preview scene.', err=True
+        )
         raise typer.Exit(1)
 
     if not validate.scene_in_scenes(ctx, scene_name):
