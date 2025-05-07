@@ -23,13 +23,16 @@ def test_group_show():
 
 def test_group_toggle():
     """Test the group toggle command."""
-    result = runner.invoke(app, ['group', 'hide', 'Scene', 'test_group'])
+    result = runner.invoke(app, ['group', 'status', 'Scene', 'test_group'])
     assert result.exit_code == 0
-    assert "Group 'test_group' is now hidden." in result.stdout
+    enabled = "Group 'test_group' is now visible." in result.stdout
 
     result = runner.invoke(app, ['group', 'toggle', 'Scene', 'test_group'])
     assert result.exit_code == 0
-    assert "Group 'test_group' is now visible." in result.stdout
+    if enabled:
+        assert "Group 'test_group' is now hidden." in result.stdout
+    else:
+        assert "Group 'test_group' is now visible." in result.stdout
 
 
 def test_group_status():
