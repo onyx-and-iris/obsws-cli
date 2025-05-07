@@ -41,3 +41,20 @@ def test_stream_stop():
         assert 'Streaming stopped successfully.' in result.stdout
     else:
         assert 'Streaming is not in progress, cannot stop.' in result.stdout
+
+
+def test_stream_toggle():
+    """Test the stream toggle command."""
+    result = runner.invoke(app, ['stream', 'status'])
+    assert result.exit_code == 0
+    active = 'Streaming is in progress' in result.stdout
+
+    result = runner.invoke(app, ['stream', 'toggle'])
+    assert result.exit_code == 0
+
+    time.sleep(2)  # Wait for the stream to toggle
+
+    if active:
+        assert 'Streaming stopped successfully.' in result.stdout
+    else:
+        assert 'Streaming started successfully.' in result.stdout

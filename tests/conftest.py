@@ -95,6 +95,10 @@ def pytest_sessionfinish(session, exitstatus):
     if resp.output_active:
         session.obsws.stop_stream()
 
+    resp = session.obsws.get_record_status()
+    if resp.output_active:
+        session.obsws.stop_record()
+
     # Close the OBS WebSocket client connection
     session.obsws.disconnect()
 

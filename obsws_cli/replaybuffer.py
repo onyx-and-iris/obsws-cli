@@ -26,6 +26,16 @@ def stop(ctx: typer.Context):
     typer.echo('Replay buffer stopped.')
 
 
+@app.command('toggle | tg')
+def toggle(ctx: typer.Context):
+    """Toggle the replay buffer."""
+    resp = ctx.obj.toggle_replay_buffer()
+    if resp.output_active:
+        typer.echo('Replay buffer is active.')
+    else:
+        typer.echo('Replay buffer is not active.')
+
+
 @app.command('status | ss')
 def status(ctx: typer.Context):
     """Get the status of the replay buffer."""

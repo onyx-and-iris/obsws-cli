@@ -42,6 +42,16 @@ def stop(ctx: typer.Context):
     typer.echo('Streaming stopped successfully.')
 
 
+@app.command('toggle | tg')
+def toggle(ctx: typer.Context):
+    """Toggle streaming."""
+    resp = ctx.obj.toggle_stream()
+    if resp.output_active:
+        typer.echo('Streaming started successfully.')
+    else:
+        typer.echo('Streaming stopped successfully.')
+
+
 @app.command('status | ss')
 def status(ctx: typer.Context):
     """Get streaming status."""
@@ -64,13 +74,3 @@ def status(ctx: typer.Context):
             typer.echo('Streaming is in progress.')
     else:
         typer.echo('Streaming is not in progress.')
-
-
-@app.command('toggle | tg')
-def toggle(ctx: typer.Context):
-    """Toggle streaming."""
-    active, _ = _get_streaming_status(ctx)
-    if active:
-        ctx.invoke(stop, ctx=ctx)
-    else:
-        ctx.invoke(start, ctx=ctx)

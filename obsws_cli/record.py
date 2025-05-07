@@ -46,6 +46,16 @@ def stop(ctx: typer.Context):
     typer.echo('Recording stopped successfully.')
 
 
+@app.command('toggle | tg')
+def toggle(ctx: typer.Context):
+    """Toggle recording."""
+    resp = ctx.obj.toggle_record()
+    if resp.output_active:
+        type.echo('Recording started successfully.')
+    else:
+        type.echo('Recording stopped successfully.')
+
+
 @app.command('status | ss')
 def status(ctx: typer.Context):
     """Get recording status."""
@@ -57,16 +67,6 @@ def status(ctx: typer.Context):
             typer.echo('Recording is in progress.')
     else:
         typer.echo('Recording is not in progress.')
-
-
-@app.command('toggle | tg')
-def toggle(ctx: typer.Context):
-    """Toggle recording."""
-    active, _ = _get_recording_status(ctx)
-    if active:
-        ctx.invoke(stop, ctx=ctx)
-    else:
-        ctx.invoke(start, ctx=ctx)
 
 
 @app.command('resume | r')
