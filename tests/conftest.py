@@ -90,6 +90,7 @@ def pytest_sessionfinish(session, exitstatus):
     Return the exit status to the system.
     """
     session.obsws.remove_scene('pytest')
+    session.obsws.set_current_scene_collection('default')
 
     resp = session.obsws.get_stream_status()
     if resp.output_active:
