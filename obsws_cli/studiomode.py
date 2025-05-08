@@ -16,12 +16,14 @@ def main():
 def enable(ctx: typer.Context):
     """Enable studio mode."""
     ctx.obj.set_studio_mode_enabled(True)
+    typer.echo('Studio mode has been enabled.')
 
 
 @app.command('disable | off')
 def disable(ctx: typer.Context):
     """Disable studio mode."""
     ctx.obj.set_studio_mode_enabled(False)
+    typer.echo('Studio mode has been disabled.')
 
 
 @app.command('toggle | tg')
