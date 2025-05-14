@@ -51,9 +51,9 @@ def toggle(ctx: typer.Context):
     """Toggle recording."""
     resp = ctx.obj.toggle_record()
     if resp.output_active:
-        type.echo('Recording started successfully.')
+        typer.echo('Recording started successfully.')
     else:
-        type.echo('Recording stopped successfully.')
+        typer.echo('Recording stopped successfully.')
 
 
 @app.command('status | ss')

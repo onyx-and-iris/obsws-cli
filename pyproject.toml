@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
   "typer>=0.15.2",
-  "obsws-python>=1.7.1",
+  "obsws-python>=1.7.2",
   "pydantic-settings>=2.9.1",
 ]
 
