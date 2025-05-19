@@ -1,11 +1,9 @@
 """Command line interface for the OBS WebSocket API."""
 
-from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import obsws_python as obsws
 import typer
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from . import (
     group,
@@ -16,30 +14,12 @@ from . import (
     scene,
     scenecollection,
     sceneitem,
+    settings,
     stream,
     studiomode,
     virtualcam,
 )
 from .alias import AliasGroup
-
-
-class Settings(BaseSettings):
-    """Settings for the OBS WebSocket client."""
-
-    model_config = SettingsConfigDict(
-        env_file=(
-            '.env',
-            Path.home() / '.config' / 'obsws-cli' / 'obsws.env',
-        ),
-        env_file_encoding='utf-8',
-        env_prefix='OBS_',
-    )
-
-    HOST: str = 'localhost'
-    PORT: int = 4455
-    PASSWORD: str = ''  # No password by default
-    TIMEOUT: int = 5  # Timeout for requests in seconds
-
 
 app = typer.Typer(cls=AliasGroup)
 for module in (
@@ -61,31 +41,26 @@ for module in (
 @app.callback()
 def main(
     ctx: typer.Context,
-    host: Annotated[Optional[str], typer.Option(help='WebSocket host')] = None,
-    port: Annotated[Optional[int], typer.Option(help='WebSocket port')] = None,
-    password: Annotated[Optional[str], typer.Option(help='WebSocket password')] = None,
-    timeout: Annotated[Optional[int], typer.Option(help='WebSocket timeout')] = None,
+    host: Annotated[
+        str,
+        typer.Option(
+            envvar='OBS_HOST', help='WebSocket host', show_default='localhost'
+        ),
+    ] = settings.get('HOST'),
+    port: Annotated[
+        int, typer.Option(envvar='OBS_PORT', help='WebSocket port', show_default=4455)
+    ] = settings.get('PORT'),
+    password: Annotated[
+        str,
+        typer.Option(envvar='OBS_PASSWORD', help='WebSocket password', show_default=''),
+    ] = settings.get('PASSWORD'),
+    timeout: Annotated[
+        int,
+        typer.Option(envvar='OBS_TIMEOUT', help='WebSocket timeout', show_default=5),
+    ] = settings.get('TIMEOUT'),
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
-    settings = Settings()
-    # Allow overriding settings with command line options
-    if host:
-        settings.HOST = host
-    if port:
-        settings.PORT = port
-    if password:
-        settings.PASSWORD = password
-    if timeout:
-        settings.TIMEOUT = timeout
-
-    ctx.obj = ctx.with_resource(
-        obsws.ReqClient(
-            host=settings.HOST,
-            port=settings.PORT,
-            password=settings.PASSWORD,
-            timeout=settings.TIMEOUT,
-        )
-    )
+    ctx.obj = ctx.with_resource(obsws.ReqClient(**ctx.params))
 
 
 @app.command()
