@@ -65,5 +65,7 @@ def switch(
 
     if preview:
         ctx.obj.set_current_preview_scene(scene_name)
+        typer.echo(f'Switched to preview scene: {scene_name}')
     else:
         ctx.obj.set_current_program_scene(scene_name)
+        typer.echo(f'Switched to program scene: {scene_name}')

@@ -20,3 +20,19 @@ def test_scene_current():
     result = runner.invoke(app, ['scene', 'current'])
     assert result.exit_code == 0
     assert 'pytest' in result.stdout
+
+
+def test_scene_switch():
+    """Test the scene switch command."""
+    result = runner.invoke(app, ['studiomode', 'status'])
+    assert result.exit_code == 0
+    enabled = 'Studio mode is enabled.' in result.stdout
+
+    if enabled:
+        result = runner.invoke(app, ['scene', 'switch', 'pytest', '--preview'])
+        assert result.exit_code == 0
+        assert 'Switched to preview scene: pytest' in result.stdout
+    else:
+        result = runner.invoke(app, ['scene', 'switch', 'pytest'])
+        assert result.exit_code == 0
+        assert 'Switched to program scene: pytest' in result.stdout
