@@ -21,7 +21,7 @@ def list(ctx: typer.Context, scene_name: str):
     """List all items in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         typer.echo(f"Scene '{scene_name}' not found.", err=True)
-        typer.Exit(code=1)
+        typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     items = (item.get('sourceName') for item in resp.scene_items)
@@ -41,7 +41,7 @@ def _validate_scene_name_and_item_name(
     ):
         if not validate.scene_in_scenes(ctx, scene_name):
             typer.echo(f"Scene '{scene_name}' not found.", err=True)
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
 
         if parent:
             if not validate.item_in_scene_item_list(ctx, scene_name, parent):
@@ -49,13 +49,13 @@ def _validate_scene_name_and_item_name(
                     f"Parent group '{parent}' not found in scene '{scene_name}'.",
                     err=True,
                 )
-                raise typer.Exit(code=1)
+                raise typer.Exit(1)
         else:
             if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
                 typer.echo(
                     f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
                 )
-                raise typer.Exit(code=1)
+                raise typer.Exit(1)
 
         return func(ctx, scene_name, item_name, parent)
 
@@ -74,7 +74,7 @@ def _get_scene_name_and_item_id(
                 break
         else:
             typer.echo(f"Item '{item_name}' not found in group '{parent}'.", err=True)
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
     else:
         resp = ctx.obj.get_scene_item_id(scene_name, item_name)
         scene_item_id = resp.scene_item_id
@@ -137,20 +137,20 @@ def toggle(
     """Toggle an item in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         typer.echo(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     if parent:
         if not validate.item_in_scene_item_list(ctx, scene_name, parent):
             typer.echo(
                 f"Parent group '{parent}' not found in scene '{scene_name}'.", err=True
             )
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
             typer.echo(
                 f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
             )
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
 
     scene_name, scene_item_id = _get_scene_name_and_item_id(
         ctx, scene_name, item_name, parent
@@ -187,13 +187,13 @@ def visible(
             typer.echo(
                 f"Parent group '{parent}' not found in scene '{scene_name}'.", err=True
             )
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
             typer.echo(
                 f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
             )
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
@@ -278,13 +278,13 @@ def transform(
             typer.echo(
                 f"Parent group '{parent}' not found in scene '{scene_name}'.", err=True
             )
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
             typer.echo(
                 f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
             )
-            raise typer.Exit(code=1)
+            raise typer.Exit(1)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
@@ -325,7 +325,7 @@ def transform(
 
     if not transform:
         typer.echo('No transform options provided.', err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     transform = ctx.obj.set_scene_item_transform(
         scene_name=scene_name,

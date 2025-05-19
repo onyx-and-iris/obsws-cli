@@ -33,14 +33,14 @@ def switch(ctx: typer.Context, profile_name: str):
     """Switch to a profile."""
     if not validate.profile_exists(ctx, profile_name):
         typer.echo(f"Profile '{profile_name}' not found.", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     resp = ctx.obj.get_profile_list()
     if resp.current_profile_name == profile_name:
         typer.echo(
             f"Profile '{profile_name}' is already the current profile.", err=True
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     ctx.obj.set_current_profile(profile_name)
     typer.echo(f"Switched to profile '{profile_name}'.")
@@ -51,7 +51,7 @@ def create(ctx: typer.Context, profile_name: str):
     """Create a new profile."""
     if validate.profile_exists(ctx, profile_name):
         typer.echo(f"Profile '{profile_name}' already exists.", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     ctx.obj.create_profile(profile_name)
     typer.echo(f"Created profile '{profile_name}'.")
@@ -62,7 +62,7 @@ def remove(ctx: typer.Context, profile_name: str):
     """Remove a profile."""
     if not validate.profile_exists(ctx, profile_name):
         typer.echo(f"Profile '{profile_name}' not found.", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     ctx.obj.remove_profile(profile_name)
     typer.echo(f"Removed profile '{profile_name}'.")

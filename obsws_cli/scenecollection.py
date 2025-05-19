@@ -32,7 +32,7 @@ def switch(ctx: typer.Context, scene_collection_name: str):
     """Switch to a scene collection."""
     if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
         typer.echo(f"Scene collection '{scene_collection_name}' not found.", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     current_scene_collection = (
         ctx.obj.get_scene_collection_list().current_scene_collection_name
@@ -41,7 +41,7 @@ def switch(ctx: typer.Context, scene_collection_name: str):
         typer.echo(
             f'Scene collection "{scene_collection_name}" is already active.', err=True
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     ctx.obj.set_current_scene_collection(scene_collection_name)
     typer.echo(f"Switched to scene collection '{scene_collection_name}'")
@@ -54,7 +54,7 @@ def create(ctx: typer.Context, scene_collection_name: str):
         typer.echo(
             f"Scene collection '{scene_collection_name}' already exists.", err=True
         )
-        raise typer.Exit(code=1)
+        raise typer.Exit(1)
 
     ctx.obj.create_scene_collection(scene_collection_name)
     typer.echo(f'Created scene collection {scene_collection_name}')
