@@ -7,6 +7,7 @@ import typer
 
 from . import (
     group,
+    hotkey,
     input,
     profile,
     record,
@@ -24,6 +25,7 @@ from .alias import AliasGroup
 app = typer.Typer(cls=AliasGroup)
 for module in (
     group,
+    hotkey,
     input,
     profile,
     record,
