@@ -452,6 +452,40 @@ obsws-cli virtualcam toggle
 obsws-cli virtualcam status
 ```
 
+#### Hotkey
+
+-   list: List all hotkeys.
+
+```console
+obsws-cli hotkey list
+```
+
+-   trigger: Trigger a hotkey by name.
+
+```console
+obsws-cli hotkey trigger OBSBasic.StartStreaming
+
+obsws-cli hotkey trigger OBSBasic.StopStreaming
+```
+
+-   trigger-sequence: Trigger a hotkey by sequence.
+    -   flags:
+
+        *optional*
+        -   --shift: Press shift.
+        -   --ctrl: Press control.
+        -   --alt: Press alt.
+        -   --cmd: Press command (mac).
+
+    -   args: <key_id>
+        -   Check [obs-hotkeys.h][obs-keyids] for a full list of OBS key ids.
+
+```console
+obsws-cli hotkey trigger-sequence OBS_KEY_F1 --ctrl
+
+obsws-cli hotkey trigger-sequence OBS_KEY_F1 --shift --ctrl
+```
+
 
 ## License
 
@@ -459,3 +493,4 @@ obsws-cli virtualcam status
 
 
 [obs-studio]: https://obsproject.com/
+[obs-keyids]: https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h
