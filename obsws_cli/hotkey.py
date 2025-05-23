@@ -1,10 +1,14 @@
 """module containing commands for hotkey management."""
 
 import typer
+from rich.console import Console
+from rich.table import Table
 
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
+out_console = Console()
+err_console = Console(stderr=True)
 
 
 @app.callback()
@@ -18,7 +22,14 @@ def list(
 ):
     """List all hotkeys."""
     resp = ctx.obj.get_hotkey_list()
-    typer.echo('\n'.join(resp.hotkeys))
+
+    table = Table(title='Hotkeys')
+    table.add_column('Name', justify='left', style='cyan')
+
+    for hotkey in resp.hotkeys:
+        table.add_row(hotkey)
+
+    out_console.print(table)
 
 
 @app.command('trigger | tr')
