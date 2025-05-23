@@ -516,6 +516,13 @@ obsws-cli filter disable "Mic/Aux" "Test Compression Filter"
 obsws-cli filter toggle "Mic/Aux" "Test Compression Filter"
 ```
 
+-   status: Get the status of a filter for a source.
+    -   args: <source_name> <filter_name>
+
+```console
+obsws-cli filter status "Mic/Aux" "Test Compression Filter"
+```
+
 ## License
 
 `obsws-cli` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
