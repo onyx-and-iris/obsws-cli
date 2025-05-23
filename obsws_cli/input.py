@@ -3,11 +3,15 @@
 from typing import Annotated
 
 import typer
+from rich.console import Console
+from rich.table import Table
 
-from . import validate
+from . import util, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
+out_console = Console()
+err_console = Console(stderr=True)
 
 
 @app.callback()
@@ -35,18 +39,38 @@ def list(
     if not any([input, output, colour]):
         kinds = ['input', 'output', 'color']
 
-    inputs = filter(
-        lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
-        resp.inputs,
-    )
-    typer.echo('\n'.join(input_.get('inputName') for input_ in inputs))
+    inputs = [
+        (input_.get('inputName'), input_.get('inputKind'))
+        for input_ in filter(
+            lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
+            resp.inputs,
+        )
+    ]
+
+    if not inputs:
+        err_console.print('No inputs found.')
+        raise typer.Exit(1)
+
+    table = Table(title='Inputs')
+    for column in ('Name', 'Kind'):
+        table.add_column(
+            column, justify='left' if column == 'Name' else 'center', style='cyan'
+        )
+
+    for input_name, input_kind in inputs:
+        table.add_row(
+            input_name,
+            util.snakecase_to_titlecase(input_kind),
+        )
+
+    out_console.print(table)
 
 
 @app.command('mute | m')
 def mute(ctx: typer.Context, input_name: str):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        typer.echo(f"Input '{input_name}' not found.", err=True)
+        err_console.print(f"Input '{input_name}' not found.")
         raise typer.Exit(1)
 
     ctx.obj.set_input_mute(
@@ -54,14 +78,14 @@ def mute(ctx: typer.Context, input_name: str):
         muted=True,
     )
 
-    typer.echo(f"Input '{input_name}' muted.")
+    out_console.print(f"Input '{input_name}' muted.")
 
 
 @app.command('unmute | um')
 def unmute(ctx: typer.Context, input_name: str):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        typer.echo(f"Input '{input_name}' not found.", err=True)
+        err_console.print(f"Input '{input_name}' not found.")
         raise typer.Exit(1)
 
     ctx.obj.set_input_mute(
@@ -69,17 +93,16 @@ def unmute(ctx: typer.Context, input_name: str):
         muted=False,
     )
 
-    typer.echo(f"Input '{input_name}' unmuted.")
+    out_console.print(f"Input '{input_name}' unmuted.")
 
 
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context, input_name: str):
     """Toggle an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        typer.echo(f"Input '{input_name}' not found.", err=True)
+        err_console.print(f"Input '{input_name}' not found.")
         raise typer.Exit(1)
 
-    # Get the current mute state
     resp = ctx.obj.get_input_mute(name=input_name)
     new_state = not resp.input_muted
 
@@ -88,6 +111,6 @@ def toggle(ctx: typer.Context, input_name: str):
         muted=new_state,
     )
 
-    typer.echo(
+    out_console.print(
         f"Input '{input_name}' {'muted' if new_state else 'unmuted'}.",
     )
