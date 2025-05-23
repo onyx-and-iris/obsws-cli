@@ -37,7 +37,10 @@ def trigger_sequence(
     ctrl: bool = typer.Option(False, help='Press control when triggering the hotkey'),
     alt: bool = typer.Option(False, help='Press alt when triggering the hotkey'),
     cmd: bool = typer.Option(False, help='Press cmd when triggering the hotkey'),
-    key_id: str = typer.Argument(..., help='The hotkey to trigger'),
+    key_id: str = typer.Argument(
+        ...,
+        help='The OBS key ID to trigger, see https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#hotkey for more info',
+    ),
 ):
     """Trigger a hotkey by sequence."""
     ctx.obj.trigger_hotkey_by_key_sequence(key_id, shift, ctrl, alt, cmd)
