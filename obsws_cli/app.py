@@ -6,6 +6,7 @@ import obsws_python as obsws
 import typer
 
 from . import (
+    filter,
     group,
     hotkey,
     input,
@@ -24,6 +25,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 for module in (
+    filter,
     group,
     hotkey,
     input,

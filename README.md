@@ -486,6 +486,35 @@ obsws-cli hotkey trigger-sequence OBS_KEY_F1 --ctrl
 obsws-cli hotkey trigger-sequence OBS_KEY_F1 --shift --ctrl
 ```
 
+#### Filter
+
+-   list: List filters for a source.
+    -   args: <source_name>
+
+```console
+obsws-cli filter list "Mic/Aux"
+```
+
+-   enable: Enable a filter for a source.
+    -   args: <source_name> <filter_name>
+
+```console
+obsws-cli filter enable "Mic/Aux" "Test Compression Filter"
+```
+
+-   disable: Disable a filter for a source.
+    -   args: <source_name> <filter_name>
+
+```console
+obsws-cli filter disable "Mic/Aux" "Test Compression Filter"
+```
+
+-   toggle: Toggle a filter for a source.
+    -   args: <source_name> <filter_name>
+
+```console
+obsws-cli filter toggle "Mic/Aux" "Test Compression Filter"
+```
 
 ## License
 
