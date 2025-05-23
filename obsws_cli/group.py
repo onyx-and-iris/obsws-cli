@@ -1,12 +1,16 @@
 """module containing commands for manipulating groups in scenes."""
 
 import typer
+from rich.console import Console
+from rich.table import Table
 
 from . import validate
 from .alias import AliasGroup
 from .protocols import DataclassProtocol
 
 app = typer.Typer(cls=AliasGroup)
+out_console = Console()
+err_console = Console(stderr=True)
 
 
 @app.callback()
@@ -15,17 +19,46 @@ def main():
 
 
 @app.command('list | ls')
-def list(ctx: typer.Context, scene_name: str):
+def list(
+    ctx: typer.Context,
+    scene_name: str = typer.Argument(
+        None, help='Scene name (optional, defaults to current scene)'
+    ),
+):
     """List groups in a scene."""
+    if not scene_name:
+        scene_name = ctx.obj.get_current_program_scene().scene_name
+
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
-    groups = (
-        item.get('sourceName') for item in resp.scene_items if item.get('isGroup')
-    )
-    typer.echo('\n'.join(groups))
+    groups = [
+        (item.get('sceneItemId'), item.get('sourceName'), item.get('sceneItemEnabled'))
+        for item in resp.scene_items
+        if item.get('isGroup')
+    ]
+
+    if not groups:
+        err_console.print(f"No groups found in scene '{scene_name}'.")
+        raise typer.Exit(1)
+
+    table = Table(title=f'Groups in Scene: {scene_name}')
+
+    for column in ('ID', 'Name', 'Enabled'):
+        table.add_column(
+            column, justify='left' if column == 'Name' else 'center', style='cyan'
+        )
+
+    for item_id, group_name, is_enabled in groups:
+        table.add_row(
+            str(item_id),
+            group_name,
+            ':heavy_check_mark:' if is_enabled else ':x:',
+        )
+
+    out_console.print(table)
 
 
 def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
@@ -45,12 +78,12 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
 def show(ctx: typer.Context, scene_name: str, group_name: str):
     """Show a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
+        err_console.print(f"Group '{group_name}' not found in scene {scene_name}.")
         raise typer.Exit(1)
 
     ctx.obj.set_scene_item_enabled(
@@ -59,19 +92,19 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
         enabled=True,
     )
 
-    typer.echo(f"Group '{group_name}' is now visible.")
+    out_console.print(f"Group '{group_name}' is now visible.")
 
 
 @app.command('hide | h')
 def hide(ctx: typer.Context, scene_name: str, group_name: str):
     """Hide a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
+        err_console.print(f"Group '{group_name}' not found in scene {scene_name}.")
         raise typer.Exit(1)
 
     ctx.obj.set_scene_item_enabled(
@@ -80,19 +113,19 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
         enabled=False,
     )
 
-    typer.echo(f"Group '{group_name}' is now hidden.")
+    out_console.print(f"Group '{group_name}' is now hidden.")
 
 
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context, scene_name: str, group_name: str):
     """Toggle a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
+        err_console.print(f"Group '{group_name}' not found in scene {scene_name}.")
         raise typer.Exit(1)
 
     new_state = not group.get('sceneItemEnabled')
@@ -103,21 +136,21 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
     )
 
     if new_state:
-        typer.echo(f"Group '{group_name}' is now visible.")
+        out_console.print(f"Group '{group_name}' is now visible.")
     else:
-        typer.echo(f"Group '{group_name}' is now hidden.")
+        out_console.print(f"Group '{group_name}' is now hidden.")
 
 
 @app.command('status | ss')
 def status(ctx: typer.Context, scene_name: str, group_name: str):
     """Get the status of a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
-        typer.echo(f"Group '{group_name}' not found in scene {scene_name}.", err=True)
+        err_console.print(f"Group '{group_name}' not found in scene {scene_name}.")
         raise typer.Exit(1)
 
     enabled = ctx.obj.get_scene_item_enabled(
@@ -126,6 +159,6 @@ def status(ctx: typer.Context, scene_name: str, group_name: str):
     )
 
     if enabled.scene_item_enabled:
-        typer.echo(f"Group '{group_name}' is now visible.")
+        out_console.print(f"Group '{group_name}' is now visible.")
     else:
-        typer.echo(f"Group '{group_name}' is now hidden.")
+        out_console.print(f"Group '{group_name}' is now hidden.")
