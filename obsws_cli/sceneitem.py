@@ -63,20 +63,19 @@ def _validate_scene_name_and_item_name(
         parent: Optional[str] = None,
     ):
         if not validate.scene_in_scenes(ctx, scene_name):
-            typer.echo(f"Scene '{scene_name}' not found.", err=True)
+            err_console.print(f"Scene '{scene_name}' not found.")
             raise typer.Exit(1)
 
         if parent:
             if not validate.item_in_scene_item_list(ctx, scene_name, parent):
-                typer.echo(
-                    f"Parent group '{parent}' not found in scene '{scene_name}'.",
-                    err=True,
+                err_console.print(
+                    f"Parent group '{parent}' not found in scene '{scene_name}'."
                 )
                 raise typer.Exit(1)
         else:
             if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-                typer.echo(
-                    f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
+                err_console.print(
+                    f"Item '{item_name}' not found in scene '{scene_name}'."
                 )
                 raise typer.Exit(1)
 
@@ -96,7 +95,7 @@ def _get_scene_name_and_item_id(
                 scene_item_id = item.get('sceneItemId')
                 break
         else:
-            typer.echo(f"Item '{item_name}' not found in group '{parent}'.", err=True)
+            err_console.print(f"Item '{item_name}' not found in group '{parent}'.")
             raise typer.Exit(1)
     else:
         resp = ctx.obj.get_scene_item_id(scene_name, item_name)
@@ -124,7 +123,7 @@ def show(
         enabled=True,
     )
 
-    typer.echo(f"Item '{item_name}' in scene '{scene_name}' has been shown.")
+    out_console.print(f"Item '{item_name}' in scene '{scene_name}' has been shown.")
 
 
 @_validate_scene_name_and_item_name
@@ -146,7 +145,7 @@ def hide(
         enabled=False,
     )
 
-    typer.echo(f"Item '{item_name}' in scene '{scene_name}' has been hidden.")
+    out_console.print(f"Item '{item_name}' in scene '{scene_name}' has been hidden.")
 
 
 @_validate_scene_name_and_item_name
@@ -159,20 +158,18 @@ def toggle(
 ):
     """Toggle an item in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.")
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     if parent:
         if not validate.item_in_scene_item_list(ctx, scene_name, parent):
-            typer.echo(
-                f"Parent group '{parent}' not found in scene '{scene_name}'.", err=True
+            err_console.print(
+                f"Parent group '{parent}' not found in scene '{scene_name}'."
             )
             raise typer.Exit(1)
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            typer.echo(
-                f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
-            )
+            err_console.print(f"Item '{item_name}' not found in scene '{scene_name}'.")
             raise typer.Exit(1)
 
     scene_name, scene_item_id = _get_scene_name_and_item_id(
@@ -191,7 +188,7 @@ def toggle(
         enabled=new_state,
     )
 
-    typer.echo(
+    out_console.print(
         f"Item '{item_name}' in scene '{scene_name}' has been {'shown' if new_state else 'hidden'}."
     )
 
@@ -207,15 +204,13 @@ def visible(
     """Check if an item in a scene is visible."""
     if parent:
         if not validate.item_in_scene_item_list(ctx, scene_name, parent):
-            typer.echo(
-                f"Parent group '{parent}' not found in scene '{scene_name}'.", err=True
+            err_console.print(
+                f"Parent group '{parent}' not found in scene '{scene_name}'."
             )
             raise typer.Exit(1)
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            typer.echo(
-                f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
-            )
+            err_console.print(f"Item '{item_name}' not found in scene '{scene_name}'.")
             raise typer.Exit(1)
 
     old_scene_name = scene_name
@@ -229,7 +224,7 @@ def visible(
     )
 
     if parent:
-        typer.echo(
+        out_console.print(
             f"Item '{item_name}' in group '{parent}' in scene '{old_scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
         )
     else:
@@ -237,7 +232,7 @@ def visible(
         # This is to avoid confusion with the parent group name
         # which is not the same as the scene name
         # and is not needed in this case
-        typer.echo(
+        out_console.print(
             f"Item '{item_name}' in scene '{scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
         )
 
@@ -298,15 +293,13 @@ def transform(
     """Set the transform of an item in a scene."""
     if parent:
         if not validate.item_in_scene_item_list(ctx, scene_name, parent):
-            typer.echo(
-                f"Parent group '{parent}' not found in scene '{scene_name}'.", err=True
+            err_console.print(
+                f"Parent group '{parent}' not found in scene '{scene_name}'."
             )
             raise typer.Exit(1)
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            typer.echo(
-                f"Item '{item_name}' not found in scene '{scene_name}'.", err=True
-            )
+            err_console.print(f"Item '{item_name}' not found in scene '{scene_name}'.")
             raise typer.Exit(1)
 
     old_scene_name = scene_name
@@ -347,7 +340,7 @@ def transform(
         transform['scaleY'] = scale_y
 
     if not transform:
-        typer.echo('No transform options provided.', err=True)
+        err_console.print('No transform options provided.')
         raise typer.Exit(1)
 
     transform = ctx.obj.set_scene_item_transform(
@@ -357,7 +350,7 @@ def transform(
     )
 
     if parent:
-        typer.echo(
+        out_console.print(
             f"Item '{item_name}' in group '{parent}' in scene '{old_scene_name}' has been transformed."
         )
     else:
@@ -365,4 +358,6 @@ def transform(
         # This is to avoid confusion with the parent group name
         # which is not the same as the scene name
         # and is not needed in this case
-        typer.echo(f"Item '{item_name}' in scene '{scene_name}' has been transformed.")
+        out_console.print(
+            f"Item '{item_name}' in scene '{scene_name}' has been transformed."
+        )
