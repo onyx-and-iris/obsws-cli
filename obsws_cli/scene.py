@@ -3,11 +3,15 @@
 from typing import Annotated
 
 import typer
+from rich.console import Console
+from rich.table import Table
 
 from . import validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
+out_console = Console()
+err_console = Console(stderr=True)
 
 
 @app.callback()
@@ -19,8 +23,20 @@ def main():
 def list(ctx: typer.Context):
     """List all scenes."""
     resp = ctx.obj.get_scene_list()
-    scenes = (scene.get('sceneName') for scene in reversed(resp.scenes))
-    typer.echo('\n'.join(scenes))
+    scenes = (
+        (scene.get('sceneIndex'), scene.get('sceneName'))
+        for scene in reversed(resp.scenes)
+    )
+
+    table = Table(title='Scenes')
+    table.add_column('Scene Name', justify='left', style='cyan')
+
+    for scene_index, scene_name in scenes:
+        table.add_row(
+            scene_name,
+        )
+
+    out_console.print(table)
 
 
 @app.command('current | get')
@@ -32,15 +48,15 @@ def current(
 ):
     """Get the current program scene or preview scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        typer.echo('Studio mode is not enabled, cannot get preview scene.', err=True)
+        err_console.print('Studio mode is not enabled, cannot get preview scene.')
         raise typer.Exit(1)
 
     if preview:
         resp = ctx.obj.get_current_preview_scene()
-        typer.echo(resp.current_preview_scene_name)
+        out_console.print(resp.current_preview_scene_name)
     else:
         resp = ctx.obj.get_current_program_scene()
-        typer.echo(resp.current_program_scene_name)
+        out_console.print(resp.current_program_scene_name)
 
 
 @app.command('switch | set')
@@ -54,18 +70,16 @@ def switch(
 ):
     """Switch to a scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        typer.echo(
-            'Studio mode is not enabled, cannot set the preview scene.', err=True
-        )
+        err_console.print('Studio mode is not enabled, cannot set the preview scene.')
         raise typer.Exit(1)
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
+        err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
     if preview:
         ctx.obj.set_current_preview_scene(scene_name)
-        typer.echo(f'Switched to preview scene: {scene_name}')
+        out_console.print(f'Switched to preview scene: {scene_name}')
     else:
         ctx.obj.set_current_program_scene(scene_name)
-        typer.echo(f'Switched to program scene: {scene_name}')
+        out_console.print(f'Switched to program scene: {scene_name}')
