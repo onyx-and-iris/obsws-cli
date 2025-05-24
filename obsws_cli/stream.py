@@ -1,10 +1,13 @@
 """module for controlling OBS stream functionality."""
 
 import typer
+from rich.console import Console
 
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
+out_console = Console()
+err_console = Console(stderr=True)
 
 
 @app.callback()
@@ -23,11 +26,11 @@ def start(ctx: typer.Context):
     """Start streaming."""
     active, _ = _get_streaming_status(ctx)
     if active:
-        typer.echo('Streaming is already in progress, cannot start.', err=True)
+        err_console.print('Streaming is already in progress, cannot start.')
         raise typer.Exit(1)
 
     ctx.obj.start_stream()
-    typer.echo('Streaming started successfully.')
+    out_console.print('Streaming started successfully.')
 
 
 @app.command('stop | st')
@@ -35,11 +38,11 @@ def stop(ctx: typer.Context):
     """Stop streaming."""
     active, _ = _get_streaming_status(ctx)
     if not active:
-        typer.echo('Streaming is not in progress, cannot stop.', err=True)
+        err_console.print('Streaming is not in progress, cannot stop.')
         raise typer.Exit(1)
 
     ctx.obj.stop_stream()
-    typer.echo('Streaming stopped successfully.')
+    out_console.print('Streaming stopped successfully.')
 
 
 @app.command('toggle | tg')
@@ -47,9 +50,9 @@ def toggle(ctx: typer.Context):
     """Toggle streaming."""
     resp = ctx.obj.toggle_stream()
     if resp.output_active:
-        typer.echo('Streaming started successfully.')
+        out_console.print('Streaming started successfully.')
     else:
-        typer.echo('Streaming stopped successfully.')
+        out_console.print('Streaming stopped successfully.')
 
 
 @app.command('status | ss')
@@ -62,15 +65,19 @@ def status(ctx: typer.Context):
             minutes = int(seconds // 60)
             seconds = int(seconds % 60)
             if minutes > 0:
-                typer.echo(
+                out_console.print(
                     f'Streaming is in progress for {minutes} minutes and {seconds} seconds.'
                 )
             else:
                 if seconds > 0:
-                    typer.echo(f'Streaming is in progress for {seconds} seconds.')
+                    out_console.print(
+                        f'Streaming is in progress for {seconds} seconds.'
+                    )
                 else:
-                    typer.echo('Streaming is in progress for less than a second.')
+                    out_console.print(
+                        'Streaming is in progress for less than a second.'
+                    )
         else:
-            typer.echo('Streaming is in progress.')
+            out_console.print('Streaming is in progress.')
     else:
-        typer.echo('Streaming is not in progress.')
+        err_console.print('Streaming is not in progress.')

@@ -4,6 +4,7 @@ from typing import Annotated
 
 import obsws_python as obsws
 import typer
+from rich.console import Console
 
 from . import (
     filter,
@@ -41,6 +42,9 @@ for module in (
 ):
     app.add_typer(module.app, name=module.__name__.split('.')[-1])
 
+out_console = Console()
+err_console = Console(stderr=True)
+
 
 @app.callback()
 def main(
@@ -71,6 +75,6 @@ def main(
 def version(ctx: typer.Context):
     """Get the OBS Client and WebSocket versions."""
     resp = ctx.obj.get_version()
-    typer.echo(
+    out_console.print(
         f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}'
     )
