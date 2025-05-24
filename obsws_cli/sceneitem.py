@@ -4,11 +4,15 @@ from collections.abc import Callable
 from typing import Annotated, Optional
 
 import typer
+from rich.console import Console
+from rich.table import Table
 
 from . import validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
+out_console = Console()
+err_console = Console(stderr=True)
 
 
 @app.callback()
@@ -17,15 +21,34 @@ def main():
 
 
 @app.command('list | ls')
-def list(ctx: typer.Context, scene_name: str):
+def list(
+    ctx: typer.Context,
+    scene_name: str = typer.Argument(
+        None, help='Scene name (optional, defaults to current scene)'
+    ),
+):
     """List all items in a scene."""
+    if not scene_name:
+        scene_name = ctx.obj.get_current_program_scene().scene_name
+
     if not validate.scene_in_scenes(ctx, scene_name):
-        typer.echo(f"Scene '{scene_name}' not found.", err=True)
-        typer.Exit(1)
+        err_console.print(f"Scene '{scene_name}' not found.")
+        raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
-    items = (item.get('sourceName') for item in resp.scene_items)
-    typer.echo('\n'.join(items))
+    items = [item.get('sourceName') for item in resp.scene_items]
+
+    if not items:
+        err_console.print(f"No items found in scene '{scene_name}'.")
+        raise typer.Exit(1)
+
+    table = Table(title=f'Items in Scene: {scene_name}')
+    table.add_column('Item Name', justify='left', style='cyan')
+
+    for item in items:
+        table.add_row(item)
+
+    out_console.print(table)
 
 
 def _validate_scene_name_and_item_name(

@@ -96,7 +96,10 @@ obsws-cli scene switch LIVE
 #### Scene Item
 
 -   list: List all items in a scene.
+
+    *optional*
     -   args: <scene_name>
+        -   defaults to current scene
 
 ```console
 obsws-cli sceneitem list LIVE
