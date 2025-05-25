@@ -506,28 +506,28 @@ obsws-cli filter list "Mic/Aux"
     -   args: <source_name> <filter_name>
 
 ```console
-obsws-cli filter enable "Mic/Aux" "Test Compression Filter"
+obsws-cli filter enable "Mic/Aux" "Gain"
 ```
 
 -   disable: Disable a filter for a source.
     -   args: <source_name> <filter_name>
 
 ```console
-obsws-cli filter disable "Mic/Aux" "Test Compression Filter"
+obsws-cli filter disable "Mic/Aux" "Gain"
 ```
 
 -   toggle: Toggle a filter for a source.
     -   args: <source_name> <filter_name>
 
 ```console
-obsws-cli filter toggle "Mic/Aux" "Test Compression Filter"
+obsws-cli filter toggle "Mic/Aux" "Gain"
 ```
 
 -   status: Get the status of a filter for a source.
     -   args: <source_name> <filter_name>
 
 ```console
-obsws-cli filter status "Mic/Aux" "Test Compression Filter"
+obsws-cli filter status "Mic/Aux" "Gain"
 ```
 
 ## License
