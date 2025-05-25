@@ -4,12 +4,12 @@ from typer.testing import CliRunner
 
 from obsws_cli.app import app
 
-runner = CliRunner()
+runner = CliRunner(mix_stderr=False)
 
 
 def test_sceneitem_list():
     """Test the sceneitem list command."""
-    result = runner.invoke(app, ['sceneitem', 'list', 'pytest'])
+    result = runner.invoke(app, ['sceneitem', 'list', 'pytest_scene'])
     assert result.exit_code == 0
     assert 'pytest_input' in result.stdout
     assert 'pytest_input_2' in result.stdout
@@ -23,11 +23,12 @@ def test_sceneitem_transform():
             'sceneitem',
             'transform',
             '--rotation=60',
-            'pytest',
+            'pytest_scene',
             'pytest_input_2',
         ],
     )
     assert result.exit_code == 0
     assert (
-        "Item 'pytest_input_2' in scene 'pytest' has been transformed" in result.stdout
+        "Item 'pytest_input_2' in scene 'pytest_scene' has been transformed"
+        in result.stdout
     )
