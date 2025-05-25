@@ -102,6 +102,8 @@ obsws-cli scene switch LIVE
         -   defaults to current scene
 
 ```console
+obsws-cli sceneitem list
+
 obsws-cli sceneitem list LIVE
 ```
 
@@ -215,6 +217,8 @@ obsws-cli scenecollection create test-collection
         -   defaults to current scene
 
 ```console
+obsws-cli group list
+
 obsws-cli group list START
 ```
 
