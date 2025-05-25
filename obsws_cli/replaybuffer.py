@@ -18,6 +18,11 @@ def main():
 @app.command('start | s')
 def start(ctx: typer.Context):
     """Start the replay buffer."""
+    resp = ctx.obj.get_replay_buffer_status()
+    if resp.output_active:
+        err_console.print('Replay buffer is already active.')
+        raise typer.Exit(1)
+
     ctx.obj.start_replay_buffer()
     out_console.print('Replay buffer started.')
 
@@ -25,6 +30,11 @@ def start(ctx: typer.Context):
 @app.command('stop | st')
 def stop(ctx: typer.Context):
     """Stop the replay buffer."""
+    resp = ctx.obj.get_replay_buffer_status()
+    if not resp.output_active:
+        err_console.print('Replay buffer is not active.')
+        raise typer.Exit(1)
+
     ctx.obj.stop_replay_buffer()
     out_console.print('Replay buffer stopped.')
 
