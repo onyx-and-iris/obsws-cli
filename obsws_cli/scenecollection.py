@@ -22,8 +22,8 @@ def list(ctx: typer.Context):
     """List all scene collections."""
     resp = ctx.obj.get_scene_collection_list()
 
-    table = Table(title='Scene Collections')
-    table.add_column('Name', justify='left', style='cyan')
+    table = Table(title='Scene Collections', padding=(0, 2))
+    table.add_column('Scene Collection Name', justify='left', style='cyan')
 
     for scene_collection_name in resp.scene_collections:
         table.add_row(scene_collection_name)

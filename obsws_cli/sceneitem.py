@@ -42,8 +42,8 @@ def list(
         err_console.print(f"No items found in scene '{scene_name}'.")
         raise typer.Exit(1)
 
-    table = Table(title=f'Items in Scene: {scene_name}')
-    table.add_column('Name', justify='left', style='cyan')
+    table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
+    table.add_column('Item Name', justify='left', style='cyan')
 
     for item in items:
         table.add_row(item)

@@ -44,11 +44,11 @@ def list(
         err_console.print(f"No groups found in scene '{scene_name}'.")
         raise typer.Exit(1)
 
-    table = Table(title=f'Groups in Scene: {scene_name}')
+    table = Table(title=f'Groups in Scene: {scene_name}', padding=(0, 2))
 
-    for column in ('ID', 'Name', 'Enabled'):
+    for column in ('ID', 'Group Name', 'Enabled'):
         table.add_column(
-            column, justify='left' if column == 'Name' else 'center', style='cyan'
+            column, justify='left' if column == 'Group Name' else 'center', style='cyan'
         )
 
     for item_id, group_name, is_enabled in groups:

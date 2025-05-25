@@ -26,12 +26,12 @@ def list(ctx: typer.Context, source_name: str):
         out_console.print(f'No filters found for source {source_name}')
         return
 
-    table = Table(title=f'Filters for Source: {source_name}')
+    table = Table(title=f'Filters for Source: {source_name}', padding=(0, 2))
 
-    for column in ('Name', 'Kind', 'Enabled', 'Settings'):
+    for column in ('Filter Name', 'Kind', 'Enabled', 'Settings'):
         table.add_column(
             column,
-            justify='left' if column in ('Name', 'Kind') else 'center',
+            justify='left' if column in ('Filter Name', 'Kind') else 'center',
             style='cyan',
         )
 

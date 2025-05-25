@@ -23,8 +23,8 @@ def list(
     """List all hotkeys."""
     resp = ctx.obj.get_hotkey_list()
 
-    table = Table(title='Hotkeys')
-    table.add_column('Name', justify='left', style='cyan')
+    table = Table(title='Hotkeys', padding=(0, 2))
+    table.add_column('Hotkey Name', justify='left', style='cyan')
 
     for hotkey in resp.hotkeys:
         table.add_row(hotkey)

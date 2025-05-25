@@ -51,10 +51,10 @@ def list(
         err_console.print('No inputs found.')
         raise typer.Exit(1)
 
-    table = Table(title='Inputs')
-    for column in ('Name', 'Kind'):
+    table = Table(title='Inputs', padding=(0, 2))
+    for column in ('Input Name', 'Kind'):
         table.add_column(
-            column, justify='left' if column == 'Name' else 'center', style='cyan'
+            column, justify='left' if column == 'Input Name' else 'center', style='cyan'
         )
 
     for input_name, input_kind in inputs:
