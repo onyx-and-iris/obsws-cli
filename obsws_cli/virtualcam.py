@@ -32,8 +32,11 @@ def stop(ctx: typer.Context):
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle the virtual camera."""
-    ctx.obj.toggle_virtual_cam()
-    out_console.print('Virtual camera toggled.')
+    resp = ctx.obj.toggle_virtual_cam()
+    if resp.output_active:
+        out_console.print('Virtual camera is enabled.')
+    else:
+        out_console.print('Virtual camera is disabled.')
 
 
 @app.command('status | ss')
