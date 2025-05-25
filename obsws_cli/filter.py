@@ -1,5 +1,6 @@
 """module containing commands for manipulating filters in scenes."""
 
+import obsws_python as obsws
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -20,7 +21,14 @@ def main():
 @app.command('list | ls')
 def list(ctx: typer.Context, source_name: str):
     """List filters for a source."""
-    resp = ctx.obj.get_source_filter_list(source_name)
+    try:
+        resp = ctx.obj.get_source_filter_list(source_name)
+    except obsws.error.OBSSDKError as e:
+        if e.code == 600:
+            err_console.print(f"No source was found by the name of '{source_name}'.")
+            raise typer.Exit(1)
+        else:
+            raise
 
     if not resp.filters:
         out_console.print(f'No filters found for source {source_name}')
