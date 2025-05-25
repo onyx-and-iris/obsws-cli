@@ -151,6 +151,7 @@ obsws-cli sceneitem visible --parent=test_group START "Colour Source 4"
 
 -   transform: Set the transform of an item in a scene.
     -   flags:
+        
         *optional*
         -   --parent: Parent group name.
 
