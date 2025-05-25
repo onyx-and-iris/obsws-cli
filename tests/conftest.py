@@ -46,9 +46,9 @@ def pytest_sessionstart(session):
 
     session.obsws.set_current_scene_collection('test-collection')
 
-    session.obsws.create_scene('pytest')
+    session.obsws.create_scene('pytest_scene')
     session.obsws.create_input(
-        sceneName='pytest',
+        sceneName='pytest_scene',
         inputName='pytest_input',
         inputKind='color_source_v3',
         inputSettings={
@@ -60,7 +60,7 @@ def pytest_sessionstart(session):
         sceneItemEnabled=True,
     )
     session.obsws.create_input(
-        sceneName='pytest',
+        sceneName='pytest_scene',
         inputName='pytest_input_2',
         inputKind='color_source_v3',
         inputSettings={
@@ -71,11 +71,11 @@ def pytest_sessionstart(session):
         },
         sceneItemEnabled=True,
     )
-    resp = session.obsws.get_scene_item_list('pytest')
+    resp = session.obsws.get_scene_item_list('pytest_scene')
     for item in resp.scene_items:
         if item['sourceName'] == 'pytest_input_2':
             session.obsws.set_scene_item_transform(
-                'pytest',
+                'pytest_scene',
                 item['sceneItemId'],
                 {
                     'rotation': 0,
@@ -83,13 +83,47 @@ def pytest_sessionstart(session):
             )
             break
 
+    # Create a source filter for the Mic/Aux source
+    session.obsws.create_source_filter(
+        source_name='Mic/Aux',
+        filter_name='pytest filter',
+        filter_kind='compressor_filter',
+        filter_settings={
+            'threshold': -20,
+            'ratio': 4,
+            'attack_time': 10,
+            'release_time': 100,
+            'output_gain': -3.6,
+            'sidechain_source': None,
+        },
+    )
+
+    # Create a source filter for the pytest scene
+    session.obsws.create_source_filter(
+        source_name='pytest_scene',
+        filter_name='pytest filter',
+        filter_kind='luma_key_filter_v2',
+        filter_settings={'luma_max': 0.6509},
+    )
+
 
 def pytest_sessionfinish(session, exitstatus):
     """Call after the whole test run finishes.
 
     Return the exit status to the system.
     """
-    session.obsws.remove_scene('pytest')
+    session.obsws.remove_source_filter(
+        source_name='Mic/Aux',
+        filter_name='pytest filter',
+    )
+
+    session.obsws.remove_source_filter(
+        source_name='pytest_scene',
+        filter_name='pytest filter',
+    )
+
+    session.obsws.remove_scene('pytest_scene')
+
     session.obsws.set_current_scene_collection('default')
 
     resp = session.obsws.get_stream_status()
@@ -99,6 +133,10 @@ def pytest_sessionfinish(session, exitstatus):
     resp = session.obsws.get_record_status()
     if resp.output_active:
         session.obsws.stop_record()
+
+    resp = session.obsws.get_replay_buffer_status()
+    if resp.output_active:
+        session.obsws.stop_replay_buffer()
 
     # Close the OBS WebSocket client connection
     session.obsws.disconnect()
