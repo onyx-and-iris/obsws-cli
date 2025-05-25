@@ -29,13 +29,17 @@ def list(ctx: typer.Context, source_name: str):
     table = Table(title=f'Filters for Source: {source_name}')
 
     for column in ('Name', 'Kind', 'Enabled', 'Settings'):
-        table.add_column(column, justify='center', style='cyan')
+        table.add_column(
+            column,
+            justify='left' if column in ('Name', 'Kind') else 'center',
+            style='cyan',
+        )
 
     for filter in resp.filters:
         table.add_row(
             filter['filterName'],
             util.snakecase_to_titlecase(filter['filterKind']),
-            ':heavy_check_mark:' if filter['filterEnabled'] else ':x:',
+            ':white_heavy_check_mark:' if filter['filterEnabled'] else ':x:',
             '\n'.join(
                 [
                     f'{util.snakecase_to_titlecase(k):<20} {v:>10}'

@@ -24,16 +24,18 @@ def list(ctx: typer.Context):
     """List all scenes."""
     resp = ctx.obj.get_scene_list()
     scenes = (
-        (scene.get('sceneIndex'), scene.get('sceneName'))
+        (scene.get('sceneName'), scene.get('sceneUuid'))
         for scene in reversed(resp.scenes)
     )
 
     table = Table(title='Scenes')
-    table.add_column('Scene Name', justify='left', style='cyan')
+    for column in ('Name', 'UUID'):
+        table.add_column(column, justify='left', style='cyan')
 
-    for scene_index, scene_name in scenes:
+    for scene_name, scene_uuid in scenes:
         table.add_row(
             scene_name,
+            scene_uuid,
         )
 
     out_console.print(table)

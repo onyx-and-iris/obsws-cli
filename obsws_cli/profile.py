@@ -31,7 +31,7 @@ def list(ctx: typer.Context):
     for profile in resp.profiles:
         table.add_row(
             profile,
-            ':heavy_check_mark:' if profile == resp.current_profile_name else '',
+            ':white_heavy_check_mark:' if profile == resp.current_profile_name else '',
         )
 
     out_console.print(table)

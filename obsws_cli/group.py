@@ -55,7 +55,7 @@ def list(
         table.add_row(
             str(item_id),
             group_name,
-            ':heavy_check_mark:' if is_enabled else ':x:',
+            ':white_heavy_check_mark:' if is_enabled else ':x:',
         )
 
     out_console.print(table)

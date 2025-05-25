@@ -43,7 +43,7 @@ def list(
         raise typer.Exit(1)
 
     table = Table(title=f'Items in Scene: {scene_name}')
-    table.add_column('Item Name', justify='left', style='cyan')
+    table.add_column('Name', justify='left', style='cyan')
 
     for item in items:
         table.add_row(item)
