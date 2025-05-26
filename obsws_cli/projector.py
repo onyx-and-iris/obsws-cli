@@ -45,13 +45,21 @@ def list_monitors(ctx: typer.Context):
 @app.command('open | o')
 def open(
     ctx: typer.Context,
-    source_name: str,
     monitor_index: Annotated[
         int,
         typer.Option(help='Index of the monitor to open the projector on.'),
     ] = 0,
+    source_name: Annotated[
+        str,
+        typer.Argument(
+            help='Name of the source to project. (optional, defaults to current scene)'
+        ),
+    ] = '',
 ):
     """Open a fullscreen projector for a source on a specific monitor."""
+    if not source_name:
+        source_name = ctx.obj.get_current_program_scene().scene_name
+
     ctx.obj.open_source_projector(
         source_name=source_name,
         monitor_index=monitor_index,

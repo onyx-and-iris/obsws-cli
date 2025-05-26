@@ -549,9 +549,13 @@ obsws-cli projector list-monitors
         -   --monitor-index: Index of the monitor to open the projector on.
             -   defaults to 0
 
+    *optional*
     -   args: <source_name>
+        -   defaults to current scene
 
 ```console
+obsws-cli project open
+
 obsws-cli projector open --monitor-index=1 "Scene"
 ```
 

@@ -1,4 +1,4 @@
 # SPDX-FileCopyrightText: 2025-present onyx-and-iris <code@onyxandiris.online>
 #
 # SPDX-License-Identifier: MIT
-__version__ = "0.13.0"
+__version__ = "0.13.1"
