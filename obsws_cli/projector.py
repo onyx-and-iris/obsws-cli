@@ -64,3 +64,7 @@ def open(
         source_name=source_name,
         monitor_index=monitor_index,
     )
+
+    out_console.print(
+        f'Opened projector for source [bold]{source_name}[/] on monitor [bold]{monitor_index}[/].'
+    )
