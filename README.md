@@ -556,7 +556,9 @@ obsws-cli projector list-monitors
 ```console
 obsws-cli project open
 
-obsws-cli projector open --monitor-index=1 "Scene"
+obsws-cli projector open --monitor-index=1 "test_scene"
+
+obsws-cli projector open --monitor-index=1 "test_group"
 ```
 
 
