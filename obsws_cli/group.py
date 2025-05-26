@@ -41,8 +41,8 @@ def list(
     ]
 
     if not groups:
-        err_console.print(f"No groups found in scene '{scene_name}'.")
-        raise typer.Exit(1)
+        out_console.print(f"No groups found in scene '{scene_name}'.")
+        return
 
     table = Table(title=f'Groups in Scene: {scene_name}', padding=(0, 2))
 
