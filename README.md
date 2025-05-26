@@ -534,6 +534,28 @@ obsws-cli filter toggle "Mic/Aux" "Gain"
 obsws-cli filter status "Mic/Aux" "Gain"
 ```
 
+#### Projector
+
+-   list-monitors: List available monitors.
+
+```console
+obsws-cli projector list-monitors
+```
+
+-   open: Open a fullscreen projector for a source on a specific monitor.
+    -   flags:
+
+        *optional*
+        -   --monitor-index: Index of the monitor to open the projector on.
+            -   defaults to 0
+
+    -   args: <source_name>
+
+```console
+obsws-cli projector open --monitor-index=1 "Scene"
+```
+
+
 ## License
 
 `obsws-cli` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
