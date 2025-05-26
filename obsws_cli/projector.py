@@ -33,7 +33,7 @@ def list_monitors(ctx: typer.Context):
     )
 
     table = Table(title='Available Monitors', padding=(0, 2))
-    table.add_column('Index', justify='right', style='cyan')
+    table.add_column('Index', justify='center', style='cyan')
     table.add_column('Name', style='cyan')
 
     for index, monitor in monitors:
