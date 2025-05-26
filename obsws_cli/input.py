@@ -48,8 +48,8 @@ def list(
     ]
 
     if not inputs:
-        err_console.print('No inputs found.')
-        raise typer.Exit(1)
+        out_console.print('No inputs found.')
+        return
 
     table = Table(title='Inputs', padding=(0, 2))
     for column in ('Input Name', 'Kind'):

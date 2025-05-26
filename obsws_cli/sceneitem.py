@@ -39,8 +39,8 @@ def list(
     items = [item.get('sourceName') for item in resp.scene_items]
 
     if not items:
-        err_console.print(f"No items found in scene '{scene_name}'.")
-        raise typer.Exit(1)
+        out_console.print(f"No items found in scene '{scene_name}'.")
+        return
 
     table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
     table.add_column('Item Name', justify='left', style='cyan')
