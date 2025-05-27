@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.14.0] - 2025-05-27
+
+### Added
+
+-   record directory command, see [directory under Record](https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#record)
+
+### Changed
+
+-   project open <source_name> arg now optional, if not passed the current scene will be projected
+-   record stop now prints the output path of the recording.
+
+### Fixed
+
+-   Index column alignment in projector list-monitors now centred.
+
 # [0.13.0] - 2025-05-26
 
 ### Added
