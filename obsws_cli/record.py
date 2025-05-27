@@ -1,5 +1,8 @@
 """module for controlling OBS recording functionality."""
 
+from pathlib import Path
+from typing import Annotated, Optional
+
 import typer
 from rich.console import Console
 
@@ -45,8 +48,8 @@ def stop(ctx: typer.Context):
         err_console.print('Recording is not in progress, cannot stop.')
         raise typer.Exit(1)
 
-    ctx.obj.stop_record()
-    out_console.print('Recording stopped successfully.')
+    resp = ctx.obj.stop_record()
+    out_console.print(f'Recording stopped successfully. Saved to: {resp.output_path}')
 
 
 @app.command('toggle | tg')
@@ -100,3 +103,27 @@ def pause(ctx: typer.Context):
 
     ctx.obj.pause_record()
     out_console.print('Recording paused successfully.')
+
+
+@app.command('directory | d')
+def directory(
+    ctx: typer.Context,
+    record_directory: Annotated[
+        Optional[Path],
+        # Since the CLI and OBS may be running on different platforms,
+        # we won't validate the path here.
+        typer.Argument(
+            file_okay=False,
+            dir_okay=True,
+            help='Directory to set for recording.',
+        ),
+    ] = None,
+):
+    """Get or set the recording directory."""
+    if record_directory is not None:
+        ctx.obj.set_record_directory(str(record_directory))
+        out_console.print(f'Recording directory updated to: {record_directory}')
+    else:
+        out_console.print(
+            f'Recording directory: {ctx.obj.get_record_directory().record_directory}'
+        )

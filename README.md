@@ -324,6 +324,19 @@ obsws-cli record resume
 obsws-cli record pause
 ```
 
+-   directory: Get or set the recording directory.
+
+    *optional*
+    -   args: <record_directory>
+        -   if not passed the current record directory will be printed.
+
+```console
+obsws-cli record directory
+
+obsws-cli record directory "/home/me/obs-vids/"
+obsws-cli record directory "C:/Users/me/Videos"
+```
+
 #### Stream
 
 -   start: Start streaming.

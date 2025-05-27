@@ -23,7 +23,7 @@ def test_record_start_status_stop():
 
     result = runner.invoke(app, ['record', 'stop'])
     assert result.exit_code == 0
-    assert 'Recording stopped successfully.' in result.stdout
+    assert 'Recording stopped successfully. Saved to:' in result.stdout
 
     time.sleep(0.5)  # Wait for the recording to stop
 
