@@ -37,7 +37,7 @@ def test_record_stop():
         assert 'Recording is not in progress, cannot stop.' in result.stderr
     else:
         assert result.exit_code == 0
-        assert 'Recording stopped successfully.' in result.stdout
+        assert 'Recording stopped successfully. Saved to:' in result.stdout
         time.sleep(0.5)  # Wait for the recording to stop
 
 
