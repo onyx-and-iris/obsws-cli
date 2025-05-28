@@ -47,7 +47,7 @@ cli = "obsws-cli {args:}"
 man = "python man/generate.py --output=./man"
 
 [tool.hatch.envs.hatch-test]
-dependencies = ["pytest>=8.3.5"]
+randomize = true
 
 [tool.hatch.envs.types]
 extra-dependencies = ["mypy>=1.0.0"]
