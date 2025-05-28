@@ -138,6 +138,10 @@ def pytest_sessionfinish(session, exitstatus):
     if resp.output_active:
         session.obsws.stop_replay_buffer()
 
+    resp = session.obsws.get_studio_mode_enabled()
+    if resp.studio_mode_enabled:
+        session.obsws.set_studio_mode_enabled(False)
+
     # Close the OBS WebSocket client connection
     session.obsws.disconnect()
 
