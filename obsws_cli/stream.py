@@ -80,4 +80,4 @@ def status(ctx: typer.Context):
         else:
             out_console.print('Streaming is in progress.')
     else:
-        err_console.print('Streaming is not in progress.')
+        out_console.print('Streaming is not in progress.')
