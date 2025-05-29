@@ -111,7 +111,7 @@ obsws-cli sceneitem list LIVE
     -   flags:
 
         *optional*
-        -   --parent: Parent group name
+        -   --group: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
@@ -122,7 +122,7 @@ obsws-cli sceneitem show START "Colour Source"
     -   flags:
 
         *optional*
-        -   --parent: Parent group name
+        -   --group: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
@@ -133,29 +133,29 @@ obsws-cli sceneitem hide START "Colour Source"
     -   flags:
 
         *optional*
-        -   --parent: Parent group name
+        -   --group: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli sceneitem toggle --parent=test_group START "Colour Source 3"
+obsws-cli sceneitem toggle --group=test_group START "Colour Source 3"
 ```
 
 -   visible: Check if an item in a scene is visible.
     -   flags:
 
         *optional*
-        -   --parent: Parent group name
+        -   --group: Parent group name
     -   args: <scene_name> <item_name>
 
 ```console
-obsws-cli sceneitem visible --parent=test_group START "Colour Source 4"
+obsws-cli sceneitem visible --group=test_group START "Colour Source 4"
 ```
 
 -   transform: Set the transform of an item in a scene.
     -   flags:
         
         *optional*
-        -   --parent: Parent group name.
+        -   --group: Parent group name.
 
         -   --alignment: Alignment of the item in the scene
         -   --bounds-alignment: Bounds alignment of the item in the scene

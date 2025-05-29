@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from typing import Annotated, Optional
 
+import obsws_python as obsws
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -36,17 +37,59 @@ def list(
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
-    items = [item.get('sourceName') for item in resp.scene_items]
+    items = sorted(
+        (
+            (
+                item.get('sceneItemId'),
+                item.get('sourceName'),
+                item.get('isGroup'),
+                item.get('sceneItemEnabled'),
+            )
+            for item in resp.scene_items
+        ),
+        key=lambda x: x[0],  # Sort by sceneItemId
+    )
 
     if not items:
         out_console.print(f"No items found in scene '{scene_name}'.")
         return
 
     table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
-    table.add_column('Item Name', justify='left', style='cyan')
+    for column in ('Item ID', 'Item Name', 'In Group', 'Enabled'):
+        table.add_column(
+            column, justify='left' if column == 'Item Name' else 'center', style='cyan'
+        )
 
-    for item in items:
-        table.add_row(item)
+    for item_id, item_name, is_group, is_enabled in items:
+        if is_group:
+            resp = ctx.obj.get_group_scene_item_list(item_name)
+            group_items = sorted(
+                (
+                    (
+                        gi.get('sceneItemId'),
+                        gi.get('sourceName'),
+                        gi.get('sceneItemEnabled'),
+                    )
+                    for gi in resp.scene_items
+                ),
+                key=lambda x: x[0],  # Sort by sceneItemId
+            )
+            for group_item_id, group_item_name, group_item_enabled in group_items:
+                table.add_row(
+                    str(group_item_id),
+                    group_item_name,
+                    item_name,
+                    ':white_heavy_check_mark:'
+                    if is_enabled and group_item_enabled
+                    else ':x:',
+                )
+        else:
+            table.add_row(
+                str(item_id),
+                item_name,
+                '',
+                ':white_heavy_check_mark:' if is_enabled else ':x:',
+            )
 
     out_console.print(table)
 
@@ -60,16 +103,16 @@ def _validate_scene_name_and_item_name(
         ctx: typer.Context,
         scene_name: str,
         item_name: str,
-        parent: Optional[str] = None,
+        group: Optional[str] = None,
     ):
         if not validate.scene_in_scenes(ctx, scene_name):
             err_console.print(f"Scene '{scene_name}' not found.")
             raise typer.Exit(1)
 
-        if parent:
-            if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+        if group:
+            if not validate.item_in_scene_item_list(ctx, scene_name, group):
                 err_console.print(
-                    f"Parent group '{parent}' not found in scene '{scene_name}'."
+                    f"Parent group '{group}' not found in scene '{scene_name}'."
                 )
                 raise typer.Exit(1)
         else:
@@ -79,26 +122,38 @@ def _validate_scene_name_and_item_name(
                 )
                 raise typer.Exit(1)
 
-        return func(ctx, scene_name, item_name, parent)
+        return func(ctx, scene_name, item_name, group)
 
     return wrapper
 
 
 def _get_scene_name_and_item_id(
-    ctx: typer.Context, scene_name: str, item_name: str, parent: Optional[str] = None
+    ctx: typer.Context, scene_name: str, item_name: str, group: Optional[str] = None
 ):
-    if parent:
-        resp = ctx.obj.get_group_scene_item_list(parent)
+    """Get the scene name and item ID for the given scene and item name."""
+    if group:
+        resp = ctx.obj.get_group_scene_item_list(group)
         for item in resp.scene_items:
             if item.get('sourceName') == item_name:
-                scene_name = parent
+                scene_name = group
                 scene_item_id = item.get('sceneItemId')
                 break
         else:
-            err_console.print(f"Item '{item_name}' not found in group '{parent}'.")
+            err_console.print(f"Item '{item_name}' not found in group '{group}'.")
             raise typer.Exit(1)
     else:
-        resp = ctx.obj.get_scene_item_id(scene_name, item_name)
+        try:
+            resp = ctx.obj.get_scene_item_id(scene_name, item_name)
+        except obsws.error.OBSSDKRequestError as e:
+            if e.code == 600:
+                err_console.print(
+                    f"Item '{item_name}' not found in scene '{scene_name}'. Is the item in a group? "
+                    'If so use the --group option to specify the parent group. '
+                    'See `obsws-cli sceneitem list` for a list of items in the scene.'
+                )
+                raise typer.Exit(1)
+            else:
+                raise
         scene_item_id = resp.scene_item_id
 
     return scene_name, scene_item_id
@@ -110,11 +165,11 @@ def show(
     ctx: typer.Context,
     scene_name: str,
     item_name: str,
-    parent: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Show an item in a scene."""
     scene_name, scene_item_id = _get_scene_name_and_item_id(
-        ctx, scene_name, item_name, parent
+        ctx, scene_name, item_name, group
     )
 
     ctx.obj.set_scene_item_enabled(
@@ -123,7 +178,16 @@ def show(
         enabled=True,
     )
 
-    out_console.print(f"Item '{item_name}' in scene '{scene_name}' has been shown.")
+    if group:
+        out_console.print(
+            f"Item '{item_name}' in group '{group}' in scene '{scene_name}' has been shown."
+        )
+    else:
+        # If not in a parent group, just show the scene name
+        # This is to avoid confusion with the parent group name
+        # which is not the same as the scene name
+        # and is not needed in this case
+        out_console.print(f"Item '{item_name}' in scene '{scene_name}' has been shown.")
 
 
 @_validate_scene_name_and_item_name
@@ -132,11 +196,11 @@ def hide(
     ctx: typer.Context,
     scene_name: str,
     item_name: str,
-    parent: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Hide an item in a scene."""
     scene_name, scene_item_id = _get_scene_name_and_item_id(
-        ctx, scene_name, item_name, parent
+        ctx, scene_name, item_name, group
     )
 
     ctx.obj.set_scene_item_enabled(
@@ -145,7 +209,18 @@ def hide(
         enabled=False,
     )
 
-    out_console.print(f"Item '{item_name}' in scene '{scene_name}' has been hidden.")
+    if group:
+        out_console.print(
+            f"Item '{item_name}' in group '{group}' in scene '{scene_name}' has been hidden."
+        )
+    else:
+        # If not in a parent group, just show the scene name
+        # This is to avoid confusion with the parent group name
+        # which is not the same as the scene name
+        # and is not needed in this case
+        out_console.print(
+            f"Item '{item_name}' in scene '{scene_name}' has been hidden."
+        )
 
 
 @_validate_scene_name_and_item_name
@@ -154,17 +229,17 @@ def toggle(
     ctx: typer.Context,
     scene_name: str,
     item_name: str,
-    parent: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Toggle an item in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         err_console.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
-    if parent:
-        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+    if group:
+        if not validate.item_in_scene_item_list(ctx, scene_name, group):
             err_console.print(
-                f"Parent group '{parent}' not found in scene '{scene_name}'."
+                f"Parent group '{group}' not found in scene '{scene_name}'."
             )
             raise typer.Exit(1)
     else:
@@ -173,7 +248,7 @@ def toggle(
             raise typer.Exit(1)
 
     scene_name, scene_item_id = _get_scene_name_and_item_id(
-        ctx, scene_name, item_name, parent
+        ctx, scene_name, item_name, group
     )
 
     enabled = ctx.obj.get_scene_item_enabled(
@@ -188,9 +263,28 @@ def toggle(
         enabled=new_state,
     )
 
-    out_console.print(
-        f"Item '{item_name}' in scene '{scene_name}' has been {'shown' if new_state else 'hidden'}."
-    )
+    if group:
+        if new_state:
+            out_console.print(
+                f"Item '{item_name}' in group '{group}' in scene '{scene_name}' has been shown."
+            )
+        else:
+            out_console.print(
+                f"Item '{item_name}' in group '{group}' in scene '{scene_name}' has been hidden."
+            )
+    else:
+        # If not in a parent group, just show the scene name
+        # This is to avoid confusion with the parent group name
+        # which is not the same as the scene name
+        # and is not needed in this case
+        if new_state:
+            out_console.print(
+                f"Item '{item_name}' in scene '{scene_name}' has been shown."
+            )
+        else:
+            out_console.print(
+                f"Item '{item_name}' in scene '{scene_name}' has been hidden."
+            )
 
 
 @_validate_scene_name_and_item_name
@@ -199,13 +293,13 @@ def visible(
     ctx: typer.Context,
     scene_name: str,
     item_name: str,
-    parent: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Check if an item in a scene is visible."""
-    if parent:
-        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+    if group:
+        if not validate.item_in_scene_item_list(ctx, scene_name, group):
             err_console.print(
-                f"Parent group '{parent}' not found in scene '{scene_name}'."
+                f"Parent group '{group}' not found in scene '{scene_name}'."
             )
             raise typer.Exit(1)
     else:
@@ -215,7 +309,7 @@ def visible(
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
-        ctx, scene_name, item_name, parent
+        ctx, scene_name, item_name, group
     )
 
     enabled = ctx.obj.get_scene_item_enabled(
@@ -223,9 +317,9 @@ def visible(
         item_id=int(scene_item_id),
     )
 
-    if parent:
+    if group:
         out_console.print(
-            f"Item '{item_name}' in group '{parent}' in scene '{old_scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
+            f"Item '{item_name}' in group '{group}' in scene '{old_scene_name}' is currently {'visible' if enabled.scene_item_enabled else 'hidden'}."
         )
     else:
         # If not in a parent group, just show the scene name
@@ -243,7 +337,7 @@ def transform(
     ctx: typer.Context,
     scene_name: str,
     item_name: str,
-    parent: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
     alignment: Annotated[
         Optional[int], typer.Option(help='Alignment of the item in the scene')
     ] = None,
@@ -291,10 +385,10 @@ def transform(
     ] = None,
 ):
     """Set the transform of an item in a scene."""
-    if parent:
-        if not validate.item_in_scene_item_list(ctx, scene_name, parent):
+    if group:
+        if not validate.item_in_scene_item_list(ctx, scene_name, group):
             err_console.print(
-                f"Parent group '{parent}' not found in scene '{scene_name}'."
+                f"Parent group '{group}' not found in scene '{scene_name}'."
             )
             raise typer.Exit(1)
     else:
@@ -304,7 +398,7 @@ def transform(
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
-        ctx, scene_name, item_name, parent
+        ctx, scene_name, item_name, group
     )
 
     transform = {}
@@ -349,9 +443,9 @@ def transform(
         transform=transform,
     )
 
-    if parent:
+    if group:
         out_console.print(
-            f"Item '{item_name}' in group '{parent}' in scene '{old_scene_name}' has been transformed."
+            f"Item '{item_name}' in group '{group}' in scene '{old_scene_name}' has been transformed."
         )
     else:
         # If not in a parent group, just show the scene name
