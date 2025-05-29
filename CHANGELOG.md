@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.14.2] - 2025-05-29
+
+### Changed
+
+-   The --parent flag for sceneitem commands has been renamed to --group. See [Scene Item](https://github.com/onyx-and-iris/obsws-cli/tree/main?tab=readme-ov-file#scene-item)
+
 # [0.14.0] - 2025-05-27
 
 ### Added
