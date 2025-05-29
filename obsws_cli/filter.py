@@ -23,7 +23,7 @@ def list(ctx: typer.Context, source_name: str):
     """List filters for a source."""
     try:
         resp = ctx.obj.get_source_filter_list(source_name)
-    except obsws.error.OBSSDKError as e:
+    except obsws.error.OBSSDKRequestError as e:
         if e.code == 600:
             err_console.print(f"No source was found by the name of '{source_name}'.")
             raise typer.Exit(1)
