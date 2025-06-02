@@ -6,6 +6,8 @@ import obsws_python as obsws
 import typer
 from rich.console import Console
 
+from obsws_cli.__about__ import __version__ as obsws_cli_version
+
 from . import (
     filter,
     group,
@@ -48,6 +50,13 @@ out_console = Console()
 err_console = Console(stderr=True)
 
 
+def version_callback(value: bool):
+    """Show the version of the CLI."""
+    if value:
+        typer.echo(f'obsws_cli version: {obsws_cli_version}')
+        raise typer.Exit()
+
+
 @app.callback()
 def main(
     ctx: typer.Context,
@@ -68,13 +77,24 @@ def main(
         int,
         typer.Option(envvar='OBS_TIMEOUT', help='WebSocket timeout', show_default=5),
     ] = settings.get('TIMEOUT'),
+    version: Annotated[
+        bool,
+        typer.Option(
+            '--version',
+            '-v',
+            is_eager=True,
+            help='Show the CLI version and exit',
+            show_default=False,
+            callback=version_callback,
+        ),
+    ] = False,
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     ctx.obj = ctx.with_resource(obsws.ReqClient(**ctx.params))
 
 
 @app.command()
-def version(ctx: typer.Context):
+def obs_version(ctx: typer.Context):
     """Get the OBS Client and WebSocket versions."""
     resp = ctx.obj.get_version()
     out_console.print(

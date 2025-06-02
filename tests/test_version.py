@@ -8,8 +8,15 @@ runner = CliRunner(mix_stderr=False)
 
 
 def test_version():
-    """Test the version command."""
-    result = runner.invoke(app, ['version'])
+    """Test the version option."""
+    result = runner.invoke(app, ['--version'])
+    assert result.exit_code == 0
+    assert 'obsws_cli version:' in result.stdout
+
+
+def test_obs_version():
+    """Test the obs-version command."""
+    result = runner.invoke(app, ['obs-version'])
     assert result.exit_code == 0
     assert 'OBS Client version' in result.stdout
     assert 'WebSocket version' in result.stdout
