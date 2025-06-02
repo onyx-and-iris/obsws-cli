@@ -64,10 +64,16 @@ Flags can be used to override environment variables.
 
 ## Root Typer
 
--   version: Get the OBS Client and WebSocket versions.
+-   --version/-v: Get the obsws-cli version:
 
 ```console
-obsws-cli version
+obsws-cli --version
+```
+
+-   obs-version: Get the OBS Client and WebSocket versions.
+
+```console
+obsws-cli obs-version
 ```
 
 ## Sub Typers
