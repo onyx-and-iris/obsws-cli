@@ -49,7 +49,7 @@ def list(
 
     if not inputs:
         out_console.print('No inputs found.')
-        return
+        raise typer.Exit()
 
     table = Table(title='Inputs', padding=(0, 2))
     for column in ('Input Name', 'Kind'):

@@ -32,7 +32,7 @@ def list(ctx: typer.Context, source_name: str):
 
     if not resp.filters:
         out_console.print(f'No filters found for source {source_name}')
-        return
+        raise typer.Exit()
 
     table = Table(title=f'Filters for Source: {source_name}', padding=(0, 2))
 

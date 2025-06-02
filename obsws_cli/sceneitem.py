@@ -52,7 +52,7 @@ def list(
 
     if not items:
         out_console.print(f"No items found in scene '{scene_name}'.")
-        return
+        raise typer.Exit()
 
     table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
     for column in ('Item ID', 'Item Name', 'In Group', 'Enabled'):
