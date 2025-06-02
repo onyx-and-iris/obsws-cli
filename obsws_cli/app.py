@@ -53,7 +53,7 @@ err_console = Console(stderr=True)
 def version_callback(value: bool):
     """Show the version of the CLI."""
     if value:
-        typer.echo(f'obsws_cli version: {obsws_cli_version}')
+        out_console.print(f'obsws_cli version: {obsws_cli_version}')
         raise typer.Exit()
 
 
