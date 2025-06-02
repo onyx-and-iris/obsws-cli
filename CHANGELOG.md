@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.15.0] - 2025-06-02
+
+### Added
+
+-   root typer now accepts --version/-v option, it returns the CLI version. See [Root Typer](https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#root-typer)
+
+### Changed
+
+-   version command renamed to obs-version
+
 # [0.14.2] - 2025-05-29
 
 ### Changed
