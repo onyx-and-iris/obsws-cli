@@ -42,7 +42,13 @@ The CLI should now be discoverable as `obsws-cli`
 
 #### Flags
 
-Pass `--host`, `--port` and `--password` as flags to the root command, for example:
+-   --host/-H: Websocket host
+-   --port/-P Websocket port
+-   --password/-p: Websocket password
+-   --timeout/-T: Websocket timeout
+-   --version/-v: Print the obsws-cli version
+
+Pass `--host`, `--port` and `--password` as flags on the root command, for example:
 
 ```console
 obsws-cli --host=localhost --port=4455 --password=<websocket password> --help
@@ -63,12 +69,6 @@ OBS_PASSWORD=<websocket password>
 Flags can be used to override environment variables.
 
 ## Root Typer
-
--   --version/-v: Get the obsws-cli version:
-
-```console
-obsws-cli --version
-```
 
 -   obs-version: Get the OBS Client and WebSocket versions.
 

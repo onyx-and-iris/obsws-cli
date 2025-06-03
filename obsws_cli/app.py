@@ -53,7 +53,7 @@ err_console = Console(stderr=True)
 def version_callback(value: bool):
     """Show the version of the CLI."""
     if value:
-        out_console.print(f'obsws_cli version: {obsws_cli_version}')
+        out_console.print(f'obsws-cli version: {obsws_cli_version}')
         raise typer.Exit()
 
 
@@ -63,20 +63,39 @@ def main(
     host: Annotated[
         str,
         typer.Option(
-            envvar='OBS_HOST', help='WebSocket host', show_default='localhost'
+            '--host',
+            '-H',
+            envvar='OBS_HOST',
+            help='WebSocket host',
+            show_default='localhost',
         ),
-    ] = settings.get('HOST'),
+    ] = settings.get('OBS_HOST'),
     port: Annotated[
-        int, typer.Option(envvar='OBS_PORT', help='WebSocket port', show_default=4455)
-    ] = settings.get('PORT'),
+        int,
+        typer.Option(
+            '--port', '-P', envvar='OBS_PORT', help='WebSocket port', show_default=4455
+        ),
+    ] = settings.get('OBS_PORT'),
     password: Annotated[
         str,
-        typer.Option(envvar='OBS_PASSWORD', help='WebSocket password', show_default=''),
-    ] = settings.get('PASSWORD'),
+        typer.Option(
+            '--password',
+            '-p',
+            envvar='OBS_PASSWORD',
+            help='WebSocket password',
+            show_default='',
+        ),
+    ] = settings.get('OBS_PASSWORD'),
     timeout: Annotated[
         int,
-        typer.Option(envvar='OBS_TIMEOUT', help='WebSocket timeout', show_default=5),
-    ] = settings.get('TIMEOUT'),
+        typer.Option(
+            '--timeout',
+            '-T',
+            envvar='OBS_TIMEOUT',
+            help='WebSocket timeout',
+            show_default=5,
+        ),
+    ] = settings.get('OBS_TIMEOUT'),
     version: Annotated[
         bool,
         typer.Option(

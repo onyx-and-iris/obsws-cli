@@ -1,31 +1,51 @@
-"""module for settings management."""
+"""module for settings management for obsws-cli."""
 
+from collections import UserDict
 from pathlib import Path
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from dotenv import dotenv_values
 
 
-class Settings(BaseSettings):
+class Settings(UserDict):
     """Settings for the OBS WebSocket client."""
 
-    model_config = SettingsConfigDict(
-        env_file=(
-            '.env',
-            Path.home() / '.config' / 'obsws-cli' / 'obsws.env',
-        ),
-        env_file_encoding='utf-8',
-        env_prefix='OBS_',
-    )
+    def __init__(self, *args, **kwargs):
+        """Initialize the Settings object."""
+        kwargs.update(
+            {
+                **dotenv_values('.env'),
+                **dotenv_values(Path.home() / '.config' / 'obsws-cli' / 'obsws.env'),
+            }
+        )
+        super().__init__(*args, **kwargs)
 
-    HOST: str = 'localhost'
-    PORT: int = 4455
-    PASSWORD: str = ''  # No password by default
-    TIMEOUT: int = 5  # Timeout for requests in seconds
+    def __getitem__(self, key):
+        """Get a setting value by key."""
+        if not key.startswith('OBS_'):
+            key = f'OBS_{key.upper()}'
+        return self.data[key]
+
+    def __setitem__(self, key, value):
+        """Set a setting value by key."""
+        self.data[key] = value
 
 
-_settings = Settings().model_dump()
+_settings = Settings(
+    OBS_HOST='localhost', OBS_PORT=4455, OBS_PASSWORD='', OBS_TIMEOUT=5
+)
 
 
-def get(key: str) -> str:
-    """Get a setting by key."""
-    return _settings.get(key)
+def get(key: str):
+    """Get a setting value by key.
+
+    Args:
+        key (str): The key of the setting to retrieve.
+
+    Returns:
+        The value of the setting.
+
+    Raises:
+        KeyError: If the key does not exist in the settings.
+
+    """
+    return _settings[key]
