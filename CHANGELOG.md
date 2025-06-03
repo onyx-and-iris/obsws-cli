@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
--   root typer now accepts --version/-v option, it returns the CLI version. See [Root Typer](https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#root-typer)
+-   root typer now accepts --version/-v option, it returns the CLI version. See [Flags](https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#flags)
 
 ### Changed
 
