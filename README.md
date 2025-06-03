@@ -573,7 +573,7 @@ obsws-cli projector list-monitors
         -   defaults to current scene
 
 ```console
-obsws-cli project open
+obsws-cli projector open
 
 obsws-cli projector open --monitor-index=1 "test_scene"
 
