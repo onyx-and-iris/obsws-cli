@@ -11,7 +11,7 @@ def test_version():
     """Test the version option."""
     result = runner.invoke(app, ['--version'])
     assert result.exit_code == 0
-    assert 'obsws_cli version:' in result.stdout
+    assert 'obsws-cli version:' in result.stdout
 
 
 def test_obs_version():
