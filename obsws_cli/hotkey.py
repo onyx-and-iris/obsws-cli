@@ -1,5 +1,7 @@
 """module containing commands for hotkey management."""
 
+from typing import Annotated
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -17,7 +19,7 @@ def main():
 
 
 @app.command('list | ls')
-def list(
+def list_(
     ctx: typer.Context,
 ):
     """List all hotkeys."""
@@ -35,7 +37,7 @@ def list(
 @app.command('trigger | tr')
 def trigger(
     ctx: typer.Context,
-    hotkey: str = typer.Argument(..., help='The hotkey to trigger'),
+    hotkey: Annotated[str, typer.Argument(..., help='The hotkey to trigger')],
 ):
     """Trigger a hotkey by name."""
     ctx.obj.trigger_hotkey_by_name(hotkey)
@@ -44,14 +46,25 @@ def trigger(
 @app.command('trigger-sequence | trs')
 def trigger_sequence(
     ctx: typer.Context,
-    shift: bool = typer.Option(False, help='Press shift when triggering the hotkey'),
-    ctrl: bool = typer.Option(False, help='Press control when triggering the hotkey'),
-    alt: bool = typer.Option(False, help='Press alt when triggering the hotkey'),
-    cmd: bool = typer.Option(False, help='Press cmd when triggering the hotkey'),
-    key_id: str = typer.Argument(
-        ...,
-        help='The OBS key ID to trigger, see https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#hotkey for more info',
-    ),
+    key_id: Annotated[
+        str,
+        typer.Argument(
+            ...,
+            help='The OBS key ID to trigger, see https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#hotkey for more info',
+        ),
+    ],
+    shift: Annotated[
+        bool, typer.Option(..., help='Press shift when triggering the hotkey')
+    ] = False,
+    ctrl: Annotated[
+        bool, typer.Option(..., help='Press control when triggering the hotkey')
+    ] = False,
+    alt: Annotated[
+        bool, typer.Option(..., help='Press alt when triggering the hotkey')
+    ] = False,
+    cmd: Annotated[
+        bool, typer.Option(..., help='Press cmd when triggering the hotkey')
+    ] = False,
 ):
     """Trigger a hotkey by sequence."""
     ctx.obj.trigger_hotkey_by_key_sequence(key_id, shift, ctrl, alt, cmd)
