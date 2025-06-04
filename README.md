@@ -580,6 +580,24 @@ obsws-cli projector open --monitor-index=1 "test_scene"
 obsws-cli projector open --monitor-index=1 "test_group"
 ```
 
+#### Screenshot
+
+-   save: Take a screenshot and save it to a file.
+    -   flags:
+
+        *optional*
+        -   --width:
+            -   defaults to 1920
+        -   --height:
+            -   defaults to 1080
+        -   --quality:
+            -   defaults to -1
+
+    -   args: <source_name> <output_path>
+
+```console
+obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos\screenshot.png"
+```
 
 ## License
 
