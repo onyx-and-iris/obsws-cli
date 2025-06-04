@@ -13,7 +13,7 @@ from . import settings
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-for sub_typer in [
+for sub_typer in (
     'filter',
     'group',
     'hotkey',
@@ -29,7 +29,7 @@ for sub_typer in [
     'stream',
     'studiomode',
     'virtualcam',
-]:
+):
     module = importlib.import_module(f'.{sub_typer}', package=__package__)
     app.add_typer(module.app, name=sub_typer)
 
