@@ -1,5 +1,7 @@
 """module containing commands for manipulating scene collections."""
 
+from typing import Annotated
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -18,7 +20,7 @@ def main():
 
 
 @app.command('list | ls')
-def list(ctx: typer.Context):
+def list_(ctx: typer.Context):
     """List all scene collections."""
     resp = ctx.obj.get_scene_collection_list()
 
@@ -39,7 +41,12 @@ def current(ctx: typer.Context):
 
 
 @app.command('switch | set')
-def switch(ctx: typer.Context, scene_collection_name: str):
+def switch(
+    ctx: typer.Context,
+    scene_collection_name: Annotated[
+        str, typer.Argument(..., help='Name of the scene collection to switch to')
+    ],
+):
     """Switch to a scene collection."""
     if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
         err_console.print(f"Scene collection '{scene_collection_name}' not found.")
@@ -59,7 +66,12 @@ def switch(ctx: typer.Context, scene_collection_name: str):
 
 
 @app.command('create | new')
-def create(ctx: typer.Context, scene_collection_name: str):
+def create(
+    ctx: typer.Context,
+    scene_collection_name: Annotated[
+        str, typer.Argument(..., help='Name of the scene collection to create')
+    ],
+):
     """Create a new scene collection."""
     if validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
         err_console.print(f"Scene collection '{scene_collection_name}' already exists.")
