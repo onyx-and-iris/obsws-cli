@@ -1,5 +1,7 @@
 """module containing commands for manipulating profiles in OBS."""
 
+from typing import Annotated
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -47,7 +49,12 @@ def current(ctx: typer.Context):
 
 
 @app.command('switch | set')
-def switch(ctx: typer.Context, profile_name: str):
+def switch(
+    ctx: typer.Context,
+    profile_name: Annotated[
+        str, typer.Argument(..., help='Name of the profile to switch to')
+    ],
+):
     """Switch to a profile."""
     if not validate.profile_exists(ctx, profile_name):
         err_console.print(f"Profile '{profile_name}' not found.")
@@ -63,7 +70,12 @@ def switch(ctx: typer.Context, profile_name: str):
 
 
 @app.command('create | new')
-def create(ctx: typer.Context, profile_name: str):
+def create(
+    ctx: typer.Context,
+    profile_name: Annotated[
+        str, typer.Argument(..., help='Name of the profile to create.')
+    ],
+):
     """Create a new profile."""
     if validate.profile_exists(ctx, profile_name):
         err_console.print(f"Profile '{profile_name}' already exists.")
@@ -74,7 +86,12 @@ def create(ctx: typer.Context, profile_name: str):
 
 
 @app.command('remove | rm')
-def remove(ctx: typer.Context, profile_name: str):
+def remove(
+    ctx: typer.Context,
+    profile_name: Annotated[
+        str, typer.Argument(..., help='Name of the profile to remove.')
+    ],
+):
     """Remove a profile."""
     if not validate.profile_exists(ctx, profile_name):
         err_console.print(f"Profile '{profile_name}' not found.")
