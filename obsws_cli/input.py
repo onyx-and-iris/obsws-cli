@@ -67,7 +67,10 @@ def list(
 
 
 @app.command('mute | m')
-def mute(ctx: typer.Context, input_name: str):
+def mute(
+    ctx: typer.Context,
+    input_name: Annotated[str, typer.Argument(..., help='Name of the input to mute.')],
+):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
         err_console.print(f"Input '{input_name}' not found.")
@@ -82,7 +85,12 @@ def mute(ctx: typer.Context, input_name: str):
 
 
 @app.command('unmute | um')
-def unmute(ctx: typer.Context, input_name: str):
+def unmute(
+    ctx: typer.Context,
+    input_name: Annotated[
+        str, typer.Argument(..., help='Name of the input to unmute.')
+    ],
+):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):
         err_console.print(f"Input '{input_name}' not found.")
@@ -97,7 +105,12 @@ def unmute(ctx: typer.Context, input_name: str):
 
 
 @app.command('toggle | tg')
-def toggle(ctx: typer.Context, input_name: str):
+def toggle(
+    ctx: typer.Context,
+    input_name: Annotated[
+        str, typer.Argument(..., help='Name of the input to toggle.')
+    ],
+):
     """Toggle an input."""
     if not validate.input_in_inputs(ctx, input_name):
         err_console.print(f"Input '{input_name}' not found.")
