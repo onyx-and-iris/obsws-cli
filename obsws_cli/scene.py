@@ -20,7 +20,7 @@ def main():
 
 
 @app.command('list | ls')
-def list(ctx: typer.Context):
+def list_(ctx: typer.Context):
     """List all scenes."""
     resp = ctx.obj.get_scene_list()
     scenes = (
@@ -64,7 +64,7 @@ def current(
 @app.command('switch | set')
 def switch(
     ctx: typer.Context,
-    scene_name: str,
+    scene_name: Annotated[str, typer.Argument(help='Name of the scene to switch to')],
     preview: Annotated[
         bool,
         typer.Option(help='Switch to the preview scene instead of the program scene'),
