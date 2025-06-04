@@ -1,5 +1,6 @@
 """Command line interface for the OBS WebSocket API."""
 
+import importlib
 from typing import Annotated
 
 import obsws_python as obsws
@@ -8,45 +9,29 @@ from rich.console import Console
 
 from obsws_cli.__about__ import __version__ as obsws_cli_version
 
-from . import (
-    filter,
-    group,
-    hotkey,
-    input,
-    profile,
-    projector,
-    record,
-    replaybuffer,
-    scene,
-    scenecollection,
-    sceneitem,
-    screenshot,
-    settings,
-    stream,
-    studiomode,
-    virtualcam,
-)
+from . import settings
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-for module in (
-    filter,
-    group,
-    hotkey,
-    input,
-    projector,
-    profile,
-    record,
-    replaybuffer,
-    scene,
-    scenecollection,
-    sceneitem,
-    screenshot,
-    stream,
-    studiomode,
-    virtualcam,
-):
-    app.add_typer(module.app, name=module.__name__.split('.')[-1])
+for sub_typer in [
+    'filter',
+    'group',
+    'hotkey',
+    'input',
+    'profile',
+    'projector',
+    'record',
+    'replaybuffer',
+    'scene',
+    'scenecollection',
+    'sceneitem',
+    'screenshot',
+    'stream',
+    'studiomode',
+    'virtualcam',
+]:
+    module = importlib.import_module(f'.{sub_typer}', package=__package__)
+    app.add_typer(module.app, name=sub_typer)
 
 out_console = Console()
 err_console = Console(stderr=True)
