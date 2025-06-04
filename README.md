@@ -519,7 +519,10 @@ obsws-cli hotkey trigger-sequence OBS_KEY_F1 --shift --ctrl
 #### Filter
 
 -   list: List filters for a source.
+
+    *optional*
     -   args: <source_name>
+        -   defaults to current scene
 
 ```console
 obsws-cli filter list "Mic/Aux"
