@@ -26,7 +26,10 @@ def list_(
     ctx: typer.Context,
     scene_name: Annotated[
         Optional[str],
-        typer.Argument(help='Scene name (optional, defaults to current scene)'),
+        typer.Argument(
+            show_default='The current scene',
+            help='Scene name to list items for',
+        ),
     ] = None,
 ):
     """List all items in a scene."""

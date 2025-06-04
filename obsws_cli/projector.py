@@ -52,7 +52,8 @@ def open(
     source_name: Annotated[
         str,
         typer.Argument(
-            help='Name of the source to project. (optional, defaults to current scene)'
+            show_default='The current scene',
+            help='Name of the source to project.',
         ),
     ] = '',
 ):

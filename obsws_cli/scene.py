@@ -64,7 +64,9 @@ def current(
 @app.command('switch | set')
 def switch(
     ctx: typer.Context,
-    scene_name: Annotated[str, typer.Argument(help='Name of the scene to switch to')],
+    scene_name: Annotated[
+        str, typer.Argument(..., help='Name of the scene to switch to')
+    ],
     preview: Annotated[
         bool,
         typer.Option(help='Switch to the preview scene instead of the program scene'),

@@ -27,6 +27,8 @@ def save(
     source_name: Annotated[
         str,
         typer.Argument(
+            ...,
+            show_default=False,
             help='Name of the source to take a screenshot of.',
         ),
     ],
@@ -36,9 +38,10 @@ def save(
         # we won't validate the path here.
         typer.Argument(
             ...,
+            show_default=False,
             file_okay=True,
             dir_okay=False,
-            help='Path to save the screenshot.',
+            help='Path to save the screenshot (must include file name and extension).',
         ),
     ],
     width: Annotated[
@@ -56,11 +59,11 @@ def save(
     quality: Annotated[
         float,
         typer.Option(
-            min=1,
+            min=-1,
             max=100,
-            help='Quality of the screenshot (1-100).',
+            help='Quality of the screenshot.',
         ),
-    ] = None,
+    ] = -1,
 ):
     """Take a screenshot and save it to a file."""
     try:
@@ -70,7 +73,7 @@ def save(
             file_path=str(output_path),
             width=width,
             height=height,
-            quality=quality if quality else -1,  # -1 means default quality
+            quality=quality,
         )
     except obsws.error.OBSSDKRequestError as e:
         match e.code:

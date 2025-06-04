@@ -37,7 +37,9 @@ def list_(
 @app.command('trigger | tr')
 def trigger(
     ctx: typer.Context,
-    hotkey: Annotated[str, typer.Argument(..., help='The hotkey to trigger')],
+    hotkey: Annotated[
+        str, typer.Argument(..., show_default=False, help='The hotkey to trigger')
+    ],
 ):
     """Trigger a hotkey by name."""
     ctx.obj.trigger_hotkey_by_name(hotkey)
@@ -50,6 +52,7 @@ def trigger_sequence(
         str,
         typer.Argument(
             ...,
+            show_default=False,
             help='The OBS key ID to trigger, see https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#hotkey for more info',
         ),
     ],

@@ -24,7 +24,11 @@ def main():
 def list_(
     ctx: typer.Context,
     source_name: Annotated[
-        Optional[str], typer.Argument(help='The source to list filters for')
+        Optional[str],
+        typer.Argument(
+            show_default='The current scene',
+            help='The source to list filters for',
+        ),
     ] = None,
 ):
     """List filters for a source."""
@@ -82,10 +86,16 @@ def _get_filter_enabled(ctx: typer.Context, source_name: str, filter_name: str):
 def enable(
     ctx: typer.Context,
     source_name: Annotated[
-        str, typer.Argument(help='The source to enable the filter for')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The source to enable the filter for'
+        ),
     ],
     filter_name: Annotated[
-        str, typer.Argument(help='The name of the filter to enable')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The name of the filter to enable'
+        ),
     ],
 ):
     """Enable a filter for a source."""
@@ -103,10 +113,16 @@ def enable(
 def disable(
     ctx: typer.Context,
     source_name: Annotated[
-        str, typer.Argument(help='The source to disable the filter for')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The source to disable the filter for'
+        ),
     ],
     filter_name: Annotated[
-        str, typer.Argument(help='The name of the filter to disable')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The name of the filter to disable'
+        ),
     ],
 ):
     """Disable a filter for a source."""
@@ -124,10 +140,16 @@ def disable(
 def toggle(
     ctx: typer.Context,
     source_name: Annotated[
-        str, typer.Argument(help='The source to toggle the filter for')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The source to toggle the filter for'
+        ),
     ],
     filter_name: Annotated[
-        str, typer.Argument(help='The name of the filter to toggle')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The name of the filter to toggle'
+        ),
     ],
 ):
     """Toggle a filter for a source."""
@@ -145,10 +167,16 @@ def toggle(
 def status(
     ctx: typer.Context,
     source_name: Annotated[
-        str, typer.Argument(help='The source to get the filter status for')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The source to get the filter status for'
+        ),
     ],
     filter_name: Annotated[
-        str, typer.Argument(help='The name of the filter to get the status for')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='The name of the filter to get the status for'
+        ),
     ],
 ):
     """Get the status of a filter for a source."""

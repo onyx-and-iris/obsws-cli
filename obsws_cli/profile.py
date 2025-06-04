@@ -20,7 +20,7 @@ def main():
 
 
 @app.command('list | ls')
-def list(ctx: typer.Context):
+def list_(ctx: typer.Context):
     """List profiles."""
     resp = ctx.obj.get_profile_list()
 
@@ -52,7 +52,10 @@ def current(ctx: typer.Context):
 def switch(
     ctx: typer.Context,
     profile_name: Annotated[
-        str, typer.Argument(..., help='Name of the profile to switch to')
+        str,
+        typer.Argument(
+            ..., show_default=False, help='Name of the profile to switch to'
+        ),
     ],
 ):
     """Switch to a profile."""
@@ -73,7 +76,8 @@ def switch(
 def create(
     ctx: typer.Context,
     profile_name: Annotated[
-        str, typer.Argument(..., help='Name of the profile to create.')
+        str,
+        typer.Argument(..., show_default=False, help='Name of the profile to create.'),
     ],
 ):
     """Create a new profile."""
@@ -89,7 +93,8 @@ def create(
 def remove(
     ctx: typer.Context,
     profile_name: Annotated[
-        str, typer.Argument(..., help='Name of the profile to remove.')
+        str,
+        typer.Argument(..., show_default=False, help='Name of the profile to remove.'),
     ],
 ):
     """Remove a profile."""

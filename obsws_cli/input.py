@@ -20,7 +20,7 @@ def main():
 
 
 @app.command('list | ls')
-def list(
+def list_(
     ctx: typer.Context,
     input: Annotated[bool, typer.Option(help='Filter by input type.')] = False,
     output: Annotated[bool, typer.Option(help='Filter by output type.')] = False,
@@ -69,7 +69,9 @@ def list(
 @app.command('mute | m')
 def mute(
     ctx: typer.Context,
-    input_name: Annotated[str, typer.Argument(..., help='Name of the input to mute.')],
+    input_name: Annotated[
+        str, typer.Argument(..., show_default=False, help='Name of the input to mute.')
+    ],
 ):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
@@ -88,7 +90,8 @@ def mute(
 def unmute(
     ctx: typer.Context,
     input_name: Annotated[
-        str, typer.Argument(..., help='Name of the input to unmute.')
+        str,
+        typer.Argument(..., show_default=False, help='Name of the input to unmute.'),
     ],
 ):
     """Unmute an input."""
@@ -108,7 +111,8 @@ def unmute(
 def toggle(
     ctx: typer.Context,
     input_name: Annotated[
-        str, typer.Argument(..., help='Name of the input to toggle.')
+        str,
+        typer.Argument(..., show_default=False, help='Name of the input to toggle.'),
     ],
 ):
     """Toggle an input."""
