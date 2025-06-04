@@ -1,5 +1,7 @@
 """module containing commands for manipulating groups in scenes."""
 
+from typing import Annotated, Optional
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -19,11 +21,12 @@ def main():
 
 
 @app.command('list | ls')
-def list(
+def list_(
     ctx: typer.Context,
-    scene_name: str = typer.Argument(
-        None, help='Scene name (optional, defaults to current scene)'
-    ),
+    scene_name: Annotated[
+        Optional[str],
+        typer.Argument(help='Scene name (optional, defaults to current scene)'),
+    ] = None,
 ):
     """List groups in a scene."""
     if not scene_name:
@@ -75,7 +78,14 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
 
 
 @app.command('show | sh')
-def show(ctx: typer.Context, scene_name: str, group_name: str):
+def show(
+    ctx: typer.Context,
+    scene_name: Annotated[
+        str,
+        typer.Argument(..., help='Scene name the group is in'),
+    ],
+    group_name: Annotated[str, typer.Argument(..., help='Group name to show')],
+):
     """Show a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         err_console.print(f"Scene '{scene_name}' not found.")
@@ -96,7 +106,11 @@ def show(ctx: typer.Context, scene_name: str, group_name: str):
 
 
 @app.command('hide | h')
-def hide(ctx: typer.Context, scene_name: str, group_name: str):
+def hide(
+    ctx: typer.Context,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the group is in')],
+    group_name: Annotated[str, typer.Argument(..., help='Group name to hide')],
+):
     """Hide a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         err_console.print(f"Scene '{scene_name}' not found.")
@@ -117,7 +131,11 @@ def hide(ctx: typer.Context, scene_name: str, group_name: str):
 
 
 @app.command('toggle | tg')
-def toggle(ctx: typer.Context, scene_name: str, group_name: str):
+def toggle(
+    ctx: typer.Context,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the group is in')],
+    group_name: Annotated[str, typer.Argument(..., help='Group name to toggle')],
+):
     """Toggle a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         err_console.print(f"Scene '{scene_name}' not found.")
@@ -142,7 +160,11 @@ def toggle(ctx: typer.Context, scene_name: str, group_name: str):
 
 
 @app.command('status | ss')
-def status(ctx: typer.Context, scene_name: str, group_name: str):
+def status(
+    ctx: typer.Context,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the group is in')],
+    group_name: Annotated[str, typer.Argument(..., help='Group name to check status')],
+):
     """Get the status of a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
         err_console.print(f"Scene '{scene_name}' not found.")
