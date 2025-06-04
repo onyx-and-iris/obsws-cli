@@ -22,11 +22,12 @@ def main():
 
 
 @app.command('list | ls')
-def list(
+def list_(
     ctx: typer.Context,
-    scene_name: str = typer.Argument(
-        None, help='Scene name (optional, defaults to current scene)'
-    ),
+    scene_name: Annotated[
+        Optional[str],
+        typer.Argument(help='Scene name (optional, defaults to current scene)'),
+    ] = None,
 ):
     """List all items in a scene."""
     if not scene_name:
@@ -163,8 +164,10 @@ def _get_scene_name_and_item_id(
 @app.command('show | sh')
 def show(
     ctx: typer.Context,
-    scene_name: str,
-    item_name: str,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the item is in')],
+    item_name: Annotated[
+        str, typer.Argument(..., help='Item name to show in the scene')
+    ],
     group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Show an item in a scene."""
@@ -194,8 +197,10 @@ def show(
 @app.command('hide | h')
 def hide(
     ctx: typer.Context,
-    scene_name: str,
-    item_name: str,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the item is in')],
+    item_name: Annotated[
+        str, typer.Argument(..., help='Item name to hide in the scene')
+    ],
     group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Hide an item in a scene."""
@@ -227,8 +232,10 @@ def hide(
 @app.command('toggle | tg')
 def toggle(
     ctx: typer.Context,
-    scene_name: str,
-    item_name: str,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the item is in')],
+    item_name: Annotated[
+        str, typer.Argument(..., help='Item name to toggle in the scene')
+    ],
     group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Toggle an item in a scene."""
@@ -291,8 +298,10 @@ def toggle(
 @app.command('visible | v')
 def visible(
     ctx: typer.Context,
-    scene_name: str,
-    item_name: str,
+    scene_name: Annotated[str, typer.Argument(..., help='Scene name the item is in')],
+    item_name: Annotated[
+        str, typer.Argument(..., help='Item name to check visibility in the scene')
+    ],
     group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
 ):
     """Check if an item in a scene is visible."""
