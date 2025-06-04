@@ -1,5 +1,7 @@
 """module containing commands for manipulating filters in scenes."""
 
+from typing import Annotated, Optional
+
 import obsws_python as obsws
 import typer
 from rich.console import Console
@@ -19,8 +21,16 @@ def main():
 
 
 @app.command('list | ls')
-def list(ctx: typer.Context, source_name: str):
+def list_(
+    ctx: typer.Context,
+    source_name: Annotated[
+        Optional[str], typer.Argument(help='The source to list filters for')
+    ] = None,
+):
     """List filters for a source."""
+    if not source_name:
+        source_name = ctx.obj.get_current_program_scene().scene_name
+
     try:
         resp = ctx.obj.get_source_filter_list(source_name)
     except obsws.error.OBSSDKRequestError as e:
@@ -44,6 +54,9 @@ def list(ctx: typer.Context, source_name: str):
         )
 
     for filter in resp.filters:
+        resp = ctx.obj.get_source_filter_default_settings(filter['filterKind'])
+        settings = resp.default_filter_settings | filter['filterSettings']
+
         table.add_row(
             filter['filterName'],
             util.snakecase_to_titlecase(filter['filterKind']),
@@ -51,7 +64,7 @@ def list(ctx: typer.Context, source_name: str):
             '\n'.join(
                 [
                     f'{util.snakecase_to_titlecase(k):<20} {v:>10}'
-                    for k, v in filter['filterSettings'].items()
+                    for k, v in settings.items()
                 ]
             ),
         )
@@ -68,8 +81,12 @@ def _get_filter_enabled(ctx: typer.Context, source_name: str, filter_name: str):
 @app.command('enable | on')
 def enable(
     ctx: typer.Context,
-    source_name: str = typer.Argument(..., help='The source to enable the filter for'),
-    filter_name: str = typer.Argument(..., help='The name of the filter to enable'),
+    source_name: Annotated[
+        str, typer.Argument(help='The source to enable the filter for')
+    ],
+    filter_name: Annotated[
+        str, typer.Argument(help='The name of the filter to enable')
+    ],
 ):
     """Enable a filter for a source."""
     if _get_filter_enabled(ctx, source_name, filter_name):
@@ -85,8 +102,12 @@ def enable(
 @app.command('disable | off')
 def disable(
     ctx: typer.Context,
-    source_name: str = typer.Argument(..., help='The source to disable the filter for'),
-    filter_name: str = typer.Argument(..., help='The name of the filter to disable'),
+    source_name: Annotated[
+        str, typer.Argument(help='The source to disable the filter for')
+    ],
+    filter_name: Annotated[
+        str, typer.Argument(help='The name of the filter to disable')
+    ],
 ):
     """Disable a filter for a source."""
     if not _get_filter_enabled(ctx, source_name, filter_name):
@@ -102,8 +123,12 @@ def disable(
 @app.command('toggle | tg')
 def toggle(
     ctx: typer.Context,
-    source_name: str = typer.Argument(..., help='The source to toggle the filter for'),
-    filter_name: str = typer.Argument(..., help='The name of the filter to toggle'),
+    source_name: Annotated[
+        str, typer.Argument(help='The source to toggle the filter for')
+    ],
+    filter_name: Annotated[
+        str, typer.Argument(help='The name of the filter to toggle')
+    ],
 ):
     """Toggle a filter for a source."""
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
@@ -119,12 +144,12 @@ def toggle(
 @app.command('status | ss')
 def status(
     ctx: typer.Context,
-    source_name: str = typer.Argument(
-        ..., help='The source to get the filter status for'
-    ),
-    filter_name: str = typer.Argument(
-        ..., help='The name of the filter to get the status for'
-    ),
+    source_name: Annotated[
+        str, typer.Argument(help='The source to get the filter status for')
+    ],
+    filter_name: Annotated[
+        str, typer.Argument(help='The name of the filter to get the status for')
+    ],
 ):
     """Get the status of a filter for a source."""
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
