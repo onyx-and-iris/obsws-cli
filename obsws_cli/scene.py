@@ -29,8 +29,12 @@ def list_(ctx: typer.Context):
     )
 
     table = Table(title='Scenes', padding=(0, 2))
-    for column in ('Scene Name', 'UUID'):
-        table.add_column(column, justify='left', style='cyan')
+    columns = [
+        ('Scene Name', 'left', 'cyan'),
+        ('UUID', 'left', 'cyan'),
+    ]
+    for column, justify, style in columns:
+        table.add_column(column, justify=justify, style=style)
 
     for scene_name, scene_uuid in scenes:
         table.add_row(

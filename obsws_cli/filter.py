@@ -52,12 +52,14 @@ def list_(
 
     table = Table(title=f'Filters for Source: {source_name}', padding=(0, 2))
 
-    for column in ('Filter Name', 'Kind', 'Enabled', 'Settings'):
-        table.add_column(
-            column,
-            justify='left' if column in ('Filter Name', 'Kind') else 'center',
-            style='cyan',
-        )
+    columns = [
+        ('Filter Name', 'left', 'cyan'),
+        ('Kind', 'left', 'cyan'),
+        ('Enabled', 'center', None),
+        ('Settings', 'center', 'cyan'),
+    ]
+    for name, justify, style in columns:
+        table.add_column(name, justify=justify, style=style if style else None)
 
     for filter in resp.filters:
         resp = ctx.obj.get_source_filter_default_settings(filter['filterKind'])

@@ -25,12 +25,12 @@ def list_(ctx: typer.Context):
     resp = ctx.obj.get_profile_list()
 
     table = Table(title='Profiles', padding=(0, 2))
-    for column in ('Profile Name', 'Current'):
-        table.add_column(
-            column,
-            justify='left' if column == 'Profile Name' else 'center',
-            style='cyan',
-        )
+    columns = [
+        ('Profile Name', 'left', 'cyan'),
+        ('Current', 'center', None),
+    ]
+    for column, justify, style in columns:
+        table.add_column(column, justify=justify, style=style)
 
     for profile in resp.profiles:
         table.add_row(

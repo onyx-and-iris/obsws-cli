@@ -52,10 +52,13 @@ def list_(
 
     table = Table(title=f'Groups in Scene: {scene_name}', padding=(0, 2))
 
-    for column in ('ID', 'Group Name', 'Enabled'):
-        table.add_column(
-            column, justify='left' if column == 'Group Name' else 'center', style='cyan'
-        )
+    columns = [
+        ('ID', 'center', 'cyan'),
+        ('Group Name', 'left', 'cyan'),
+        ('Enabled', 'center', None),
+    ]
+    for column, justify, style in columns:
+        table.add_column(column, justify=justify, style=style)
 
     for item_id, group_name, is_enabled in groups:
         table.add_row(

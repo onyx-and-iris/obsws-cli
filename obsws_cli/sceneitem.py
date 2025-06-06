@@ -58,10 +58,15 @@ def list_(
         raise typer.Exit()
 
     table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
-    for column in ('Item ID', 'Item Name', 'In Group', 'Enabled'):
-        table.add_column(
-            column, justify='left' if column == 'Item Name' else 'center', style='cyan'
-        )
+    columns = [
+        ('Item ID', 'center', 'cyan'),
+        ('Item Name', 'left', 'cyan'),
+        ('In Group', 'left', 'cyan'),
+        ('Enabled', 'center', None),
+    ]
+    # Add columns to the table
+    for column, justify, style in columns:
+        table.add_column(column, justify=justify, style=style)
 
     for item_id, item_name, is_group, is_enabled in items:
         if is_group:
