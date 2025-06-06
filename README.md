@@ -267,8 +267,6 @@ obsws-cli group status START "test_group"
         -   --colour: Filter by colour source type.
         -   --ffmpeg: Filter by ffmpeg source type.
         -   --vlc: Filter by VLC source type.
-        
-            -   If no filters are passed then all types will be included in the output.
 
 ```console
 obsws-cli input list
