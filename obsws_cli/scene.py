@@ -11,7 +11,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -78,12 +78,12 @@ def switch(
         raise typer.Exit(1)
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        err_console.print(f"Scene '{scene_name}' not found.")
+        err_console.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     if preview:
         ctx.obj.set_current_preview_scene(scene_name)
-        out_console.print(f'Switched to preview scene: {scene_name}')
+        out_console.print(f'Switched to preview scene: [green]{scene_name}[/green]')
     else:
         ctx.obj.set_current_program_scene(scene_name)
-        out_console.print(f'Switched to program scene: {scene_name}')
+        out_console.print(f'Switched to program scene: [green]{scene_name}[/green]')

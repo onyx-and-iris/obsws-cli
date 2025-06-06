@@ -11,7 +11,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -49,7 +49,9 @@ def switch(
 ):
     """Switch to a scene collection."""
     if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        err_console.print(f"Scene collection '{scene_collection_name}' not found.")
+        err_console.print(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] not found.'
+        )
         raise typer.Exit(1)
 
     current_scene_collection = (
@@ -57,12 +59,14 @@ def switch(
     )
     if scene_collection_name == current_scene_collection:
         err_console.print(
-            f'Scene collection "{scene_collection_name}" is already active.'
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] is already active.'
         )
         raise typer.Exit(1)
 
     ctx.obj.set_current_scene_collection(scene_collection_name)
-    out_console.print(f"Switched to scene collection '{scene_collection_name}'")
+    out_console.print(
+        f'Switched to scene collection [green]{scene_collection_name}[/green].'
+    )
 
 
 @app.command('create | new')
@@ -74,8 +78,12 @@ def create(
 ):
     """Create a new scene collection."""
     if validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        err_console.print(f"Scene collection '{scene_collection_name}' already exists.")
+        err_console.print(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] already exists.'
+        )
         raise typer.Exit(1)
 
     ctx.obj.create_scene_collection(scene_collection_name)
-    out_console.print(f'Created scene collection {scene_collection_name}')
+    out_console.print(
+        f'Created scene collection [green]{scene_collection_name}[/green].'
+    )

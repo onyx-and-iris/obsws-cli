@@ -7,7 +7,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()

@@ -12,7 +12,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -39,13 +39,15 @@ def list_(
         resp = ctx.obj.get_source_filter_list(source_name)
     except obsws.error.OBSSDKRequestError as e:
         if e.code == 600:
-            err_console.print(f"No source was found by the name of '{source_name}'.")
+            err_console.print(
+                f'No source was found by the name of [yellow]{source_name}[/yellow].'
+            )
             raise typer.Exit(1)
         else:
             raise
 
     if not resp.filters:
-        out_console.print(f'No filters found for source {source_name}')
+        out_console.print(f'No filters found for source [yellow]{source_name}[/yellow]')
         raise typer.Exit()
 
     table = Table(title=f'Filters for Source: {source_name}', padding=(0, 2))
@@ -101,12 +103,14 @@ def enable(
     """Enable a filter for a source."""
     if _get_filter_enabled(ctx, source_name, filter_name):
         err_console.print(
-            f'Filter {filter_name} is already enabled for source {source_name}'
+            f'Filter [yellow]{filter_name}[/yellow] is already enabled for source [yellow]{source_name}[/yellow]'
         )
         raise typer.Exit(1)
 
     ctx.obj.set_source_filter_enabled(source_name, filter_name, enabled=True)
-    out_console.print(f'Enabled filter {filter_name} for source {source_name}')
+    out_console.print(
+        f'Enabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+    )
 
 
 @app.command('disable | off')
@@ -128,12 +132,14 @@ def disable(
     """Disable a filter for a source."""
     if not _get_filter_enabled(ctx, source_name, filter_name):
         err_console.print(
-            f'Filter {filter_name} is already disabled for source {source_name}'
+            f'Filter [yellow]{filter_name}[/yellow] is already disabled for source [yellow]{source_name}[/yellow]'
         )
         raise typer.Exit(1)
 
     ctx.obj.set_source_filter_enabled(source_name, filter_name, enabled=False)
-    out_console.print(f'Disabled filter {filter_name} for source {source_name}')
+    out_console.print(
+        f'Disabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+    )
 
 
 @app.command('toggle | tg')
@@ -158,9 +164,13 @@ def toggle(
 
     ctx.obj.set_source_filter_enabled(source_name, filter_name, enabled=new_state)
     if new_state:
-        out_console.print(f'Enabled filter {filter_name} for source {source_name}')
+        out_console.print(
+            f'Enabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+        )
     else:
-        out_console.print(f'Disabled filter {filter_name} for source {source_name}')
+        out_console.print(
+            f'Disabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+        )
 
 
 @app.command('status | ss')
@@ -182,6 +192,10 @@ def status(
     """Get the status of a filter for a source."""
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
     if is_enabled:
-        out_console.print(f'Filter {filter_name} is enabled for source {source_name}')
+        out_console.print(
+            f'Filter [green]{filter_name}[/green] is enabled for source [green]{source_name}[/green]'
+        )
     else:
-        out_console.print(f'Filter {filter_name} is disabled for source {source_name}')
+        out_console.print(
+            f'Filter [green]{filter_name}[/green] is disabled for source [green]{source_name}[/green]'
+        )

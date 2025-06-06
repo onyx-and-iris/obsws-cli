@@ -10,7 +10,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -49,7 +49,9 @@ def stop(ctx: typer.Context):
         raise typer.Exit(1)
 
     resp = ctx.obj.stop_record()
-    out_console.print(f'Recording stopped successfully. Saved to: {resp.output_path}')
+    out_console.print(
+        f'Recording stopped successfully. Saved to: [green]{resp.output_path}[/green]'
+    )
 
 
 @app.command('toggle | tg')
@@ -125,5 +127,5 @@ def directory(
         out_console.print(f'Recording directory updated to: {record_directory}')
     else:
         out_console.print(
-            f'Recording directory: {ctx.obj.get_record_directory().record_directory}'
+            f'Recording directory: [green]{ctx.obj.get_record_directory().record_directory}[/green]'
         )

@@ -34,7 +34,7 @@ for sub_typer in (
     app.add_typer(module.app, name=sub_typer)
 
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 def version_callback(value: bool):

@@ -11,7 +11,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -60,16 +60,18 @@ def switch(
 ):
     """Switch to a profile."""
     if not validate.profile_exists(ctx, profile_name):
-        err_console.print(f"Profile '{profile_name}' not found.")
+        err_console.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     resp = ctx.obj.get_profile_list()
     if resp.current_profile_name == profile_name:
-        err_console.print(f"Profile '{profile_name}' is already the current profile.")
+        err_console.print(
+            f'Profile [yellow]{profile_name}[/yellow] is already the current profile.'
+        )
         raise typer.Exit(1)
 
     ctx.obj.set_current_profile(profile_name)
-    out_console.print(f"Switched to profile '{profile_name}'.")
+    out_console.print(f'Switched to profile [green]{profile_name}[/green].')
 
 
 @app.command('create | new')
@@ -82,11 +84,11 @@ def create(
 ):
     """Create a new profile."""
     if validate.profile_exists(ctx, profile_name):
-        err_console.print(f"Profile '{profile_name}' already exists.")
+        err_console.print(f'Profile [yellow]{profile_name}[/yellow] already exists.')
         raise typer.Exit(1)
 
     ctx.obj.create_profile(profile_name)
-    out_console.print(f"Created profile '{profile_name}'.")
+    out_console.print(f'Created profile [green]{profile_name}[/green].')
 
 
 @app.command('remove | rm')
@@ -99,8 +101,8 @@ def remove(
 ):
     """Remove a profile."""
     if not validate.profile_exists(ctx, profile_name):
-        err_console.print(f"Profile '{profile_name}' not found.")
+        err_console.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     ctx.obj.remove_profile(profile_name)
-    out_console.print(f"Removed profile '{profile_name}'.")
+    out_console.print(f'Removed profile [green]{profile_name}[/green].')

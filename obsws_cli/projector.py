@@ -10,7 +10,7 @@ from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 out_console = Console()
-err_console = Console(stderr=True)
+err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -61,11 +61,21 @@ def open(
     if not source_name:
         source_name = ctx.obj.get_current_program_scene().scene_name
 
-    ctx.obj.open_source_projector(
-        source_name=source_name,
-        monitor_index=monitor_index,
-    )
+    monitors = ctx.obj.get_monitor_list().monitors
+    for monitor in monitors:
+        if monitor['monitorIndex'] == monitor_index:
+            ctx.obj.open_source_projector(
+                source_name=source_name,
+                monitor_index=monitor_index,
+            )
 
-    out_console.print(
-        f'Opened projector for source [bold]{source_name}[/] on monitor [bold]{monitor_index}[/].'
-    )
+            out_console.print(
+                f'Opened projector for source [green]{source_name}[/] on monitor [green]{monitor["monitorName"]}[/].'
+            )
+
+            break
+    else:
+        err_console.print(
+            f'Monitor with index [yellow]{monitor_index}[/yellow] not found.'
+        )
+        raise typer.Exit(code=1)

@@ -79,14 +79,16 @@ def save(
         match e.code:
             case 403:
                 err_console.print(
-                    'The image format (file extension) must be included in the file name '
+                    'The [yellow]image format[/yellow] (file extension) must be included in the file name, '
                     "for example: '/path/to/screenshot.png'.",
                 )
                 raise typer.Exit(1)
             case 600:
-                err_console.print(f"No source was found by the name of '{source_name}'")
+                err_console.print(
+                    f'No source was found by the name of [yellow]{source_name}[/yellow]'
+                )
                 raise typer.Exit(1)
             case _:
                 raise
 
-    out_console.print(f"Screenshot saved to [bold]'{output_path}'[/bold].")
+    out_console.print(f'Screenshot saved to [green]{output_path}[/green].')
