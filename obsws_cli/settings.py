@@ -5,9 +5,22 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
+SettingsValue = str | int
+
 
 class Settings(UserDict):
-    """Settings for the OBS WebSocket client."""
+    """A class to manage settings for obsws-cli.
+
+    This class extends UserDict to provide a dictionary-like interface for settings.
+    It loads settings from environment variables and .env files.
+    The settings are expected to be in uppercase and should start with 'OBS_'.
+
+    Example:
+        settings = Settings()
+        host = settings['OBS_HOST']
+        settings['OBS_PORT'] = 4455
+
+    """
 
     def __init__(self, *args, **kwargs):
         """Initialize the Settings object."""
@@ -19,15 +32,17 @@ class Settings(UserDict):
         )
         super().__init__(*args, **kwargs)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> SettingsValue:
         """Get a setting value by key."""
         if not key.startswith('OBS_'):
-            key = f'OBS_{key.upper()}'
-        return self.data[key]
+            key = f'OBS_{key}'
+        return self.data[key.upper()]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: SettingsValue):
         """Set a setting value by key."""
-        self.data[key] = value
+        if not key.startswith('OBS_'):
+            key = f'OBS_{key}'
+        self.data[key.upper()] = value
 
 
 _settings = Settings(
@@ -35,7 +50,7 @@ _settings = Settings(
 )
 
 
-def get(key: str):
+def get(key: str) -> SettingsValue:
     """Get a setting value by key.
 
     Args:

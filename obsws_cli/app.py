@@ -56,13 +56,13 @@ def main(
             help='WebSocket host',
             show_default='localhost',
         ),
-    ] = settings.get('OBS_HOST'),
+    ] = settings.get('host'),
     port: Annotated[
         int,
         typer.Option(
             '--port', '-P', envvar='OBS_PORT', help='WebSocket port', show_default=4455
         ),
-    ] = settings.get('OBS_PORT'),
+    ] = settings.get('port'),
     password: Annotated[
         str,
         typer.Option(
@@ -72,7 +72,7 @@ def main(
             help='WebSocket password',
             show_default='',
         ),
-    ] = settings.get('OBS_PASSWORD'),
+    ] = settings.get('password'),
     timeout: Annotated[
         int,
         typer.Option(
@@ -82,7 +82,7 @@ def main(
             help='WebSocket timeout',
             show_default=5,
         ),
-    ] = settings.get('OBS_TIMEOUT'),
+    ] = settings.get('timeout'),
     version: Annotated[
         bool,
         typer.Option(
