@@ -45,13 +45,16 @@ def list_(
     if not any([input, output, colour, ffmpeg, vlc]):
         kinds = ['input', 'output', 'color', 'ffmpeg', 'vlc']
 
-    inputs = [
-        (input_.get('inputName'), input_.get('inputKind'))
-        for input_ in filter(
-            lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
-            resp.inputs,
-        )
-    ]
+    inputs = sorted(
+        (
+            (input_.get('inputName'), input_.get('inputKind'))
+            for input_ in filter(
+                lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
+                resp.inputs,
+            )
+        ),
+        key=lambda x: x[0],  # Sort by input name
+    )
 
     if not inputs:
         out_console.print('No inputs found.')
