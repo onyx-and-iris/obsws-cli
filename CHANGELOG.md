@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.16.5] - 2025-06-06
+
+### Added
+
+-   [Disable Colouring](https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#disable-colouring) section added to README.
+
+### Changed
+-   error output:
+    -   now printed in bold red.
+    -   highlights are now yellow
+-   normal output:
+    -   highlights are now green
+-   help messages:
+    -   removed a lot of the `[default: None]`, this affects optional flags/arguments without default values.
+
 # [0.16.1] - 2025-06-04
 
 ### Added
