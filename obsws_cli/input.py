@@ -75,7 +75,7 @@ def mute(
 ):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        err_console.print(f"Input '{input_name}' not found.")
+        err_console.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     ctx.obj.set_input_mute(
@@ -83,7 +83,7 @@ def mute(
         muted=True,
     )
 
-    out_console.print(f"Input '{input_name}' muted.")
+    out_console.print(f'Input [green]{input_name}[/green] muted.')
 
 
 @app.command('unmute | um')
@@ -96,7 +96,7 @@ def unmute(
 ):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        err_console.print(f"Input '{input_name}' not found.")
+        err_console.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     ctx.obj.set_input_mute(
@@ -104,7 +104,7 @@ def unmute(
         muted=False,
     )
 
-    out_console.print(f"Input '{input_name}' unmuted.")
+    out_console.print(f'Input [green]{input_name}[/green] unmuted.')
 
 
 @app.command('toggle | tg')
@@ -117,7 +117,7 @@ def toggle(
 ):
     """Toggle an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        err_console.print(f"Input '{input_name}' not found.")
+        err_console.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     resp = ctx.obj.get_input_mute(name=input_name)
@@ -128,6 +128,11 @@ def toggle(
         muted=new_state,
     )
 
-    out_console.print(
-        f"Input '{input_name}' {'muted' if new_state else 'unmuted'}.",
-    )
+    if new_state:
+        out_console.print(
+            f'Input [green]{input_name}[/green] muted.',
+        )
+    else:
+        out_console.print(
+            f'Input [green]{input_name}[/green] unmuted.',
+        )
