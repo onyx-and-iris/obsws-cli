@@ -70,7 +70,7 @@ def main(
             '-p',
             envvar='OBS_PASSWORD',
             help='WebSocket password',
-            show_default='',
+            show_default=False,
         ),
     ] = settings.get('password'),
     timeout: Annotated[
