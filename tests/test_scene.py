@@ -36,3 +36,10 @@ def test_scene_switch():
         result = runner.invoke(app, ['scene', 'switch', 'pytest_scene'])
         assert result.exit_code == 0
         assert 'Switched to program scene: pytest_scene' in result.stdout
+
+
+def test_scene_switch_invalid():
+    """Test the scene switch command with an invalid scene."""
+    result = runner.invoke(app, ['scene', 'switch', 'non_existent_scene'])
+    assert result.exit_code != 0
+    assert 'Scene non_existent_scene not found' in result.stderr

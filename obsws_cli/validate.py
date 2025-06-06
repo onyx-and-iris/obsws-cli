@@ -46,3 +46,9 @@ def profile_exists(ctx: typer.Context, profile_name: str) -> bool:
     """Check if a profile exists."""
     resp = ctx.obj.get_profile_list()
     return any(profile == profile_name for profile in resp.profiles)
+
+
+def monitor_exists(ctx: typer.Context, monitor_index: int) -> bool:
+    """Check if a monitor exists."""
+    resp = ctx.obj.get_monitor_list()
+    return any(monitor['monitorIndex'] == monitor_index for monitor in resp.monitors)

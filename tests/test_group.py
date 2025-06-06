@@ -18,29 +18,29 @@ def test_group_show():
     """Test the group show command."""
     result = runner.invoke(app, ['group', 'show', 'Scene', 'test_group'])
     assert result.exit_code == 0
-    assert "Group 'test_group' is now visible." in result.stdout
+    assert 'Group test_group is now visible.' in result.stdout
 
 
 def test_group_toggle():
     """Test the group toggle command."""
     result = runner.invoke(app, ['group', 'status', 'Scene', 'test_group'])
     assert result.exit_code == 0
-    enabled = "Group 'test_group' is now visible." in result.stdout
+    enabled = 'Group test_group is now visible.' in result.stdout
 
     result = runner.invoke(app, ['group', 'toggle', 'Scene', 'test_group'])
     assert result.exit_code == 0
     if enabled:
-        assert "Group 'test_group' is now hidden." in result.stdout
+        assert 'Group test_group is now hidden.' in result.stdout
     else:
-        assert "Group 'test_group' is now visible." in result.stdout
+        assert 'Group test_group is now visible.' in result.stdout
 
 
 def test_group_status():
     """Test the group status command."""
     result = runner.invoke(app, ['group', 'show', 'Scene', 'test_group'])
     assert result.exit_code == 0
-    assert "Group 'test_group' is now visible." in result.stdout
+    assert 'Group test_group is now visible.' in result.stdout
 
     result = runner.invoke(app, ['group', 'status', 'Scene', 'test_group'])
     assert result.exit_code == 0
-    assert "Group 'test_group' is now visible." in result.stdout
+    assert 'Group test_group is now visible.' in result.stdout

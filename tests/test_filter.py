@@ -27,4 +27,4 @@ def test_filter_list_invalid_source():
     """Test the filter list command with an invalid source."""
     result = runner.invoke(app, ['filter', 'list', 'invalid_source'])
     assert result.exit_code != 0
-    assert "No source was found by the name of 'invalid_source'" in result.stderr
+    assert 'No source was found by the name of invalid_source' in result.stderr

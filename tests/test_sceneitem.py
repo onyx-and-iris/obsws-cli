@@ -29,6 +29,6 @@ def test_sceneitem_transform():
     )
     assert result.exit_code == 0
     assert (
-        "Item 'pytest_input_2' in scene 'pytest_scene' has been transformed"
+        'Item pytest_input_2 in scene pytest_scene has been transformed'
         in result.stdout
     )
