@@ -25,6 +25,8 @@ def list_(
     input: Annotated[bool, typer.Option(help='Filter by input type.')] = False,
     output: Annotated[bool, typer.Option(help='Filter by output type.')] = False,
     colour: Annotated[bool, typer.Option(help='Filter by colour source type.')] = False,
+    ffmpeg: Annotated[bool, typer.Option(help='Filter by ffmpeg source type.')] = False,
+    vlc: Annotated[bool, typer.Option(help='Filter by VLC source type.')] = False,
 ):
     """List all inputs."""
     resp = ctx.obj.get_input_list()
@@ -36,8 +38,12 @@ def list_(
         kinds.append('output')
     if colour:
         kinds.append('color')
-    if not any([input, output, colour]):
-        kinds = ['input', 'output', 'color']
+    if ffmpeg:
+        kinds.append('ffmpeg')
+    if vlc:
+        kinds.append('vlc')
+    if not any([input, output, colour, ffmpeg, vlc]):
+        kinds = ['input', 'output', 'color', 'ffmpeg', 'vlc']
 
     inputs = [
         (input_.get('inputName'), input_.get('inputKind'))
@@ -52,15 +58,27 @@ def list_(
         raise typer.Exit()
 
     table = Table(title='Inputs', padding=(0, 2))
-    for column in ('Input Name', 'Kind'):
-        table.add_column(
-            column, justify='left' if column == 'Input Name' else 'center', style='cyan'
-        )
+    columns = [
+        ('Input Name', 'left', 'cyan'),
+        ('Kind', 'center', 'cyan'),
+        ('Muted', 'center', None),
+    ]
+    for column, justify, style in columns:
+        table.add_column(column, justify=justify, style=style)
 
     for input_name, input_kind in inputs:
+        input_mark = ''
+        if any(
+            kind in input_kind
+            for kind in ['input_capture', 'output_capture', 'ffmpeg', 'vlc']
+        ):
+            input_muted = ctx.obj.get_input_mute(name=input_name).input_muted
+            input_mark = ':white_heavy_check_mark:' if input_muted else ':x:'
+
         table.add_row(
             input_name,
             util.snakecase_to_titlecase(input_kind),
+            input_mark,
         )
 
     out_console.print(table)
