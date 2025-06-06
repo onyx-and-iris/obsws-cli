@@ -602,6 +602,10 @@ obsws-cli projector open --monitor-index=1 "test_group"
 obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos\screenshot.png"
 ```
 
+## Disable Colouring
+
+If you prefer colourless output you can set the environment variable `NO_COLOR`. See the [rich documentation][rich-doc-envvars]
+
 ## License
 
 `obsws-cli` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
@@ -609,3 +613,4 @@ obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos
 
 [obs-studio]: https://obsproject.com/
 [obs-keyids]: https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h
+[rich-doc-envvars]: https://rich.readthedocs.io/en/stable/console.html#environment-variables
