@@ -59,7 +59,7 @@ def list_(
         ('Settings', 'center', 'cyan'),
     ]
     for name, justify, style in columns:
-        table.add_column(name, justify=justify, style=style if style else None)
+        table.add_column(name, justify=justify, style=style)
 
     for filter in resp.filters:
         resp = ctx.obj.get_source_filter_default_settings(filter['filterKind'])
