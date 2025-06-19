@@ -42,6 +42,9 @@ dependencies = ["click-man>=0.5.1"]
 cli = "obsws-cli {args:}"
 man = "python man/generate.py --output=./man"
 
+[tool.hatch.envs.lazyimports.scripts]
+cli = "obsws-cli {args:}"
+
 [tool.hatch.envs.hatch-test]
 randomize = true
 
