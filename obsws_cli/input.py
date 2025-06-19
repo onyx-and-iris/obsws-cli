@@ -43,7 +43,7 @@ def list_(
     if vlc:
         kinds.append('vlc')
     if not any([input, output, colour, ffmpeg, vlc]):
-        kinds = ['input', 'output', 'color', 'ffmpeg', 'vlc']
+        kinds = ctx.obj.get_input_kind_list(False).input_kinds
 
     inputs = sorted(
         (
