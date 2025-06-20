@@ -27,6 +27,7 @@ def list_(
     colour: Annotated[bool, typer.Option(help='Filter by colour source type.')] = False,
     ffmpeg: Annotated[bool, typer.Option(help='Filter by ffmpeg source type.')] = False,
     vlc: Annotated[bool, typer.Option(help='Filter by VLC source type.')] = False,
+    uuid: Annotated[bool, typer.Option(help='Show UUIDs of scenes')] = False,
 ):
     """List all inputs."""
     resp = ctx.obj.get_input_list()
@@ -47,7 +48,7 @@ def list_(
 
     inputs = sorted(
         (
-            (input_.get('inputName'), input_.get('inputKind'))
+            (input_.get('inputName'), input_.get('inputKind'), input_.get('inputUuid'))
             for input_ in filter(
                 lambda input_: any(kind in input_.get('inputKind') for kind in kinds),
                 resp.inputs,
@@ -61,15 +62,24 @@ def list_(
         raise typer.Exit()
 
     table = Table(title='Inputs', padding=(0, 2))
-    columns = [
-        ('Input Name', 'left', 'cyan'),
-        ('Kind', 'center', 'cyan'),
-        ('Muted', 'center', None),
-    ]
+    if uuid:
+        columns = [
+            ('Input Name', 'left', 'cyan'),
+            ('Kind', 'center', 'cyan'),
+            ('Muted', 'center', None),
+            ('UUID', 'left', 'cyan'),
+        ]
+    else:
+        table.title += ' (UUIDs hidden)'
+        columns = [
+            ('Input Name', 'left', 'cyan'),
+            ('Kind', 'center', 'cyan'),
+            ('Muted', 'center', None),
+        ]
     for column, justify, style in columns:
         table.add_column(column, justify=justify, style=style)
 
-    for input_name, input_kind in inputs:
+    for input_name, input_kind, input_uuid in inputs:
         input_mark = ''
         if any(
             kind in input_kind
@@ -78,11 +88,19 @@ def list_(
             input_muted = ctx.obj.get_input_mute(name=input_name).input_muted
             input_mark = ':white_heavy_check_mark:' if input_muted else ':x:'
 
-        table.add_row(
-            input_name,
-            util.snakecase_to_titlecase(input_kind),
-            input_mark,
-        )
+        if uuid:
+            table.add_row(
+                input_name,
+                util.snakecase_to_titlecase(input_kind),
+                input_mark,
+                input_uuid,
+            )
+        else:
+            table.add_row(
+                input_name,
+                util.snakecase_to_titlecase(input_kind),
+                input_mark,
+            )
 
     out_console.print(table)
 

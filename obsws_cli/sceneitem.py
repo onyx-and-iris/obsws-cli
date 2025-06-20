@@ -2,7 +2,6 @@
 
 from typing import Annotated, Optional
 
-import obsws_python as obsws
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -30,6 +29,7 @@ def list_(
             help='Scene name to list items for',
         ),
     ] = None,
+    uuid: Annotated[bool, typer.Option(help='Show UUIDs of scene items')] = False,
 ):
     """List all items in a scene."""
     if not scene_name:
@@ -47,6 +47,7 @@ def list_(
                 item.get('sourceName'),
                 item.get('isGroup'),
                 item.get('sceneItemEnabled'),
+                item.get('sourceUuid', 'N/A'),  # Include source UUID
             )
             for item in resp.scene_items
         ),
@@ -58,17 +59,27 @@ def list_(
         raise typer.Exit()
 
     table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
-    columns = [
-        ('Item ID', 'center', 'cyan'),
-        ('Item Name', 'left', 'cyan'),
-        ('In Group', 'left', 'cyan'),
-        ('Enabled', 'center', None),
-    ]
+    if uuid:
+        columns = [
+            ('Item ID', 'center', 'cyan'),
+            ('Item Name', 'left', 'cyan'),
+            ('In Group', 'left', 'cyan'),
+            ('Enabled', 'center', None),
+            ('UUID', 'left', 'cyan'),
+        ]
+    else:
+        table.title += ' (UUIDs hidden)'
+        columns = [
+            ('Item ID', 'center', 'cyan'),
+            ('Item Name', 'left', 'cyan'),
+            ('In Group', 'left', 'cyan'),
+            ('Enabled', 'center', None),
+        ]
     # Add columns to the table
     for column, justify, style in columns:
         table.add_column(column, justify=justify, style=style)
 
-    for item_id, item_name, is_group, is_enabled in items:
+    for item_id, item_name, is_group, is_enabled, source_uuid in items:
         if is_group:
             resp = ctx.obj.get_group_scene_item_list(item_name)
             group_items = sorted(
@@ -77,27 +88,53 @@ def list_(
                         gi.get('sceneItemId'),
                         gi.get('sourceName'),
                         gi.get('sceneItemEnabled'),
+                        gi.get('sourceUuid', 'N/A'),  # Include source UUID
                     )
                     for gi in resp.scene_items
                 ),
                 key=lambda x: x[0],  # Sort by sceneItemId
             )
-            for group_item_id, group_item_name, group_item_enabled in group_items:
-                table.add_row(
-                    str(group_item_id),
-                    group_item_name,
-                    item_name,
-                    ':white_heavy_check_mark:'
-                    if is_enabled and group_item_enabled
-                    else ':x:',
-                )
+            for (
+                group_item_id,
+                group_item_name,
+                group_item_enabled,
+                group_item_source_uuid,
+            ) in group_items:
+                if uuid:
+                    table.add_row(
+                        str(group_item_id),
+                        group_item_name,
+                        item_name,
+                        ':white_heavy_check_mark:'
+                        if is_enabled and group_item_enabled
+                        else ':x:',
+                        group_item_source_uuid,
+                    )
+                else:
+                    table.add_row(
+                        str(group_item_id),
+                        group_item_name,
+                        item_name,
+                        ':white_heavy_check_mark:'
+                        if is_enabled and group_item_enabled
+                        else ':x:',
+                    )
         else:
-            table.add_row(
-                str(item_id),
-                item_name,
-                '',
-                ':white_heavy_check_mark:' if is_enabled else ':x:',
-            )
+            if uuid:
+                table.add_row(
+                    str(item_id),
+                    item_name,
+                    '',
+                    ':white_heavy_check_mark:' if is_enabled else ':x:',
+                    source_uuid,
+                )
+            else:
+                table.add_row(
+                    str(item_id),
+                    item_name,
+                    '',
+                    ':white_heavy_check_mark:' if is_enabled else ':x:',
+                )
 
     out_console.print(table)
 
@@ -122,7 +159,9 @@ def _validate_sources(
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
             err_console.print(
-                f'Item [yellow]{item_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
+                f'Item [yellow]{item_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow]. Is the item in a group? '
+                f'If so use the [yellow]--group[/yellow] option to specify the parent group.\n'
+                'Use `obsws-cli sceneitem list` for a list of items in the scene.'
             )
             return False
 
@@ -146,18 +185,7 @@ def _get_scene_name_and_item_id(
             )
             raise typer.Exit(1)
     else:
-        try:
-            resp = ctx.obj.get_scene_item_id(scene_name, item_name)
-        except obsws.error.OBSSDKRequestError as e:
-            if e.code == 600:
-                err_console.print(
-                    f'Item [yellow]{item_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow]. Is the item in a group? '
-                    'If so use the --group option to specify the parent group. '
-                    'Use `obsws-cli sceneitem list` for a list of items in the scene.'
-                )
-                raise typer.Exit(1)
-            else:
-                raise
+        resp = ctx.obj.get_scene_item_id(scene_name, item_name)
         scene_item_id = resp.scene_item_id
 
     return scene_name, scene_item_id

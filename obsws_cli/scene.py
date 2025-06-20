@@ -20,7 +20,10 @@ def main():
 
 
 @app.command('list | ls')
-def list_(ctx: typer.Context):
+def list_(
+    ctx: typer.Context,
+    uuid: Annotated[bool, typer.Option(help='Show UUIDs of scenes')] = False,
+):
     """List all scenes."""
     resp = ctx.obj.get_scene_list()
     scenes = (
@@ -28,19 +31,41 @@ def list_(ctx: typer.Context):
         for scene in reversed(resp.scenes)
     )
 
+    active_scene = ctx.obj.get_current_program_scene().scene_name
+
     table = Table(title='Scenes', padding=(0, 2))
-    columns = [
-        ('Scene Name', 'left', 'cyan'),
-        ('UUID', 'left', 'cyan'),
-    ]
+    if uuid:
+        columns = [
+            ('Scene Name', 'left', 'cyan'),
+            ('Active', 'center', None),
+            ('UUID', 'left', 'cyan'),
+        ]
+    else:
+        table.title += ' (UUIDs hidden)'
+        columns = [
+            ('Scene Name', 'left', 'cyan'),
+            ('Active', 'center', None),
+        ]
     for column, justify, style in columns:
         table.add_column(column, justify=justify, style=style)
 
     for scene_name, scene_uuid in scenes:
-        table.add_row(
-            scene_name,
-            scene_uuid,
-        )
+        if scene_name == active_scene:
+            scene_output = f'[bold green]{scene_name}[/bold green]'
+        else:
+            scene_output = f'[dim]{scene_name}[/dim]'
+
+        if uuid:
+            table.add_row(
+                scene_output,
+                ':white_heavy_check_mark:' if scene_name == active_scene else '',
+                scene_uuid,
+            )
+        else:
+            table.add_row(
+                scene_output,
+                ':white_heavy_check_mark:' if scene_name == active_scene else '',
+            )
 
     out_console.print(table)
 
