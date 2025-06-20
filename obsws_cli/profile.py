@@ -5,7 +5,7 @@ from typing import Annotated
 import typer
 from rich.table import Table
 
-from . import console, validate
+from . import console, util, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
@@ -32,7 +32,7 @@ def list_(ctx: typer.Context):
     for profile in resp.profiles:
         table.add_row(
             profile,
-            ':white_heavy_check_mark:' if profile == resp.current_profile_name else '',
+            util.check_mark(profile == resp.current_profile_name),
         )
 
     console.out.print(table)

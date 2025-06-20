@@ -5,7 +5,7 @@ from typing import Annotated, Optional
 import typer
 from rich.table import Table
 
-from . import console, validate
+from . import console, util, validate
 from .alias import AliasGroup
 from .protocols import DataclassProtocol
 
@@ -61,7 +61,7 @@ def list_(
         table.add_row(
             str(item_id),
             group_name,
-            ':white_heavy_check_mark:' if is_enabled else ':x:',
+            util.check_mark(is_enabled),
         )
 
     console.out.print(table)

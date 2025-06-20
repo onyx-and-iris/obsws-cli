@@ -5,7 +5,7 @@ from typing import Annotated, Optional
 import typer
 from rich.table import Table
 
-from . import console, validate
+from . import console, util, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
@@ -102,9 +102,7 @@ def list_(
                         str(group_item_id),
                         group_item_name,
                         item_name,
-                        ':white_heavy_check_mark:'
-                        if is_enabled and group_item_enabled
-                        else ':x:',
+                        util.check_mark(is_enabled and group_item_enabled),
                         group_item_source_uuid,
                     )
                 else:
@@ -112,9 +110,7 @@ def list_(
                         str(group_item_id),
                         group_item_name,
                         item_name,
-                        ':white_heavy_check_mark:'
-                        if is_enabled and group_item_enabled
-                        else ':x:',
+                        util.check_mark(is_enabled and group_item_enabled),
                     )
         else:
             if uuid:
@@ -122,7 +118,7 @@ def list_(
                     str(item_id),
                     item_name,
                     '',
-                    ':white_heavy_check_mark:' if is_enabled else ':x:',
+                    util.check_mark(is_enabled),
                     source_uuid,
                 )
             else:
@@ -130,7 +126,7 @@ def list_(
                     str(item_id),
                     item_name,
                     '',
-                    ':white_heavy_check_mark:' if is_enabled else ':x:',
+                    util.check_mark(is_enabled),
                 )
 
     console.out.print(table)

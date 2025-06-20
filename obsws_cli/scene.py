@@ -5,7 +5,7 @@ from typing import Annotated
 import typer
 from rich.table import Table
 
-from . import console, validate
+from . import console, util, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
@@ -55,13 +55,13 @@ def list_(
         if uuid:
             table.add_row(
                 scene_output,
-                ':white_heavy_check_mark:' if scene_name == active_scene else '',
+                util.check_mark(scene_name == active_scene),
                 scene_uuid,
             )
         else:
             table.add_row(
                 scene_output,
-                ':white_heavy_check_mark:' if scene_name == active_scene else '',
+                util.check_mark(scene_name == active_scene),
             )
 
     console.out.print(table)
