@@ -6,11 +6,10 @@ from typing import Annotated
 
 import obsws_python as obsws
 import typer
-from rich.console import Console
 
 from obsws_cli.__about__ import __version__ as obsws_cli_version
 
-from . import settings
+from . import console, settings
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
@@ -34,14 +33,11 @@ for sub_typer in (
     module = importlib.import_module(f'.{sub_typer}', package=__package__)
     app.add_typer(module.app, name=sub_typer)
 
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
-
 
 def version_callback(value: bool):
     """Show the version of the CLI."""
     if value:
-        out_console.print(f'obsws-cli version: {obsws_cli_version}')
+        console.out.print(f'obsws-cli version: {obsws_cli_version}')
         raise typer.Exit()
 
 
@@ -130,6 +126,6 @@ def main(
 def obs_version(ctx: typer.Context):
     """Get the OBS Client and WebSocket versions."""
     resp = ctx.obj.get_version()
-    out_console.print(
+    console.out.print(
         f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}'
     )
