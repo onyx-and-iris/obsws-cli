@@ -55,13 +55,13 @@ def list_(
         if uuid:
             table.add_row(
                 scene_output,
-                util.check_mark(scene_name == active_scene),
+                util.check_mark(scene_name == active_scene, empty_if_false=True),
                 scene_uuid,
             )
         else:
             table.add_row(
                 scene_output,
-                util.check_mark(scene_name == active_scene),
+                util.check_mark(scene_name == active_scene, empty_if_false=True),
             )
 
     console.out.print(table)

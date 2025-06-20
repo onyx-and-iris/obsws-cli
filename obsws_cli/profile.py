@@ -32,7 +32,7 @@ def list_(ctx: typer.Context):
     for profile in resp.profiles:
         table.add_row(
             profile,
-            util.check_mark(profile == resp.current_profile_name),
+            util.check_mark(profile == resp.current_profile_name, empty_if_false=True),
         )
 
     console.out.print(table)
