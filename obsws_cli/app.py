@@ -1,6 +1,7 @@
 """Command line interface for the OBS WebSocket API."""
 
 import importlib
+import logging
 from typing import Annotated
 
 import obsws_python as obsws
@@ -44,6 +45,15 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
+def setup_logging(debug: bool):
+    """Set up logging for the application."""
+    log_level = logging.DEBUG if debug else logging.CRITICAL
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    )
+
+
 @app.callback()
 def main(
     ctx: typer.Context,
@@ -60,7 +70,11 @@ def main(
     port: Annotated[
         int,
         typer.Option(
-            '--port', '-P', envvar='OBS_PORT', help='WebSocket port', show_default=4455
+            '--port',
+            '-P',
+            envvar='OBS_PORT',
+            help='WebSocket port',
+            show_default=4455,
         ),
     ] = settings.get('port'),
     password: Annotated[
@@ -94,6 +108,19 @@ def main(
             callback=version_callback,
         ),
     ] = False,
+    debug: Annotated[
+        bool,
+        typer.Option(
+            '--debug',
+            '-d',
+            envvar='OBS_DEBUG',
+            is_eager=True,
+            help='Enable debug logging',
+            show_default=False,
+            callback=setup_logging,
+            hidden=True,
+        ),
+    ] = settings.get('debug'),
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     ctx.obj = ctx.with_resource(obsws.ReqClient(**ctx.params))

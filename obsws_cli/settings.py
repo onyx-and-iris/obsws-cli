@@ -22,6 +22,8 @@ class Settings(UserDict):
 
     """
 
+    PREFIX = 'OBS_'
+
     def __init__(self, *args, **kwargs):
         """Initialize the Settings object."""
         kwargs.update(
@@ -34,19 +36,25 @@ class Settings(UserDict):
 
     def __getitem__(self, key: str) -> SettingsValue:
         """Get a setting value by key."""
-        if not key.startswith('OBS_'):
-            key = f'OBS_{key}'
-        return self.data[key.upper()]
+        key = key.upper()
+        if not key.startswith(Settings.PREFIX):
+            key = f'{Settings.PREFIX}{key}'
+        return self.data[key]
 
     def __setitem__(self, key: str, value: SettingsValue):
         """Set a setting value by key."""
-        if not key.startswith('OBS_'):
-            key = f'OBS_{key}'
-        self.data[key.upper()] = value
+        key = key.upper()
+        if not key.startswith(Settings.PREFIX):
+            key = f'{Settings.PREFIX}{key}'
+        self.data[key] = value
 
 
 _settings = Settings(
-    OBS_HOST='localhost', OBS_PORT=4455, OBS_PASSWORD='', OBS_TIMEOUT=5
+    OBS_HOST='localhost',
+    OBS_PORT=4455,
+    OBS_PASSWORD='',
+    OBS_TIMEOUT=5,
+    OBS_DEBUG=False,
 )
 
 
