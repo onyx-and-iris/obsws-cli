@@ -3,15 +3,12 @@
 from typing import Annotated
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
-from . import validate
+from . import console, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -38,14 +35,14 @@ def list_(ctx: typer.Context):
             ':white_heavy_check_mark:' if profile == resp.current_profile_name else '',
         )
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 @app.command('current | get')
 def current(ctx: typer.Context):
     """Get the current profile."""
     resp = ctx.obj.get_profile_list()
-    out_console.print(resp.current_profile_name)
+    console.out.print(resp.current_profile_name)
 
 
 @app.command('switch | set')
@@ -60,18 +57,18 @@ def switch(
 ):
     """Switch to a profile."""
     if not validate.profile_exists(ctx, profile_name):
-        err_console.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
+        console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     resp = ctx.obj.get_profile_list()
     if resp.current_profile_name == profile_name:
-        err_console.print(
+        console.err.print(
             f'Profile [yellow]{profile_name}[/yellow] is already the current profile.'
         )
         raise typer.Exit(1)
 
     ctx.obj.set_current_profile(profile_name)
-    out_console.print(f'Switched to profile [green]{profile_name}[/green].')
+    console.out.print(f'Switched to profile [green]{profile_name}[/green].')
 
 
 @app.command('create | new')
@@ -84,11 +81,11 @@ def create(
 ):
     """Create a new profile."""
     if validate.profile_exists(ctx, profile_name):
-        err_console.print(f'Profile [yellow]{profile_name}[/yellow] already exists.')
+        console.err.print(f'Profile [yellow]{profile_name}[/yellow] already exists.')
         raise typer.Exit(1)
 
     ctx.obj.create_profile(profile_name)
-    out_console.print(f'Created profile [green]{profile_name}[/green].')
+    console.out.print(f'Created profile [green]{profile_name}[/green].')
 
 
 @app.command('remove | rm')
@@ -101,8 +98,8 @@ def remove(
 ):
     """Remove a profile."""
     if not validate.profile_exists(ctx, profile_name):
-        err_console.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
+        console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     ctx.obj.remove_profile(profile_name)
-    out_console.print(f'Removed profile [green]{profile_name}[/green].')
+    console.out.print(f'Removed profile [green]{profile_name}[/green].')

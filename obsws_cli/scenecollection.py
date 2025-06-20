@@ -3,15 +3,12 @@
 from typing import Annotated
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
-from . import validate
+from . import console, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -30,14 +27,14 @@ def list_(ctx: typer.Context):
     for scene_collection_name in resp.scene_collections:
         table.add_row(scene_collection_name)
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 @app.command('current | get')
 def current(ctx: typer.Context):
     """Get the current scene collection."""
     resp = ctx.obj.get_scene_collection_list()
-    out_console.print(resp.current_scene_collection_name)
+    console.out.print(resp.current_scene_collection_name)
 
 
 @app.command('switch | set')
@@ -49,7 +46,7 @@ def switch(
 ):
     """Switch to a scene collection."""
     if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        err_console.print(
+        console.err.print(
             f'Scene collection [yellow]{scene_collection_name}[/yellow] not found.'
         )
         raise typer.Exit(1)
@@ -58,13 +55,13 @@ def switch(
         ctx.obj.get_scene_collection_list().current_scene_collection_name
     )
     if scene_collection_name == current_scene_collection:
-        err_console.print(
+        console.err.print(
             f'Scene collection [yellow]{scene_collection_name}[/yellow] is already active.'
         )
         raise typer.Exit(1)
 
     ctx.obj.set_current_scene_collection(scene_collection_name)
-    out_console.print(
+    console.out.print(
         f'Switched to scene collection [green]{scene_collection_name}[/green].'
     )
 
@@ -78,12 +75,12 @@ def create(
 ):
     """Create a new scene collection."""
     if validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        err_console.print(
+        console.err.print(
             f'Scene collection [yellow]{scene_collection_name}[/yellow] already exists.'
         )
         raise typer.Exit(1)
 
     ctx.obj.create_scene_collection(scene_collection_name)
-    out_console.print(
+    console.out.print(
         f'Created scene collection [green]{scene_collection_name}[/green].'
     )

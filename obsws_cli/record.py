@@ -4,13 +4,11 @@ from pathlib import Path
 from typing import Annotated, Optional
 
 import typer
-from rich.console import Console
 
+from . import console
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -33,11 +31,11 @@ def start(ctx: typer.Context):
         if paused:
             err_msg += ' Try resuming it.'
 
-        err_console.print(err_msg)
+        console.err.print(err_msg)
         raise typer.Exit(1)
 
     ctx.obj.start_record()
-    out_console.print('Recording started successfully.')
+    console.out.print('Recording started successfully.')
 
 
 @app.command('stop | st')
@@ -45,11 +43,11 @@ def stop(ctx: typer.Context):
     """Stop recording."""
     active, _ = _get_recording_status(ctx)
     if not active:
-        err_console.print('Recording is not in progress, cannot stop.')
+        console.err.print('Recording is not in progress, cannot stop.')
         raise typer.Exit(1)
 
     resp = ctx.obj.stop_record()
-    out_console.print(
+    console.out.print(
         f'Recording stopped successfully. Saved to: [green]{resp.output_path}[/green]'
     )
 
@@ -59,9 +57,9 @@ def toggle(ctx: typer.Context):
     """Toggle recording."""
     resp = ctx.obj.toggle_record()
     if resp.output_active:
-        out_console.print('Recording started successfully.')
+        console.out.print('Recording started successfully.')
     else:
-        out_console.print('Recording stopped successfully.')
+        console.out.print('Recording stopped successfully.')
 
 
 @app.command('status | ss')
@@ -70,11 +68,11 @@ def status(ctx: typer.Context):
     active, paused = _get_recording_status(ctx)
     if active:
         if paused:
-            out_console.print('Recording is in progress and paused.')
+            console.out.print('Recording is in progress and paused.')
         else:
-            out_console.print('Recording is in progress.')
+            console.out.print('Recording is in progress.')
     else:
-        out_console.print('Recording is not in progress.')
+        console.out.print('Recording is not in progress.')
 
 
 @app.command('resume | r')
@@ -82,14 +80,14 @@ def resume(ctx: typer.Context):
     """Resume recording."""
     active, paused = _get_recording_status(ctx)
     if not active:
-        err_console.print('Recording is not in progress, cannot resume.')
+        console.err.print('Recording is not in progress, cannot resume.')
         raise typer.Exit(1)
     if not paused:
-        err_console.print('Recording is in progress but not paused, cannot resume.')
+        console.err.print('Recording is in progress but not paused, cannot resume.')
         raise typer.Exit(1)
 
     ctx.obj.resume_record()
-    out_console.print('Recording resumed successfully.')
+    console.out.print('Recording resumed successfully.')
 
 
 @app.command('pause | p')
@@ -97,14 +95,14 @@ def pause(ctx: typer.Context):
     """Pause recording."""
     active, paused = _get_recording_status(ctx)
     if not active:
-        err_console.print('Recording is not in progress, cannot pause.')
+        console.err.print('Recording is not in progress, cannot pause.')
         raise typer.Exit(1)
     if paused:
-        err_console.print('Recording is in progress but already paused, cannot pause.')
+        console.err.print('Recording is in progress but already paused, cannot pause.')
         raise typer.Exit(1)
 
     ctx.obj.pause_record()
-    out_console.print('Recording paused successfully.')
+    console.out.print('Recording paused successfully.')
 
 
 @app.command('directory | d')
@@ -124,8 +122,8 @@ def directory(
     """Get or set the recording directory."""
     if record_directory is not None:
         ctx.obj.set_record_directory(str(record_directory))
-        out_console.print(f'Recording directory updated to: {record_directory}')
+        console.out.print(f'Recording directory updated to: {record_directory}')
     else:
-        out_console.print(
+        console.out.print(
             f'Recording directory: [green]{ctx.obj.get_record_directory().record_directory}[/green]'
         )

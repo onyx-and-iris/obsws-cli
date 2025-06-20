@@ -3,15 +3,12 @@
 from typing import Annotated
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
-from . import validate
+from . import console, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -67,7 +64,7 @@ def list_(
                 ':white_heavy_check_mark:' if scene_name == active_scene else '',
             )
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 @app.command('current | get')
@@ -79,15 +76,15 @@ def current(
 ):
     """Get the current program scene or preview scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        err_console.print('Studio mode is not enabled, cannot get preview scene.')
+        console.err.print('Studio mode is not enabled, cannot get preview scene.')
         raise typer.Exit(1)
 
     if preview:
         resp = ctx.obj.get_current_preview_scene()
-        out_console.print(resp.current_preview_scene_name)
+        console.out.print(resp.current_preview_scene_name)
     else:
         resp = ctx.obj.get_current_program_scene()
-        out_console.print(resp.current_program_scene_name)
+        console.out.print(resp.current_program_scene_name)
 
 
 @app.command('switch | set')
@@ -103,16 +100,16 @@ def switch(
 ):
     """Switch to a scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        err_console.print('Studio mode is not enabled, cannot set the preview scene.')
+        console.err.print('Studio mode is not enabled, cannot set the preview scene.')
         raise typer.Exit(1)
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        err_console.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
+        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     if preview:
         ctx.obj.set_current_preview_scene(scene_name)
-        out_console.print(f'Switched to preview scene: [green]{scene_name}[/green]')
+        console.out.print(f'Switched to preview scene: [green]{scene_name}[/green]')
     else:
         ctx.obj.set_current_program_scene(scene_name)
-        out_console.print(f'Switched to program scene: [green]{scene_name}[/green]')
+        console.out.print(f'Switched to program scene: [green]{scene_name}[/green]')

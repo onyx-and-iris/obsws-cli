@@ -3,14 +3,12 @@
 from typing import Annotated
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
+from . import console
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -24,7 +22,7 @@ def list_monitors(ctx: typer.Context):
     resp = ctx.obj.get_monitor_list()
 
     if not resp.monitors:
-        out_console.print('No monitors found.')
+        console.out.print('No monitors found.')
         return
 
     monitors = sorted(
@@ -39,7 +37,7 @@ def list_monitors(ctx: typer.Context):
     for index, monitor in monitors:
         table.add_row(str(index), monitor)
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 @app.command('open | o')
@@ -69,13 +67,13 @@ def open(
                 monitor_index=monitor_index,
             )
 
-            out_console.print(
+            console.out.print(
                 f'Opened projector for source [green]{source_name}[/] on monitor [green]{monitor["monitorName"]}[/].'
             )
 
             break
     else:
-        err_console.print(
+        console.err.print(
             f'Monitor with index [yellow]{monitor_index}[/yellow] not found.'
         )
         raise typer.Exit(code=1)

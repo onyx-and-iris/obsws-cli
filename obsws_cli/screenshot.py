@@ -5,15 +5,11 @@ from typing import Annotated
 
 import obsws_python as obsws
 import typer
-from rich.console import Console
 
+from . import console
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(
-    stderr=True,
-)
 
 
 @app.callback()
@@ -78,17 +74,17 @@ def save(
     except obsws.error.OBSSDKRequestError as e:
         match e.code:
             case 403:
-                err_console.print(
+                console.err.print(
                     'The [yellow]image format[/yellow] (file extension) must be included in the file name, '
                     "for example: '/path/to/screenshot.png'.",
                 )
                 raise typer.Exit(1)
             case 600:
-                err_console.print(
+                console.err.print(
                     f'No source was found by the name of [yellow]{source_name}[/yellow]'
                 )
                 raise typer.Exit(1)
             case _:
                 raise
 
-    out_console.print(f'Screenshot saved to [green]{output_path}[/green].')
+    console.out.print(f'Screenshot saved to [green]{output_path}[/green].')

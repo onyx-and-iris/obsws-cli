@@ -3,14 +3,12 @@
 from typing import Annotated
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
+from . import console
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -31,7 +29,7 @@ def list_(
     for hotkey in resp.hotkeys:
         table.add_row(hotkey)
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 @app.command('trigger | tr')

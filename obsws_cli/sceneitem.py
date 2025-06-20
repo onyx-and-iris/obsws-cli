@@ -3,15 +3,12 @@
 from typing import Annotated, Optional
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
-from . import validate
+from . import console, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -36,7 +33,7 @@ def list_(
         scene_name = ctx.obj.get_current_program_scene().scene_name
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        err_console.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
+        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     resp = ctx.obj.get_scene_item_list(scene_name)
@@ -55,7 +52,7 @@ def list_(
     )
 
     if not items:
-        out_console.print(f'No items found in scene [green]{scene_name}[/green].')
+        console.out.print(f'No items found in scene [green]{scene_name}[/green].')
         raise typer.Exit()
 
     table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
@@ -136,7 +133,7 @@ def list_(
                     ':white_heavy_check_mark:' if is_enabled else ':x:',
                 )
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 def _validate_sources(
@@ -147,18 +144,18 @@ def _validate_sources(
 ) -> bool:
     """Validate the scene name and item name."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        err_console.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
+        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         return False
 
     if group:
         if not validate.item_in_scene_item_list(ctx, scene_name, group):
-            err_console.print(
+            console.err.print(
                 f'Group [yellow]{group}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
             )
             return False
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            err_console.print(
+            console.err.print(
                 f'Item [yellow]{item_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow]. Is the item in a group? '
                 f'If so use the [yellow]--group[/yellow] option to specify the parent group.\n'
                 'Use `obsws-cli sceneitem list` for a list of items in the scene.'
@@ -180,7 +177,7 @@ def _get_scene_name_and_item_id(
                 scene_item_id = item.get('sceneItemId')
                 break
         else:
-            err_console.print(
+            console.err.print(
                 f'Item [yellow]{item_name}[/yellow] not found in group [yellow]{group}[/yellow].'
             )
             raise typer.Exit(1)
@@ -219,7 +216,7 @@ def show(
     )
 
     if group:
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been shown.'
         )
     else:
@@ -227,7 +224,7 @@ def show(
         # This is to avoid confusion with the parent group name
         # which is not the same as the scene name
         # and is not needed in this case
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been shown.'
         )
 
@@ -260,7 +257,7 @@ def hide(
     )
 
     if group:
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been hidden.'
         )
     else:
@@ -268,7 +265,7 @@ def hide(
         # This is to avoid confusion with the parent group name
         # which is not the same as the scene name
         # and is not needed in this case
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been hidden.'
         )
 
@@ -310,11 +307,11 @@ def toggle(
 
     if group:
         if new_state:
-            out_console.print(
+            console.out.print(
                 f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been shown.'
             )
         else:
-            out_console.print(
+            console.out.print(
                 f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been hidden.'
             )
     else:
@@ -323,11 +320,11 @@ def toggle(
         # which is not the same as the scene name
         # and is not needed in this case
         if new_state:
-            out_console.print(
+            console.out.print(
                 f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been shown.'
             )
         else:
-            out_console.print(
+            console.out.print(
                 f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been hidden.'
             )
 
@@ -361,7 +358,7 @@ def visible(
     )
 
     if group:
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] is currently {"visible" if enabled.scene_item_enabled else "hidden"}.'
         )
     else:
@@ -369,7 +366,7 @@ def visible(
         # This is to avoid confusion with the parent group name
         # which is not the same as the scene name
         # and is not needed in this case
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] is currently {"visible" if enabled.scene_item_enabled else "hidden"}.'
         )
 
@@ -475,7 +472,7 @@ def transform(
         transform['scaleY'] = scale_y
 
     if not transform:
-        err_console.print('No transform options provided.')
+        console.err.print('No transform options provided.')
         raise typer.Exit(1)
 
     transform = ctx.obj.set_scene_item_transform(
@@ -485,7 +482,7 @@ def transform(
     )
 
     if group:
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been transformed.'
         )
     else:
@@ -493,6 +490,6 @@ def transform(
         # This is to avoid confusion with the parent group name
         # which is not the same as the scene name
         # and is not needed in this case
-        out_console.print(
+        console.out.print(
             f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been transformed.'
         )

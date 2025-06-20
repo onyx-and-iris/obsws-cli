@@ -2,16 +2,14 @@
 
 from typing import Annotated
 
+import obsws_python as obsws
 import typer
-from rich.console import Console
 from rich.table import Table
 
-from . import util, validate
+from . import console, util, validate
 from .alias import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
-out_console = Console()
-err_console = Console(stderr=True, style='bold red')
 
 
 @app.callback()
@@ -27,7 +25,7 @@ def list_(
     colour: Annotated[bool, typer.Option(help='Filter by colour source type.')] = False,
     ffmpeg: Annotated[bool, typer.Option(help='Filter by ffmpeg source type.')] = False,
     vlc: Annotated[bool, typer.Option(help='Filter by VLC source type.')] = False,
-    uuid: Annotated[bool, typer.Option(help='Show UUIDs of scenes')] = False,
+    uuid: Annotated[bool, typer.Option(help='Show UUIDs of inputs.')] = False,
 ):
     """List all inputs."""
     resp = ctx.obj.get_input_list()
@@ -58,7 +56,7 @@ def list_(
     )
 
     if not inputs:
-        out_console.print('No inputs found.')
+        console.out.print('No inputs found.')
         raise typer.Exit()
 
     table = Table(title='Inputs', padding=(0, 2))
@@ -81,12 +79,14 @@ def list_(
 
     for input_name, input_kind, input_uuid in inputs:
         input_mark = ''
-        if any(
-            kind in input_kind
-            for kind in ['input_capture', 'output_capture', 'ffmpeg', 'vlc']
-        ):
+        try:
             input_muted = ctx.obj.get_input_mute(name=input_name).input_muted
             input_mark = ':white_heavy_check_mark:' if input_muted else ':x:'
+        except obsws.error.OBSSDKRequestError as e:
+            if e.code == 604:  # Input does not support audio
+                input_mark = 'N/A'
+            else:
+                raise
 
         if uuid:
             table.add_row(
@@ -102,7 +102,7 @@ def list_(
                 input_mark,
             )
 
-    out_console.print(table)
+    console.out.print(table)
 
 
 @app.command('mute | m')
@@ -114,7 +114,7 @@ def mute(
 ):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        err_console.print(f'Input [yellow]{input_name}[/yellow] not found.')
+        console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     ctx.obj.set_input_mute(
@@ -122,7 +122,7 @@ def mute(
         muted=True,
     )
 
-    out_console.print(f'Input [green]{input_name}[/green] muted.')
+    console.out.print(f'Input [green]{input_name}[/green] muted.')
 
 
 @app.command('unmute | um')
@@ -135,7 +135,7 @@ def unmute(
 ):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        err_console.print(f'Input [yellow]{input_name}[/yellow] not found.')
+        console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     ctx.obj.set_input_mute(
@@ -143,7 +143,7 @@ def unmute(
         muted=False,
     )
 
-    out_console.print(f'Input [green]{input_name}[/green] unmuted.')
+    console.out.print(f'Input [green]{input_name}[/green] unmuted.')
 
 
 @app.command('toggle | tg')
@@ -156,7 +156,7 @@ def toggle(
 ):
     """Toggle an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        err_console.print(f'Input [yellow]{input_name}[/yellow] not found.')
+        console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     resp = ctx.obj.get_input_mute(name=input_name)
@@ -168,10 +168,10 @@ def toggle(
     )
 
     if new_state:
-        out_console.print(
+        console.out.print(
             f'Input [green]{input_name}[/green] muted.',
         )
     else:
-        out_console.print(
+        console.out.print(
             f'Input [green]{input_name}[/green] unmuted.',
         )
