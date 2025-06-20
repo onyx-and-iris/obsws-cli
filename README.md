@@ -81,6 +81,10 @@ obsws-cli obs-version
 #### Scene
 
 -   list: List all scenes.
+    -   flags:
+
+        *optional*
+        -   --uuid: Show UUIDs of scenes
 
 ```console
 obsws-cli scene list
@@ -102,6 +106,10 @@ obsws-cli scene switch LIVE
 #### Scene Item
 
 -   list: List all items in a scene.
+    -   flags:
+
+        *optional*
+        -   --uuid: Show UUIDs of scene items
 
     *optional*
     -   args: <scene_name>
@@ -267,6 +275,7 @@ obsws-cli group status START "test_group"
         -   --colour: Filter by colour source type.
         -   --ffmpeg: Filter by ffmpeg source type.
         -   --vlc: Filter by VLC source type.
+        -   --uuid: Show UUIDs of inputs.
 
 ```console
 obsws-cli input list
