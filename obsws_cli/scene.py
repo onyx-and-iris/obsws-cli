@@ -48,7 +48,7 @@ def list_(
 
     for scene_name, scene_uuid in scenes:
         if scene_name == active_scene:
-            scene_output = f'[bold green]{scene_name}[/bold green]'
+            scene_output = f'[bold]{scene_name}[/bold]'
         else:
             scene_output = f'[dim]{scene_name}[/dim]'
 
