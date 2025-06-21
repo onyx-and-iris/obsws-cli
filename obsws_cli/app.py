@@ -7,7 +7,7 @@ from typing import Annotated
 import obsws_python as obsws
 import typer
 
-from obsws_cli.__about__ import __version__ as obsws_cli_version
+from obsws_cli.__about__ import __version__ as version
 
 from . import console, settings, styles
 from .alias import RootTyperAliasGroup
@@ -37,7 +37,7 @@ for sub_typer in (
 def version_callback(value: bool):
     """Show the version of the CLI."""
     if value:
-        console.out.print(f'obsws-cli version: {obsws_cli_version}')
+        console.out.print(f'obsws-cli version: {version}')
         raise typer.Exit()
 
 
