@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.18.0] - 2025-06-21
+
+### Added
+
+-   Various colouring styles, see [Style](https://github.com/onyx-and-iris/obsws-cli/tree/main?tab=readme-ov-file#style)
+    -   colouring is applied to list tables as well as highlighted information in stdout/stderr output.
+    -   table border styling may be optionally disabled with the --no-border flag.
+
+
 # [0.17.3] - 2025-06-20
 
 ### Added
