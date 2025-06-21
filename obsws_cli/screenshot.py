@@ -7,9 +7,9 @@ import obsws_python as obsws
 import typer
 
 from . import console
-from .alias import AliasGroup
+from .alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=AliasGroup)
+app = typer.Typer(cls=SubTyperAliasGroup)
 
 
 @app.callback()

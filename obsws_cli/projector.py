@@ -6,9 +6,9 @@ import typer
 from rich.table import Table
 
 from . import console
-from .alias import AliasGroup
+from .alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=AliasGroup)
+app = typer.Typer(cls=SubTyperAliasGroup)
 
 
 @app.callback()
@@ -74,6 +74,7 @@ def open(
             break
     else:
         console.err.print(
-            f'Monitor with index [yellow]{monitor_index}[/yellow] not found.'
+            f'Monitor with index [yellow]{monitor_index}[/yellow] not found. '
+            f'Use [yellow]obsws-cli projector ls-m[/yellow] to see available monitors.'
         )
         raise typer.Exit(code=1)

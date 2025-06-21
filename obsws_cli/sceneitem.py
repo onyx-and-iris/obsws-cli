@@ -6,9 +6,9 @@ import typer
 from rich.table import Table
 
 from . import console, util, validate
-from .alias import AliasGroup
+from .alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=AliasGroup)
+app = typer.Typer(cls=SubTyperAliasGroup)
 
 
 @app.callback()
@@ -154,7 +154,7 @@ def _validate_sources(
             console.err.print(
                 f'Item [yellow]{item_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow]. Is the item in a group? '
                 f'If so use the [yellow]--group[/yellow] option to specify the parent group.\n'
-                'Use `obsws-cli sceneitem list` for a list of items in the scene.'
+                'Use [yellow]obsws-cli sceneitem ls[/yellow] for a list of items in the scene.'
             )
             return False
 

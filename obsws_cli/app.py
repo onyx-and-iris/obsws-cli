@@ -10,9 +10,9 @@ import typer
 from obsws_cli.__about__ import __version__ as obsws_cli_version
 
 from . import console, settings
-from .alias import AliasGroup
+from .alias import RootTyperAliasGroup
 
-app = typer.Typer(cls=AliasGroup)
+app = typer.Typer(cls=RootTyperAliasGroup)
 for sub_typer in (
     'filter',
     'group',

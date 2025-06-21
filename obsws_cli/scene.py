@@ -6,9 +6,9 @@ import typer
 from rich.table import Table
 
 from . import console, util, validate
-from .alias import AliasGroup
+from .alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=AliasGroup)
+app = typer.Typer(cls=SubTyperAliasGroup)
 
 
 @app.callback()
