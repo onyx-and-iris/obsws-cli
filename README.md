@@ -615,7 +615,11 @@ obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos
 
 ## Disable Colouring
 
-If you prefer colourless output you can set the environment variable `NO_COLOR`. See the [rich documentation][rich-doc-envvars]
+If you prefer colourless output you can set the environment variable `NO_COLOR`, see [NO_COLOR][no-colour].
+
+```console
+NO_COLOR="1" obsws-cli scene list
+```
 
 ## License
 
@@ -624,4 +628,4 @@ If you prefer colourless output you can set the environment variable `NO_COLOR`.
 
 [obs-studio]: https://obsproject.com/
 [obs-keyids]: https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h
-[rich-doc-envvars]: https://rich.readthedocs.io/en/stable/console.html#environment-variables
+[no-colour]: https://no-color.org/
