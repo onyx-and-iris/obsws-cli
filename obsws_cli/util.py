@@ -13,6 +13,6 @@ def check_mark(value: bool, empty_if_false: bool = False) -> str:
     if empty_if_false and not value:
         return ''
 
-    if os.getenv('NO_COLOR') is not None:
+    if os.getenv('NO_COLOR', '') != '':
         return '✓' if value else '✗'
     return '✅' if value else '❌'
