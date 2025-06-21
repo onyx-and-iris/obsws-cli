@@ -613,12 +613,32 @@ obsws-cli projector open --monitor-index=1 "test_group"
 obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos\screenshot.png"
 ```
 
-## Disable Colouring
+## Style
 
-If you prefer colourless output you can set the environment variable `NO_COLOR`, see [NO_COLOR][no-colour].
+By default styling is disabled but you may enable it with:
+
+-   --style/-s: Style used in output.
+    -  OBS_STYLE
+-   --no-border/-b: Disable table border styling in output.
+    -  OBS_STYLE_NO_BORDER
+
+Available styles:
+
+- red
+- magenta
+- purple
+- blue
+- cyan
+- green
+- yellow
+- orange
+- white
+- grey
+- navy
+- black
 
 ```console
-NO_COLOR="1" obsws-cli scene list
+obsws-cli --style=cyan --no-border scene list
 ```
 
 ## License
