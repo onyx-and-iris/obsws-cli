@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 
 import typer
 from rich.table import Table
+from rich.text import Text
 
 from . import console, util, validate
 from .alias import SubTyperAliasGroup
@@ -30,13 +31,13 @@ def list_(
 ):
     """List groups in a scene."""
     if not scene_name:
-        scene_name = ctx.obj.get_current_program_scene().scene_name
+        scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
 
     if not validate.scene_in_scenes(ctx, scene_name):
         console.err.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_scene_item_list(scene_name)
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     groups = [
         (item.get('sceneItemId'), item.get('sourceName'), item.get('sceneItemEnabled'))
         for item in resp.scene_items
@@ -44,15 +45,21 @@ def list_(
     ]
 
     if not groups:
-        console.out.print(f"No groups found in scene '{scene_name}'.")
+        console.out.print(
+            f'No groups found in scene {console.highlight(ctx, scene_name)}.'
+        )
         raise typer.Exit()
 
-    table = Table(title=f'Groups in Scene: {scene_name}', padding=(0, 2))
+    table = Table(
+        title=f'Groups in Scene: {scene_name}',
+        padding=(0, 2),
+        border_style=ctx.obj['style'].border,
+    )
 
     columns = [
-        ('ID', 'center', 'cyan'),
-        ('Group Name', 'left', 'cyan'),
-        ('Enabled', 'center', None),
+        (Text('ID', justify='center'), 'center', ctx.obj['style'].column),
+        (Text('Group Name', justify='center'), 'left', ctx.obj['style'].column),
+        (Text('Enabled', justify='center'), 'center', None),
     ]
     for column, justify, style in columns:
         table.add_column(column, justify=justify, style=style)
@@ -96,20 +103,20 @@ def show(
         console.err.print(f"Scene '{scene_name}' not found.")
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_scene_item_list(scene_name)
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
             f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
         )
         raise typer.Exit(1)
 
-    ctx.obj.set_scene_item_enabled(
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=True,
     )
 
-    console.out.print(f'Group [green]{group_name}[/green] is now visible.')
+    console.out.print(f'Group {console.highlight(ctx, group_name)} is now visible.')
 
 
 @app.command('hide | h')
@@ -127,20 +134,20 @@ def hide(
         console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_scene_item_list(scene_name)
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
             f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
         )
         raise typer.Exit(1)
 
-    ctx.obj.set_scene_item_enabled(
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=False,
     )
 
-    console.out.print(f'Group [green]{group_name}[/green] is now hidden.')
+    console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')
 
 
 @app.command('toggle | tg')
@@ -158,7 +165,7 @@ def toggle(
         console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_scene_item_list(scene_name)
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
             f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
@@ -166,16 +173,16 @@ def toggle(
         raise typer.Exit(1)
 
     new_state = not group.get('sceneItemEnabled')
-    ctx.obj.set_scene_item_enabled(
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=new_state,
     )
 
     if new_state:
-        console.out.print(f'Group [green]{group_name}[/green] is now visible.')
+        console.out.print(f'Group {console.highlight(ctx, group_name)} is now visible.')
     else:
-        console.out.print(f'Group [green]{group_name}[/green] is now hidden.')
+        console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')
 
 
 @app.command('status | ss')
@@ -193,19 +200,19 @@ def status(
         console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_scene_item_list(scene_name)
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
             f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
         )
         raise typer.Exit(1)
 
-    enabled = ctx.obj.get_scene_item_enabled(
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
     )
 
     if enabled.scene_item_enabled:
-        console.out.print(f'Group [green]{group_name}[/green] is now visible.')
+        console.out.print(f'Group {console.highlight(ctx, group_name)} is now visible.')
     else:
-        console.out.print(f'Group [green]{group_name}[/green] is now hidden.')
+        console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')

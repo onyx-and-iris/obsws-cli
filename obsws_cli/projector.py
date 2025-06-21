@@ -4,6 +4,7 @@ from typing import Annotated
 
 import typer
 from rich.table import Table
+from rich.text import Text
 
 from . import console
 from .alias import SubTyperAliasGroup
@@ -19,7 +20,7 @@ def main():
 @app.command('list-monitors | ls-m')
 def list_monitors(ctx: typer.Context):
     """List available monitors."""
-    resp = ctx.obj.get_monitor_list()
+    resp = ctx.obj['obsws'].get_monitor_list()
 
     if not resp.monitors:
         console.out.print('No monitors found.')
@@ -30,9 +31,17 @@ def list_monitors(ctx: typer.Context):
         key=lambda m: m[0],
     )
 
-    table = Table(title='Available Monitors', padding=(0, 2))
-    table.add_column('Index', justify='center', style='cyan')
-    table.add_column('Name', style='cyan')
+    table = Table(
+        title='Available Monitors',
+        padding=(0, 2),
+        border_style=ctx.obj['style'].border,
+    )
+    table.add_column(
+        Text('Index', justify='center'), justify='center', style=ctx.obj['style'].column
+    )
+    table.add_column(
+        Text('Name', justify='center'), justify='left', style=ctx.obj['style'].column
+    )
 
     for index, monitor in monitors:
         table.add_row(str(index), monitor)
@@ -57,18 +66,18 @@ def open(
 ):
     """Open a fullscreen projector for a source on a specific monitor."""
     if not source_name:
-        source_name = ctx.obj.get_current_program_scene().scene_name
+        source_name = ctx.obj['obsws'].get_current_program_scene().scene_name
 
-    monitors = ctx.obj.get_monitor_list().monitors
+    monitors = ctx.obj['obsws'].get_monitor_list().monitors
     for monitor in monitors:
         if monitor['monitorIndex'] == monitor_index:
-            ctx.obj.open_source_projector(
+            ctx.obj['obsws'].open_source_projector(
                 source_name=source_name,
                 monitor_index=monitor_index,
             )
 
             console.out.print(
-                f'Opened projector for source [green]{source_name}[/] on monitor [green]{monitor["monitorName"]}[/].'
+                f'Opened projector for source {console.highlight(ctx, source_name)} on monitor {console.highlight(ctx, monitor["monitorName"])}.'
             )
 
             break

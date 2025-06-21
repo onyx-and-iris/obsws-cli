@@ -63,7 +63,7 @@ def save(
 ):
     """Take a screenshot and save it to a file."""
     try:
-        ctx.obj.save_source_screenshot(
+        ctx.obj['obsws'].save_source_screenshot(
             name=source_name,
             img_format=output_path.suffix.lstrip('.').lower(),
             file_path=str(output_path),
@@ -87,4 +87,4 @@ def save(
             case _:
                 raise
 
-    console.out.print(f'Screenshot saved to [green]{output_path}[/green].')
+    console.out.print(f'Screenshot saved to {console.highlight(ctx, output_path)}.')

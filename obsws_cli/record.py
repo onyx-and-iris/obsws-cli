@@ -18,7 +18,7 @@ def main():
 
 def _get_recording_status(ctx: typer.Context) -> tuple:
     """Get recording status."""
-    resp = ctx.obj.get_record_status()
+    resp = ctx.obj['obsws'].get_record_status()
     return resp.output_active, resp.output_paused
 
 
@@ -34,7 +34,7 @@ def start(ctx: typer.Context):
         console.err.print(err_msg)
         raise typer.Exit(1)
 
-    ctx.obj.start_record()
+    ctx.obj['obsws'].start_record()
     console.out.print('Recording started successfully.')
 
 
@@ -46,16 +46,16 @@ def stop(ctx: typer.Context):
         console.err.print('Recording is not in progress, cannot stop.')
         raise typer.Exit(1)
 
-    resp = ctx.obj.stop_record()
+    resp = ctx.obj['obsws'].stop_record()
     console.out.print(
-        f'Recording stopped successfully. Saved to: [green]{resp.output_path}[/green]'
+        f'Recording stopped successfully. Saved to: {console.highlight(ctx, resp.output_path)}'
     )
 
 
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle recording."""
-    resp = ctx.obj.toggle_record()
+    resp = ctx.obj['obsws'].toggle_record()
     if resp.output_active:
         console.out.print('Recording started successfully.')
     else:
@@ -86,7 +86,7 @@ def resume(ctx: typer.Context):
         console.err.print('Recording is in progress but not paused, cannot resume.')
         raise typer.Exit(1)
 
-    ctx.obj.resume_record()
+    ctx.obj['obsws'].resume_record()
     console.out.print('Recording resumed successfully.')
 
 
@@ -101,7 +101,7 @@ def pause(ctx: typer.Context):
         console.err.print('Recording is in progress but already paused, cannot pause.')
         raise typer.Exit(1)
 
-    ctx.obj.pause_record()
+    ctx.obj['obsws'].pause_record()
     console.out.print('Recording paused successfully.')
 
 
@@ -121,9 +121,12 @@ def directory(
 ):
     """Get or set the recording directory."""
     if record_directory is not None:
-        ctx.obj.set_record_directory(str(record_directory))
-        console.out.print(f'Recording directory updated to: {record_directory}')
-    else:
+        ctx.obj['obsws'].set_record_directory(str(record_directory))
         console.out.print(
-            f'Recording directory: [green]{ctx.obj.get_record_directory().record_directory}[/green]'
+            f'Recording directory updated to: {console.highlight(ctx, record_directory)}'
+        )
+    else:
+        resp = ctx.obj['obsws'].get_record_directory()
+        console.out.print(
+            f'Recording directory: {console.highlight(ctx, resp.record_directory)}'
         )

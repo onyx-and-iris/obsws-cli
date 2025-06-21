@@ -4,6 +4,7 @@ from typing import Annotated
 
 import typer
 from rich.table import Table
+from rich.text import Text
 
 from . import console, util, validate
 from .alias import SubTyperAliasGroup
@@ -22,45 +23,39 @@ def list_(
     uuid: Annotated[bool, typer.Option(help='Show UUIDs of scenes')] = False,
 ):
     """List all scenes."""
-    resp = ctx.obj.get_scene_list()
+    resp = ctx.obj['obsws'].get_scene_list()
     scenes = (
         (scene.get('sceneName'), scene.get('sceneUuid'))
         for scene in reversed(resp.scenes)
     )
 
-    active_scene = ctx.obj.get_current_program_scene().scene_name
+    active_scene = ctx.obj['obsws'].get_current_program_scene().scene_name
 
-    table = Table(title='Scenes', padding=(0, 2))
+    table = Table(title='Scenes', padding=(0, 2), border_style=ctx.obj['style'].border)
     if uuid:
         columns = [
-            ('Scene Name', 'left', 'cyan'),
-            ('Active', 'center', None),
-            ('UUID', 'left', 'cyan'),
+            (Text('Scene Name', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('Active', justify='center'), 'center', None),
+            (Text('UUID', justify='center'), 'left', ctx.obj['style'].column),
         ]
     else:
-        table.title += ' (UUIDs hidden)'
         columns = [
-            ('Scene Name', 'left', 'cyan'),
-            ('Active', 'center', None),
+            (Text('Scene Name', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('Active', justify='center'), 'center', None),
         ]
     for column, justify, style in columns:
         table.add_column(column, justify=justify, style=style)
 
     for scene_name, scene_uuid in scenes:
-        if scene_name == active_scene:
-            scene_output = f'[bold]{scene_name}[/bold]'
-        else:
-            scene_output = f'[dim]{scene_name}[/dim]'
-
         if uuid:
             table.add_row(
-                scene_output,
+                scene_name,
                 util.check_mark(scene_name == active_scene, empty_if_false=True),
                 scene_uuid,
             )
         else:
             table.add_row(
-                scene_output,
+                scene_name,
                 util.check_mark(scene_name == active_scene, empty_if_false=True),
             )
 
@@ -80,11 +75,15 @@ def current(
         raise typer.Exit(1)
 
     if preview:
-        resp = ctx.obj.get_current_preview_scene()
-        console.out.print(resp.current_preview_scene_name)
+        resp = ctx.obj['obsws'].get_current_preview_scene()
+        console.out.print(
+            f'Current Preview Scene: {console.highlight(ctx, resp.current_preview_scene_name)}'
+        )
     else:
-        resp = ctx.obj.get_current_program_scene()
-        console.out.print(resp.current_program_scene_name)
+        resp = ctx.obj['obsws'].get_current_program_scene()
+        console.out.print(
+            f'Current Program Scene: {console.highlight(ctx, resp.current_program_scene_name)}'
+        )
 
 
 @app.command('switch | set')
@@ -108,8 +107,8 @@ def switch(
         raise typer.Exit(1)
 
     if preview:
-        ctx.obj.set_current_preview_scene(scene_name)
+        ctx.obj['obsws'].set_current_preview_scene(scene_name)
         console.out.print(f'Switched to preview scene: [green]{scene_name}[/green]')
     else:
-        ctx.obj.set_current_program_scene(scene_name)
+        ctx.obj['obsws'].set_current_program_scene(scene_name)
         console.out.print(f'Switched to program scene: [green]{scene_name}[/green]')

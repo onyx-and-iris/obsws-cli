@@ -4,6 +4,7 @@ from typing import Annotated
 
 import typer
 from rich.table import Table
+from rich.text import Text
 
 from . import console
 from .alias import SubTyperAliasGroup
@@ -21,13 +22,21 @@ def list_(
     ctx: typer.Context,
 ):
     """List all hotkeys."""
-    resp = ctx.obj.get_hotkey_list()
+    resp = ctx.obj['obsws'].get_hotkey_list()
 
-    table = Table(title='Hotkeys', padding=(0, 2))
-    table.add_column('Hotkey Name', justify='left', style='cyan')
+    table = Table(
+        title='Hotkeys',
+        padding=(0, 2),
+        border_style=ctx.obj['style'].border,
+    )
+    table.add_column(
+        Text('Hotkey Name', justify='center'),
+        justify='left',
+        style=ctx.obj['style'].column,
+    )
 
-    for hotkey in resp.hotkeys:
-        table.add_row(hotkey)
+    for i, hotkey in enumerate(resp.hotkeys):
+        table.add_row(hotkey, style='' if i % 2 == 0 else 'dim')
 
     console.out.print(table)
 
@@ -40,7 +49,7 @@ def trigger(
     ],
 ):
     """Trigger a hotkey by name."""
-    ctx.obj.trigger_hotkey_by_name(hotkey)
+    ctx.obj['obsws'].trigger_hotkey_by_name(hotkey)
 
 
 @app.command('trigger-sequence | trs')
@@ -68,4 +77,4 @@ def trigger_sequence(
     ] = False,
 ):
     """Trigger a hotkey by sequence."""
-    ctx.obj.trigger_hotkey_by_key_sequence(key_id, shift, ctrl, alt, cmd)
+    ctx.obj['obsws'].trigger_hotkey_by_key_sequence(key_id, shift, ctrl, alt, cmd)

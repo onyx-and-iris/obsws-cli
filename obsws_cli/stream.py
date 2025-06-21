@@ -15,7 +15,7 @@ def main():
 
 def _get_streaming_status(ctx: typer.Context) -> tuple:
     """Get streaming status."""
-    resp = ctx.obj.get_stream_status()
+    resp = ctx.obj['obsws'].get_stream_status()
     return resp.output_active, resp.output_duration
 
 
@@ -27,7 +27,7 @@ def start(ctx: typer.Context):
         console.err.print('Streaming is already in progress, cannot start.')
         raise typer.Exit(1)
 
-    ctx.obj.start_stream()
+    ctx.obj['obsws'].start_stream()
     console.out.print('Streaming started successfully.')
 
 
@@ -39,14 +39,14 @@ def stop(ctx: typer.Context):
         console.err.print('Streaming is not in progress, cannot stop.')
         raise typer.Exit(1)
 
-    ctx.obj.stop_stream()
+    ctx.obj['obsws'].stop_stream()
     console.out.print('Streaming stopped successfully.')
 
 
 @app.command('toggle | tg')
 def toggle(ctx: typer.Context):
     """Toggle streaming."""
-    resp = ctx.obj.toggle_stream()
+    resp = ctx.obj['obsws'].toggle_stream()
     if resp.output_active:
         console.out.print('Streaming started successfully.')
     else:

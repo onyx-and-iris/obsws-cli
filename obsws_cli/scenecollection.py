@@ -19,10 +19,16 @@ def main():
 @app.command('list | ls')
 def list_(ctx: typer.Context):
     """List all scene collections."""
-    resp = ctx.obj.get_scene_collection_list()
+    resp = ctx.obj['obsws'].get_scene_collection_list()
 
-    table = Table(title='Scene Collections', padding=(0, 2))
-    table.add_column('Scene Collection Name', justify='left', style='cyan')
+    table = Table(
+        title='Scene Collections',
+        padding=(0, 2),
+        border_style=ctx.obj['style'].border,
+    )
+    table.add_column(
+        'Scene Collection Name', justify='left', style=ctx.obj['style'].column
+    )
 
     for scene_collection_name in resp.scene_collections:
         table.add_row(scene_collection_name)
@@ -33,8 +39,10 @@ def list_(ctx: typer.Context):
 @app.command('current | get')
 def current(ctx: typer.Context):
     """Get the current scene collection."""
-    resp = ctx.obj.get_scene_collection_list()
-    console.out.print(resp.current_scene_collection_name)
+    resp = ctx.obj['obsws'].get_scene_collection_list()
+    console.out.print(
+        f'Current scene collection: {console.highlight(ctx, resp.current_scene_collection_name)}'
+    )
 
 
 @app.command('switch | set')
@@ -52,7 +60,7 @@ def switch(
         raise typer.Exit(1)
 
     current_scene_collection = (
-        ctx.obj.get_scene_collection_list().current_scene_collection_name
+        ctx.obj['obsws'].get_scene_collection_list().current_scene_collection_name
     )
     if scene_collection_name == current_scene_collection:
         console.err.print(
@@ -60,9 +68,9 @@ def switch(
         )
         raise typer.Exit(1)
 
-    ctx.obj.set_current_scene_collection(scene_collection_name)
+    ctx.obj['obsws'].set_current_scene_collection(scene_collection_name)
     console.out.print(
-        f'Switched to scene collection [green]{scene_collection_name}[/green].'
+        f'Switched to scene collection {console.highlight(ctx, scene_collection_name)}.'
     )
 
 
@@ -80,7 +88,7 @@ def create(
         )
         raise typer.Exit(1)
 
-    ctx.obj.create_scene_collection(scene_collection_name)
+    ctx.obj['obsws'].create_scene_collection(scene_collection_name)
     console.out.print(
-        f'Created scene collection [green]{scene_collection_name}[/green].'
+        f'Created scene collection {console.highlight(ctx, scene_collection_name)}.'
     )

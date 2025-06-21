@@ -5,6 +5,7 @@ from typing import Annotated
 import obsws_python as obsws
 import typer
 from rich.table import Table
+from rich.text import Text
 
 from . import console, util, validate
 from .alias import SubTyperAliasGroup
@@ -28,7 +29,7 @@ def list_(
     uuid: Annotated[bool, typer.Option(help='Show UUIDs of inputs.')] = False,
 ):
     """List all inputs."""
-    resp = ctx.obj.get_input_list()
+    resp = ctx.obj['obsws'].get_input_list()
 
     kinds = []
     if input:
@@ -42,7 +43,7 @@ def list_(
     if vlc:
         kinds.append('vlc')
     if not any([input, output, colour, ffmpeg, vlc]):
-        kinds = ctx.obj.get_input_kind_list(False).input_kinds
+        kinds = ctx.obj['obsws'].get_input_kind_list(False).input_kinds
 
     inputs = sorted(
         (
@@ -59,20 +60,19 @@ def list_(
         console.out.print('No inputs found.')
         raise typer.Exit()
 
-    table = Table(title='Inputs', padding=(0, 2))
+    table = Table(title='Inputs', padding=(0, 2), border_style=ctx.obj['style'].border)
     if uuid:
         columns = [
-            ('Input Name', 'left', 'cyan'),
-            ('Kind', 'center', 'cyan'),
-            ('Muted', 'center', None),
-            ('UUID', 'left', 'cyan'),
+            (Text('Input Name', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('Kind', justify='center'), 'center', ctx.obj['style'].column),
+            (Text('Muted', justify='center'), 'center', None),
+            (Text('UUID', justify='center'), 'left', ctx.obj['style'].column),
         ]
     else:
-        table.title += ' (UUIDs hidden)'
         columns = [
-            ('Input Name', 'left', 'cyan'),
-            ('Kind', 'center', 'cyan'),
-            ('Muted', 'center', None),
+            (Text('Input Name', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('Kind', justify='center'), 'center', ctx.obj['style'].column),
+            (Text('Muted', justify='center'), 'center', None),
         ]
     for column, justify, style in columns:
         table.add_column(column, justify=justify, style=style)
@@ -80,7 +80,7 @@ def list_(
     for input_name, input_kind, input_uuid in inputs:
         input_mark = ''
         try:
-            input_muted = ctx.obj.get_input_mute(name=input_name).input_muted
+            input_muted = ctx.obj['obsws'].get_input_mute(name=input_name).input_muted
             input_mark = util.check_mark(input_muted)
         except obsws.error.OBSSDKRequestError as e:
             if e.code == 604:  # Input does not support audio
@@ -117,12 +117,12 @@ def mute(
         console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    ctx.obj.set_input_mute(
+    ctx.obj['obsws'].set_input_mute(
         name=input_name,
         muted=True,
     )
 
-    console.out.print(f'Input [green]{input_name}[/green] muted.')
+    console.out.print(f'Input {console.highlight(ctx, input_name)} muted.')
 
 
 @app.command('unmute | um')
@@ -138,12 +138,12 @@ def unmute(
         console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    ctx.obj.set_input_mute(
+    ctx.obj['obsws'].set_input_mute(
         name=input_name,
         muted=False,
     )
 
-    console.out.print(f'Input [green]{input_name}[/green] unmuted.')
+    console.out.print(f'Input {console.highlight(ctx, input_name)} unmuted.')
 
 
 @app.command('toggle | tg')
@@ -159,19 +159,19 @@ def toggle(
         console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_input_mute(name=input_name)
+    resp = ctx.obj['obsws'].get_input_mute(name=input_name)
     new_state = not resp.input_muted
 
-    ctx.obj.set_input_mute(
+    ctx.obj['obsws'].set_input_mute(
         name=input_name,
         muted=new_state,
     )
 
     if new_state:
         console.out.print(
-            f'Input [green]{input_name}[/green] muted.',
+            f'Input {console.highlight(ctx, input_name)} muted.',
         )
     else:
         console.out.print(
-            f'Input [green]{input_name}[/green] unmuted.',
+            f'Input {console.highlight(ctx, input_name)} unmuted.',
         )

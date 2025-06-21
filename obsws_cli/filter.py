@@ -5,6 +5,7 @@ from typing import Annotated, Optional
 import obsws_python as obsws
 import typer
 from rich.table import Table
+from rich.text import Text
 
 from . import console, util
 from .alias import SubTyperAliasGroup
@@ -30,10 +31,10 @@ def list_(
 ):
     """List filters for a source."""
     if not source_name:
-        source_name = ctx.obj.get_current_program_scene().scene_name
+        source_name = ctx.obj['obsws'].get_current_program_scene().scene_name
 
     try:
-        resp = ctx.obj.get_source_filter_list(source_name)
+        resp = ctx.obj['obsws'].get_source_filter_list(source_name)
     except obsws.error.OBSSDKRequestError as e:
         if e.code == 600:
             console.err.print(
@@ -44,22 +45,28 @@ def list_(
             raise
 
     if not resp.filters:
-        console.out.print(f'No filters found for source [yellow]{source_name}[/yellow]')
+        console.out.print(
+            f'No filters found for source {console.highlight(ctx, source_name)}'
+        )
         raise typer.Exit()
 
-    table = Table(title=f'Filters for Source: {source_name}', padding=(0, 2))
+    table = Table(
+        title=f'Filters for Source: {source_name}',
+        padding=(0, 2),
+        border_style=ctx.obj['style'].border,
+    )
 
     columns = [
-        ('Filter Name', 'left', 'cyan'),
-        ('Kind', 'left', 'cyan'),
-        ('Enabled', 'center', None),
-        ('Settings', 'center', 'cyan'),
+        (Text('Filter Name', justify='center'), 'left', ctx.obj['style'].column),
+        (Text('Kind', justify='center'), 'left', ctx.obj['style'].column),
+        (Text('Enabled', justify='center'), 'center', None),
+        (Text('Settings', justify='center'), 'center', ctx.obj['style'].column),
     ]
     for name, justify, style in columns:
         table.add_column(name, justify=justify, style=style)
 
     for filter in resp.filters:
-        resp = ctx.obj.get_source_filter_default_settings(filter['filterKind'])
+        resp = ctx.obj['obsws'].get_source_filter_default_settings(filter['filterKind'])
         settings = resp.default_filter_settings | filter['filterSettings']
 
         table.add_row(
@@ -79,7 +86,7 @@ def list_(
 
 def _get_filter_enabled(ctx: typer.Context, source_name: str, filter_name: str):
     """Get the status of a filter for a source."""
-    resp = ctx.obj.get_source_filter(source_name, filter_name)
+    resp = ctx.obj['obsws'].get_source_filter(source_name, filter_name)
     return resp.filter_enabled
 
 
@@ -106,9 +113,9 @@ def enable(
         )
         raise typer.Exit(1)
 
-    ctx.obj.set_source_filter_enabled(source_name, filter_name, enabled=True)
+    ctx.obj['obsws'].set_source_filter_enabled(source_name, filter_name, enabled=True)
     console.out.print(
-        f'Enabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+        f'Enabled filter {console.highlight(ctx, filter_name)} for source {console.highlight(ctx, source_name)}'
     )
 
 
@@ -135,9 +142,9 @@ def disable(
         )
         raise typer.Exit(1)
 
-    ctx.obj.set_source_filter_enabled(source_name, filter_name, enabled=False)
+    ctx.obj['obsws'].set_source_filter_enabled(source_name, filter_name, enabled=False)
     console.out.print(
-        f'Disabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+        f'Disabled filter {console.highlight(ctx, filter_name)} for source {console.highlight(ctx, source_name)}'
     )
 
 
@@ -161,14 +168,16 @@ def toggle(
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
     new_state = not is_enabled
 
-    ctx.obj.set_source_filter_enabled(source_name, filter_name, enabled=new_state)
+    ctx.obj['obsws'].set_source_filter_enabled(
+        source_name, filter_name, enabled=new_state
+    )
     if new_state:
         console.out.print(
-            f'Enabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+            f'Enabled filter {console.highlight(ctx, filter_name)} for source {console.highlight(ctx, source_name)}'
         )
     else:
         console.out.print(
-            f'Disabled filter [green]{filter_name}[/green] for source [green]{source_name}[/green]'
+            f'Disabled filter {console.highlight(ctx, filter_name)} for source {console.highlight(ctx, source_name)}'
         )
 
 
@@ -192,9 +201,9 @@ def status(
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
     if is_enabled:
         console.out.print(
-            f'Filter [green]{filter_name}[/green] is enabled for source [green]{source_name}[/green]'
+            f'Filter {console.highlight(ctx, filter_name)} is enabled for source {console.highlight(ctx, source_name)}'
         )
     else:
         console.out.print(
-            f'Filter [green]{filter_name}[/green] is disabled for source [green]{source_name}[/green]'
+            f'Filter {console.highlight(ctx, filter_name)} is disabled for source {console.highlight(ctx, source_name)}'
         )

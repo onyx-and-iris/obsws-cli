@@ -30,13 +30,13 @@ def list_(
 ):
     """List all items in a scene."""
     if not scene_name:
-        scene_name = ctx.obj.get_current_program_scene().scene_name
+        scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
 
     if not validate.scene_in_scenes(ctx, scene_name):
         console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
-    resp = ctx.obj.get_scene_item_list(scene_name)
+    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     items = sorted(
         (
             (
@@ -52,24 +52,29 @@ def list_(
     )
 
     if not items:
-        console.out.print(f'No items found in scene [green]{scene_name}[/green].')
+        console.out.print(
+            f'No items found in scene {console.highlight(ctx, scene_name)}.'
+        )
         raise typer.Exit()
 
-    table = Table(title=f'Items in Scene: {scene_name}', padding=(0, 2))
+    table = Table(
+        title=f'Items in Scene: {scene_name}',
+        padding=(0, 2),
+        border_style=ctx.obj['style'].border,
+    )
     if uuid:
         columns = [
-            ('Item ID', 'center', 'cyan'),
-            ('Item Name', 'left', 'cyan'),
-            ('In Group', 'left', 'cyan'),
+            ('Item ID', 'center', ctx.obj['style'].column),
+            ('Item Name', 'left', ctx.obj['style'].column),
+            ('In Group', 'left', ctx.obj['style'].column),
             ('Enabled', 'center', None),
-            ('UUID', 'left', 'cyan'),
+            ('UUID', 'left', ctx.obj['style'].column),
         ]
     else:
-        table.title += ' (UUIDs hidden)'
         columns = [
-            ('Item ID', 'center', 'cyan'),
-            ('Item Name', 'left', 'cyan'),
-            ('In Group', 'left', 'cyan'),
+            ('Item ID', 'center', ctx.obj['style'].column),
+            ('Item Name', 'left', ctx.obj['style'].column),
+            ('In Group', 'left', ctx.obj['style'].column),
             ('Enabled', 'center', None),
         ]
     # Add columns to the table
@@ -78,7 +83,7 @@ def list_(
 
     for item_id, item_name, is_group, is_enabled, source_uuid in items:
         if is_group:
-            resp = ctx.obj.get_group_scene_item_list(item_name)
+            resp = ctx.obj['obsws'].get_group_scene_item_list(item_name)
             group_items = sorted(
                 (
                     (
@@ -166,7 +171,7 @@ def _get_scene_name_and_item_id(
 ):
     """Get the scene name and item ID for the given scene and item name."""
     if group:
-        resp = ctx.obj.get_group_scene_item_list(group)
+        resp = ctx.obj['obsws'].get_group_scene_item_list(group)
         for item in resp.scene_items:
             if item.get('sourceName') == item_name:
                 scene_name = group
@@ -178,7 +183,7 @@ def _get_scene_name_and_item_id(
             )
             raise typer.Exit(1)
     else:
-        resp = ctx.obj.get_scene_item_id(scene_name, item_name)
+        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
         scene_item_id = resp.scene_item_id
 
     return scene_name, scene_item_id
@@ -205,7 +210,7 @@ def show(
         ctx, scene_name, item_name, group
     )
 
-    ctx.obj.set_scene_item_enabled(
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=True,
@@ -213,7 +218,8 @@ def show(
 
     if group:
         console.out.print(
-            f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been shown.'
+            f'Item {console.highlight(ctx, item_name)} in group {console.highlight(ctx, group)} '
+            f'in scene {console.highlight(ctx, old_scene_name)} has been shown.'
         )
     else:
         # If not in a parent group, just show the scene name
@@ -221,7 +227,7 @@ def show(
         # which is not the same as the scene name
         # and is not needed in this case
         console.out.print(
-            f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been shown.'
+            f'Item {console.highlight(ctx, item_name)} in scene {console.highlight(ctx, scene_name)} has been shown.'
         )
 
 
@@ -246,7 +252,7 @@ def hide(
         ctx, scene_name, item_name, group
     )
 
-    ctx.obj.set_scene_item_enabled(
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=False,
@@ -254,7 +260,7 @@ def hide(
 
     if group:
         console.out.print(
-            f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been hidden.'
+            f'Item {console.highlight(ctx, item_name)} in group {console.highlight(ctx, group)} in scene {console.highlight(ctx, old_scene_name)} has been hidden.'
         )
     else:
         # If not in a parent group, just show the scene name
@@ -262,7 +268,7 @@ def hide(
         # which is not the same as the scene name
         # and is not needed in this case
         console.out.print(
-            f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been hidden.'
+            f'Item {console.highlight(ctx, item_name)} in scene {console.highlight(ctx, scene_name)} has been hidden.'
         )
 
 
@@ -289,13 +295,13 @@ def toggle(
         ctx, scene_name, item_name, group
     )
 
-    enabled = ctx.obj.get_scene_item_enabled(
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
     )
     new_state = not enabled.scene_item_enabled
 
-    ctx.obj.set_scene_item_enabled(
+    ctx.obj['obsws'].set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=new_state,
@@ -304,11 +310,13 @@ def toggle(
     if group:
         if new_state:
             console.out.print(
-                f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been shown.'
+                f'Item {console.highlight(ctx, item_name)} in group {console.highlight(ctx, group)} '
+                f'in scene {console.highlight(ctx, old_scene_name)} has been shown.'
             )
         else:
             console.out.print(
-                f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been hidden.'
+                f'Item {console.highlight(ctx, item_name)} in group {console.highlight(ctx, group)} '
+                f'in scene {console.highlight(ctx, old_scene_name)} has been hidden.'
             )
     else:
         # If not in a parent group, just show the scene name
@@ -317,11 +325,11 @@ def toggle(
         # and is not needed in this case
         if new_state:
             console.out.print(
-                f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been shown.'
+                f'Item {console.highlight(ctx, item_name)} in scene {console.highlight(ctx, scene_name)} has been shown.'
             )
         else:
             console.out.print(
-                f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been hidden.'
+                f'Item {console.highlight(ctx, item_name)} in scene {console.highlight(ctx, scene_name)} has been hidden.'
             )
 
 
@@ -348,14 +356,15 @@ def visible(
         ctx, scene_name, item_name, group
     )
 
-    enabled = ctx.obj.get_scene_item_enabled(
+    enabled = ctx.obj['obsws'].get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
     )
 
     if group:
         console.out.print(
-            f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] is currently {"visible" if enabled.scene_item_enabled else "hidden"}.'
+            f'Item {console.highlight(ctx, item_name)} in group {console.highlight(ctx, group)} '
+            f'in scene {console.highlight(ctx, old_scene_name)} is currently {"visible" if enabled.scene_item_enabled else "hidden"}.'
         )
     else:
         # If not in a parent group, just show the scene name
@@ -363,7 +372,8 @@ def visible(
         # which is not the same as the scene name
         # and is not needed in this case
         console.out.print(
-            f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] is currently {"visible" if enabled.scene_item_enabled else "hidden"}.'
+            f'Item {console.highlight(ctx, item_name)} in scene {console.highlight(ctx, scene_name)} '
+            f'is currently {"visible" if enabled.scene_item_enabled else "hidden"}.'
         )
 
 
@@ -471,7 +481,7 @@ def transform(
         console.err.print('No transform options provided.')
         raise typer.Exit(1)
 
-    transform = ctx.obj.set_scene_item_transform(
+    transform = ctx.obj['obsws'].set_scene_item_transform(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         transform=transform,
@@ -479,7 +489,8 @@ def transform(
 
     if group:
         console.out.print(
-            f'Item [green]{item_name}[/green] in group [green]{group}[/green] in scene [green]{old_scene_name}[/green] has been transformed.'
+            f'Item {console.highlight(ctx, item_name)} in group {console.highlight(ctx, group)} '
+            f'in scene {console.highlight(ctx, old_scene_name)} has been transformed.'
         )
     else:
         # If not in a parent group, just show the scene name
@@ -487,5 +498,5 @@ def transform(
         # which is not the same as the scene name
         # and is not needed in this case
         console.out.print(
-            f'Item [green]{item_name}[/green] in scene [green]{scene_name}[/green] has been transformed.'
+            f'Item {console.highlight(ctx, item_name)} in scene {console.highlight(ctx, scene_name)} has been transformed.'
         )
