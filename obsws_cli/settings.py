@@ -55,6 +55,8 @@ _settings = Settings(
     OBS_PASSWORD='',
     OBS_TIMEOUT=5,
     OBS_DEBUG=False,
+    OBS_STYLE='disabled',
+    OBS_STYLE_NO_BORDER=False,
 )
 
 

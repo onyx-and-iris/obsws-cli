@@ -9,7 +9,7 @@ import typer
 
 from obsws_cli.__about__ import __version__ as obsws_cli_version
 
-from . import console, settings
+from . import console, settings, styles
 from .alias import RootTyperAliasGroup
 
 app = typer.Typer(cls=RootTyperAliasGroup)
@@ -104,6 +104,26 @@ def main(
             callback=version_callback,
         ),
     ] = False,
+    style: Annotated[
+        str,
+        typer.Option(
+            '--style',
+            '-s',
+            envvar='OBS_STYLE',
+            help='Set the style for the CLI output',
+            show_default='disabled',
+        ),
+    ] = settings.get('style'),
+    no_border: Annotated[
+        bool,
+        typer.Option(
+            '--no-border',
+            '-b',
+            envvar='OBS_STYLE_NO_BORDER',
+            help='Disable table border styling in the CLI output',
+            show_default=False,
+        ),
+    ] = settings.get('style_no_border'),
     debug: Annotated[
         bool,
         typer.Option(
@@ -119,13 +139,16 @@ def main(
     ] = settings.get('debug'),
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
-    ctx.obj = ctx.with_resource(obsws.ReqClient(**ctx.params))
+    ctx.ensure_object(dict)
+    ctx.obj['obsws'] = ctx.with_resource(obsws.ReqClient(**ctx.params))
+    ctx.obj['style'] = styles.request_style_obj(style, no_border)
 
 
 @app.command()
 def obs_version(ctx: typer.Context):
     """Get the OBS Client and WebSocket versions."""
-    resp = ctx.obj.get_version()
+    resp = ctx.obj['obsws'].get_version()
     console.out.print(
-        f'OBS Client version: {resp.obs_version} with WebSocket version: {resp.obs_web_socket_version}'
+        f'OBS Client version: {console.highlight(ctx, resp.obs_version)}'
+        f' with WebSocket version: {console.highlight(ctx, resp.obs_web_socket_version)}'
     )
