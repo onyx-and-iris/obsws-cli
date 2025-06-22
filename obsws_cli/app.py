@@ -50,6 +50,15 @@ def setup_logging(debug: bool):
     )
 
 
+def validate_style(value: str):
+    """Validate and return the style."""
+    if value not in styles.registry:
+        raise typer.BadParameter(
+            f'Invalid style: {value}. Available styles: {", ".join(styles.registry.keys())}'
+        )
+    return value
+
+
 @app.callback()
 def main(
     ctx: typer.Context,
@@ -112,6 +121,7 @@ def main(
             envvar='OBS_STYLE',
             help='Set the style for the CLI output',
             show_default='disabled',
+            callback=validate_style,
         ),
     ] = settings.get('style'),
     no_border: Annotated[
