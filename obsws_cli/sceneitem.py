@@ -107,7 +107,7 @@ def list_(
                         str(group_item_id),
                         group_item_name,
                         item_name,
-                        util.check_mark(is_enabled and group_item_enabled),
+                        util.check_mark(ctx, is_enabled and group_item_enabled),
                         group_item_source_uuid,
                     )
                 else:
@@ -115,7 +115,7 @@ def list_(
                         str(group_item_id),
                         group_item_name,
                         item_name,
-                        util.check_mark(is_enabled and group_item_enabled),
+                        util.check_mark(ctx, is_enabled and group_item_enabled),
                     )
         else:
             if uuid:
@@ -123,7 +123,7 @@ def list_(
                     str(item_id),
                     item_name,
                     '',
-                    util.check_mark(is_enabled),
+                    util.check_mark(ctx, is_enabled),
                     source_uuid,
                 )
             else:
@@ -131,7 +131,7 @@ def list_(
                     str(item_id),
                     item_name,
                     '',
-                    util.check_mark(is_enabled),
+                    util.check_mark(ctx, is_enabled),
                 )
 
     console.out.print(table)

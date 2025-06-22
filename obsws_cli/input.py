@@ -81,7 +81,7 @@ def list_(
         input_mark = ''
         try:
             input_muted = ctx.obj['obsws'].get_input_mute(name=input_name).input_muted
-            input_mark = util.check_mark(input_muted)
+            input_mark = util.check_mark(ctx, input_muted)
         except obsws.error.OBSSDKRequestError as e:
             if e.code == 604:  # Input does not support audio
                 input_mark = 'N/A'

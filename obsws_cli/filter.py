@@ -72,7 +72,7 @@ def list_(
         table.add_row(
             filter['filterName'],
             util.snakecase_to_titlecase(filter['filterKind']),
-            util.check_mark(filter['filterEnabled']),
+            util.check_mark(ctx, filter['filterEnabled']),
             '\n'.join(
                 [
                     f'{util.snakecase_to_titlecase(k):<20} {v:>10}'

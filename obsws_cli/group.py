@@ -68,7 +68,7 @@ def list_(
         table.add_row(
             str(item_id),
             group_name,
-            util.check_mark(is_enabled),
+            util.check_mark(ctx, is_enabled),
         )
 
     console.out.print(table)

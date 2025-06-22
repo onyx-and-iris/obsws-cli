@@ -9,4 +9,6 @@ err = Console(stderr=True, style='bold red')
 
 def highlight(ctx: typer.Context, text: str) -> str:
     """Highlight text using the current context's style."""
+    if ctx.obj['style'].name == 'no_colour':
+        return text
     return f'[{ctx.obj["style"].highlight}]{text}[/{ctx.obj["style"].highlight}]'
