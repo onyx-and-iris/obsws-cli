@@ -21,9 +21,9 @@ class Style:
 
     name: str = 'no_colour'
     description: str = 'Style disabled'
-    border: str | None = None
-    column: str | None = None
-    highlight: str | None = None
+    border: str = 'none'
+    column: str = 'none'
+    highlight: str = 'none'
     no_border: bool = False
 
     def __post_init__(self):
