@@ -13,10 +13,10 @@ def check_mark(value: bool, empty_if_false: bool = False) -> str:
     if empty_if_false and not value:
         return ''
 
-    # For all other output rich gracefully handles colourless output
-    # but here we must handle it manually
-    # If NO_COLOR is set, return simple check or cross marks
-    # Otherwise, return colored check or cross marks
+    # rich gracefully handles the absence of colour throughout the rest of the application,
+    # but here we must handle it manually.
+    # If NO_COLOR is set, we return plain text symbols.
+    # Otherwise, we return coloured symbols.
     if os.getenv('NO_COLOR', '') != '':
         return '✓' if value else '✗'
     return '✅' if value else '❌'
