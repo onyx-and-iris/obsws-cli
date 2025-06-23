@@ -130,3 +130,43 @@ def directory(
         console.out.print(
             f'Recording directory: {console.highlight(ctx, resp.record_directory)}'
         )
+
+
+@app.command('split | sp')
+def split(ctx: typer.Context):
+    """Split the current recording."""
+    active, paused = _get_recording_status(ctx)
+    if not active:
+        console.err.print('Recording is not in progress, cannot split.')
+        raise typer.Exit(1)
+    if paused:
+        console.err.print('Recording is paused, cannot split.')
+        raise typer.Exit(1)
+
+    ctx.obj['obsws'].split_record_file()
+    console.out.print('Recording split successfully.')
+
+
+@app.command('chapter | ch')
+def chapter(
+    ctx: typer.Context,
+    chapter_name: Annotated[
+        Optional[str],
+        typer.Argument(
+            help='Name of the chapter to create.',
+        ),
+    ] = None,
+):
+    """Create a chapter in the current recording."""
+    active, paused = _get_recording_status(ctx)
+    if not active:
+        console.err.print('Recording is not in progress, cannot create chapter.')
+        raise typer.Exit(1)
+    if paused:
+        console.err.print('Recording is paused, cannot create chapter.')
+        raise typer.Exit(1)
+
+    ctx.obj['obsws'].create_record_chapter(chapter_name)
+    console.out.print(
+        f'Chapter {console.highlight(chapter_name or "unnamed")} created successfully.'
+    )
