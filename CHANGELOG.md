@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.19.0] - 2025-06-23
+
+### Added
+
+-   record split and record chapter commands, see [Record](https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#record)
+    -   As of OBS 30.2.0, the only file format supporting *record chapter* is Hybrid MP4.
+
 # [0.18.0] - 2025-06-21
 
 ### Added
