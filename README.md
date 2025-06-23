@@ -354,6 +354,21 @@ obsws-cli record directory "/home/me/obs-vids/"
 obsws-cli record directory "C:/Users/me/Videos"
 ```
 
+-   split: Split the current recording.
+
+```console
+obsws-cli record split
+```
+
+-   chapter: Create a chapter in the current recording.
+
+    *optional*
+    -   args: <chapter_name>
+
+```console
+obsws-cli record chapter "Chapter Name"
+```
+
 #### Stream
 
 -   start: Start streaming.
