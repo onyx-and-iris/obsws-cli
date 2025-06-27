@@ -90,7 +90,7 @@ Optionally you may disable border colouring with the --no-border flag:
 ![coloured-no-border](./img/coloured-no-border.png)
 
 ```console
-obsws-cli --style="cyan' --no-border sceneitem list
+obsws-cli --style="cyan" --no-border sceneitem list
 ```
 
 Or with environment variables:
