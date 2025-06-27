@@ -108,7 +108,11 @@ def switch(
 
     if preview:
         ctx.obj['obsws'].set_current_preview_scene(scene_name)
-        console.out.print(f'Switched to preview scene: [green]{scene_name}[/green]')
+        console.out.print(
+            f'Switched to preview scene: {console.highlight(ctx, scene_name)}'
+        )
     else:
         ctx.obj['obsws'].set_current_program_scene(scene_name)
-        console.out.print(f'Switched to program scene: [green]{scene_name}[/green]')
+        console.out.print(
+            f'Switched to program scene: {console.highlight(ctx, scene_name)}'
+        )
