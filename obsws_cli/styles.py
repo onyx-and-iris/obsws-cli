@@ -42,11 +42,6 @@ class Disabled(Style):
     column: str = 'none'
     highlight: str = 'none'
 
-    def __post_init__(self):
-        """Post-initialization to set default values."""
-        super().__post_init__()
-        os.environ['NO_COLOR'] = '1'
-
 
 @register_style
 @dataclass
@@ -182,4 +177,7 @@ class Black(Style):
 
 def request_style_obj(style_name: str, no_border: bool) -> Style:
     """Entry point for style objects. Returns a Style object based on the style name."""
+    if style_name == 'disabled':
+        os.environ['NO_COLOR'] = '1'
+
     return registry[style_name.lower()](no_border=no_border)
