@@ -14,6 +14,7 @@ For an outline of past/future changes refer to: [CHANGELOG](CHANGELOG.md)
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Style](#style)
 - [Commands](#root-typer)
 - [License](#license)
 
@@ -67,6 +68,37 @@ OBS_PASSWORD=<websocket password>
 ```
 
 Flags can be used to override environment variables.
+
+## Style
+
+Styling is opt-in, by default you will get a colourless output:
+
+![colourless](./img/colourless.png)
+
+You may enable styling with the --style/-s flag:
+
+```console
+obsws-cli --style="cyan" sceneitem list
+```
+
+Available styles: _red, magenta, purple, blue, cyan, green, yellow, orange, white, grey, navy, black_
+
+![coloured](./img/coloured-border.png)
+
+Optionally you may disable border colouring with the --no-border flag:
+
+![coloured-no-border](./img/coloured-no-border.png)
+
+```console
+obsws-cli --style="cyan' --no-border sceneitem list
+```
+
+Or with environment variables:
+
+```env
+OBS_STYLE=cyan
+OBS_STYLE_NO_BORDER=true
+```
 
 ## Root Typer
 
@@ -626,34 +658,6 @@ obsws-cli projector open --monitor-index=1 "test_group"
 
 ```console
 obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos\screenshot.png"
-```
-
-## Style
-
-By default styling is disabled but you may enable it with:
-
--   --style/-s: Style used in output.
-    -  OBS_STYLE
--   --no-border/-b: Disable table border styling in output.
-    -  OBS_STYLE_NO_BORDER
-
-Available styles:
-
-- red
-- magenta
-- purple
-- blue
-- cyan
-- green
-- yellow
-- orange
-- white
-- grey
-- navy
-- black
-
-```console
-obsws-cli --style=cyan --no-border scene list
 ```
 
 ## License
