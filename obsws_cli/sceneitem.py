@@ -78,8 +78,8 @@ def list_(
             ('Enabled', 'center', None),
         ]
     # Add columns to the table
-    for column, justify, style in columns:
-        table.add_column(column, justify=justify, style=style)
+    for heading, justify, style in columns:
+        table.add_column(heading, justify=justify, style=style)
 
     for item_id, item_name, is_group, is_enabled, source_uuid in items:
         if is_group:

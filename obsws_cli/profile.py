@@ -29,8 +29,8 @@ def list_(ctx: typer.Context):
         (Text('Profile Name', justify='center'), 'left', ctx.obj['style'].column),
         (Text('Current', justify='center'), 'center', None),
     ]
-    for column, justify, style in columns:
-        table.add_column(column, justify=justify, style=style)
+    for heading, justify, style in columns:
+        table.add_column(heading, justify=justify, style=style)
 
     for profile in resp.profiles:
         table.add_row(

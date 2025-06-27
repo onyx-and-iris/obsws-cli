@@ -43,8 +43,8 @@ def list_(
             (Text('Scene Name', justify='center'), 'left', ctx.obj['style'].column),
             (Text('Active', justify='center'), 'center', None),
         ]
-    for column, justify, style in columns:
-        table.add_column(column, justify=justify, style=style)
+    for heading, justify, style in columns:
+        table.add_column(heading, justify=justify, style=style)
 
     for scene_name, scene_uuid in scenes:
         if uuid:

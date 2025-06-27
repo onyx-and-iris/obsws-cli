@@ -74,8 +74,8 @@ def list_(
             (Text('Kind', justify='center'), 'center', ctx.obj['style'].column),
             (Text('Muted', justify='center'), 'center', None),
         ]
-    for column, justify, style in columns:
-        table.add_column(column, justify=justify, style=style)
+    for heading, justify, style in columns:
+        table.add_column(heading, justify=justify, style=style)
 
     for input_name, input_kind, input_uuid in inputs:
         input_mark = ''

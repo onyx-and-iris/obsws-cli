@@ -62,8 +62,8 @@ def list_(
         (Text('Enabled', justify='center'), 'center', None),
         (Text('Settings', justify='center'), 'center', ctx.obj['style'].column),
     ]
-    for name, justify, style in columns:
-        table.add_column(name, justify=justify, style=style)
+    for heading, justify, style in columns:
+        table.add_column(heading, justify=justify, style=style)
 
     for filter in resp.filters:
         resp = ctx.obj['obsws'].get_source_filter_default_settings(filter['filterKind'])

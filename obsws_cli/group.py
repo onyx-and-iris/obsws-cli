@@ -61,8 +61,8 @@ def list_(
         (Text('Group Name', justify='center'), 'left', ctx.obj['style'].column),
         (Text('Enabled', justify='center'), 'center', None),
     ]
-    for column, justify, style in columns:
-        table.add_column(column, justify=justify, style=style)
+    for heading, justify, style in columns:
+        table.add_column(heading, justify=justify, style=style)
 
     for item_id, group_name, is_enabled in groups:
         table.add_row(
