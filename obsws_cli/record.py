@@ -168,5 +168,5 @@ def chapter(
 
     ctx.obj['obsws'].create_record_chapter(chapter_name)
     console.out.print(
-        f'Chapter {console.highlight(chapter_name or "unnamed")} created successfully.'
+        f'Chapter {console.highlight(ctx, chapter_name or "unnamed")} created successfully.'
     )
