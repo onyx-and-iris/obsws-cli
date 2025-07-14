@@ -71,6 +71,13 @@ def pytest_sessionstart(session):
         },
         sceneItemEnabled=True,
     )
+    session.obsws.create_input(
+        sceneName='pytest_scene',
+        inputName='pytest_text_input',
+        inputKind='text_gdiplus_v3',
+        inputSettings={'text': 'Hello, OBS!'},
+        sceneItemEnabled=True,
+    )
     resp = session.obsws.get_scene_item_list('pytest_scene')
     for item in resp.scene_items:
         if item['sourceName'] == 'pytest_input_2':
