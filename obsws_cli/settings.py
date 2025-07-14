@@ -16,6 +16,7 @@ class Settings(UserDict):
     The settings are expected to be in uppercase and should start with 'OBS_'.
 
     Example:
+    -------
         settings = Settings()
         host = settings['OBS_HOST']
         settings['OBS_PORT'] = 4455
@@ -64,12 +65,15 @@ def get(key: str) -> SettingsValue:
     """Get a setting value by key.
 
     Args:
+    ----
         key (str): The key of the setting to retrieve.
 
     Returns:
+    -------
         The value of the setting.
 
     Raises:
+    ------
         KeyError: If the key does not exist in the settings.
 
     """
