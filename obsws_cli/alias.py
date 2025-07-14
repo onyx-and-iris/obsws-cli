@@ -44,6 +44,8 @@ class RootTyperAliasGroup(typer.core.TyperGroup):
                 cmd_name = 'stream'
             case 'sm':
                 cmd_name = 'studiomode'
+            case 't':
+                cmd_name = 'text'
             case 'vc':
                 cmd_name = 'virtualcam'
         return super().get_command(ctx, cmd_name)

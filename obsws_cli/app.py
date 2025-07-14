@@ -28,6 +28,7 @@ for sub_typer in (
     'screenshot',
     'stream',
     'studiomode',
+    'text',
     'virtualcam',
 ):
     module = importlib.import_module(f'.{sub_typer}', package=__package__)
