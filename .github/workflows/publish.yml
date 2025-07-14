@@ -11,7 +11,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    environment: release
+    environment: pypi
     permissions:
       # This permission is needed for private repositories.
       contents: read
