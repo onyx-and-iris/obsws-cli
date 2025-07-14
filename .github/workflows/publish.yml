@@ -36,4 +36,4 @@ jobs:
         run: hatch build
 
       - name: Publish on PyPI
-        run: hatch publish
+        uses: pypa/gh-action-pypi-publish@release/v1
