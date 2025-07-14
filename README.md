@@ -335,6 +335,22 @@ obsws-cli input unmute "Mic/Aux"
 obsws-cli input toggle "Mic/Aux"
 ```
 
+#### Text
+
+-   current: Get the current text for a text input.
+    -   args: <input_name>
+
+```console
+obsws-cli text current "My Text Input"
+```
+
+-   update: Update the text of a text input.
+    -   args: <input_name> <new_text>
+
+```console
+obsws-cli text update "My Text Input" "hi OBS!"
+```
+
 #### Record
 
 -   start: Start recording.
