@@ -2,12 +2,14 @@
 
 from typing import Annotated
 
-from cyclopts import App, Argument, CycloptsError, Parameter
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 from rich.text import Text
 
 from . import console, util, validate
 from .context import Context
+from .enum import ExitCode
+from .error import OBSWSCLIError
 
 app = App(name='scene')
 
@@ -68,9 +70,9 @@ def current(
 ):
     """Get the current program scene or preview scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        raise CycloptsError(
+        raise OBSWSCLIError(
             'Studio mode is not enabled, cannot get preview scene.',
-            console=console.err,
+            code=ExitCode.INVALID_PARAMETER,
         )
 
     if preview:
@@ -98,15 +100,15 @@ def switch(
 ):
     """Switch to a scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        raise CycloptsError(
-            'Studio mode is not enabled, cannot set the preview scene.',
-            console=console.err,
+        raise OBSWSCLIError(
+            'Studio mode is not enabled, cannot switch to preview scene.',
+            code=ExitCode.INVALID_PARAMETER,
         )
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        raise CycloptsError(
+        raise OBSWSCLIError(
             f'Scene [yellow]{scene_name}[/yellow] not found.',
-            console=console.err,
+            code=ExitCode.NOT_FOUND,
         )
 
     if preview:
