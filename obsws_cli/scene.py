@@ -72,7 +72,7 @@ def current(
     if preview and not validate.studio_mode_enabled(ctx):
         raise OBSWSCLIError(
             'Studio mode is not enabled, cannot get preview scene.',
-            code=ExitCode.INVALID_PARAMETER,
+            code=ExitCode.ERROR,
         )
 
     if preview:
@@ -102,13 +102,13 @@ def switch(
     if preview and not validate.studio_mode_enabled(ctx):
         raise OBSWSCLIError(
             'Studio mode is not enabled, cannot switch to preview scene.',
-            code=ExitCode.INVALID_PARAMETER,
+            code=ExitCode.ERROR,
         )
 
     if not validate.scene_in_scenes(ctx, scene_name):
         raise OBSWSCLIError(
             f'Scene [yellow]{scene_name}[/yellow] not found.',
-            code=ExitCode.NOT_FOUND,
+            code=ExitCode.ERROR,
         )
 
     if preview:

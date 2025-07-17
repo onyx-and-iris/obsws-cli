@@ -3,7 +3,7 @@
 from typing import Annotated, Optional
 
 import obsws_python as obsws
-from cyclopts import App, Argument, CycloptsError, Parameter
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 from rich.text import Text
 
@@ -37,7 +37,7 @@ def list_(
         if e.code == 600:
             raise OBSWSCLIError(
                 f'No source found by the name of [yellow]{source_name}[/yellow].',
-                code=ExitCode.NOT_FOUND,
+                code=ExitCode.ERROR,
             )
         else:
             raise
@@ -104,9 +104,9 @@ def enable(
 ):
     """Enable a filter for a source."""
     if _get_filter_enabled(ctx, source_name, filter_name):
-        raise CycloptsError(
+        raise OBSWSCLIError(
             f'Filter [yellow]{filter_name}[/yellow] is already enabled for source [yellow]{source_name}[/yellow]',
-            console=console.err,
+            code=ExitCode.ERROR,
         )
 
     ctx.client.set_source_filter_enabled(source_name, filter_name, enabled=True)
@@ -131,9 +131,9 @@ def disable(
 ):
     """Disable a filter for a source."""
     if not _get_filter_enabled(ctx, source_name, filter_name):
-        raise CycloptsError(
+        raise OBSWSCLIError(
             f'Filter [yellow]{filter_name}[/yellow] is already disabled for source [yellow]{source_name}[/yellow]',
-            console=console.err,
+            code=ExitCode.ERROR,
         )
 
     ctx.client.set_source_filter_enabled(source_name, filter_name, enabled=False)

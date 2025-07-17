@@ -8,9 +8,3 @@ class ExitCode(IntEnum):
 
     SUCCESS = 0
     ERROR = auto()
-    INVALID_ARGUMENT = auto()
-    INVALID_PARAMETER = auto()
-    NOT_FOUND = auto()
-    ALREADY_EXISTS = auto()
-    TIMEOUT = auto()
-    UNKNOWN_ERROR = auto()
