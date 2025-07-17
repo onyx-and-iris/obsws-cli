@@ -21,7 +21,12 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["typer>=0.16.0", "obsws-python>=1.8.0", "python-dotenv>=1.1.0"]
+dependencies = [
+  "cyclopts>=3.22.2",
+  "typer>=0.16.0",
+  "obsws-python>=1.8.0",
+  "python-dotenv>=1.1.0",
+]
 
 
 [project.urls]
@@ -30,7 +35,7 @@ Issues = "https://github.com/onyx-and-iris/obsws-cli/issues"
 Source = "https://github.com/onyx-and-iris/obsws-cli"
 
 [project.scripts]
-obsws-cli = "obsws_cli:app"
+obsws-cli = "obsws_cli:run"
 
 [tool.hatch.version]
 path = "obsws_cli/__about__.py"

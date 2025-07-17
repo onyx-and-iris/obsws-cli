@@ -2,45 +2,41 @@
 
 from typing import Annotated
 
-import typer
+from cyclopts import App, Argument, CycloptsError, Parameter
 from rich.table import Table
 from rich.text import Text
 
 from . import console, util, validate
-from .alias import SubTyperAliasGroup
+from .context import Context
 
-app = typer.Typer(cls=SubTyperAliasGroup)
-
-
-@app.callback()
-def main():
-    """Control OBS scenes."""
+app = App(name='scene')
 
 
-@app.command('list | ls')
+@app.command(name=['list', 'ls'])
 def list_(
-    ctx: typer.Context,
-    uuid: Annotated[bool, typer.Option(help='Show UUIDs of scenes')] = False,
+    uuid: Annotated[bool, Parameter(help='Show UUIDs of scenes')] = False,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """List all scenes."""
-    resp = ctx.obj['obsws'].get_scene_list()
+    resp = ctx.client.get_scene_list()
     scenes = (
         (scene.get('sceneName'), scene.get('sceneUuid'))
         for scene in reversed(resp.scenes)
     )
 
-    active_scene = ctx.obj['obsws'].get_current_program_scene().scene_name
+    active_scene = ctx.client.get_current_program_scene().scene_name
 
-    table = Table(title='Scenes', padding=(0, 2), border_style=ctx.obj['style'].border)
+    table = Table(title='Scenes', padding=(0, 2), border_style=ctx.style.border)
     if uuid:
         columns = [
-            (Text('Scene Name', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('Scene Name', justify='center'), 'left', ctx.style.column),
             (Text('Active', justify='center'), 'center', None),
-            (Text('UUID', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('UUID', justify='center'), 'left', ctx.style.column),
         ]
     else:
         columns = [
-            (Text('Scene Name', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('Scene Name', justify='center'), 'left', ctx.style.column),
             (Text('Active', justify='center'), 'center', None),
         ]
     for heading, justify, style in columns:
@@ -62,57 +58,64 @@ def list_(
     console.out.print(table)
 
 
-@app.command('current | get')
+@app.command(name=['current', 'get'])
 def current(
-    ctx: typer.Context,
     preview: Annotated[
-        bool, typer.Option(help='Get the preview scene instead of the program scene')
+        bool, Parameter(help='Get the preview scene instead of the program scene')
     ] = False,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Get the current program scene or preview scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        console.err.print('Studio mode is not enabled, cannot get preview scene.')
-        raise typer.Exit(1)
+        raise CycloptsError(
+            'Studio mode is not enabled, cannot get preview scene.',
+            console=console.err,
+        )
 
     if preview:
-        resp = ctx.obj['obsws'].get_current_preview_scene()
+        resp = ctx.client.get_current_preview_scene()
         console.out.print(
             f'Current Preview Scene: {console.highlight(ctx, resp.current_preview_scene_name)}'
         )
     else:
-        resp = ctx.obj['obsws'].get_current_program_scene()
+        resp = ctx.client.get_current_program_scene()
         console.out.print(
             f'Current Program Scene: {console.highlight(ctx, resp.current_program_scene_name)}'
         )
 
 
-@app.command('switch | set')
+@app.command(name=['switch', 'set'])
 def switch(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., help='Name of the scene to switch to')
-    ],
+    scene_name: Annotated[str, Argument(hint='Name of the scene to switch to')],
+    /,
     preview: Annotated[
         bool,
-        typer.Option(help='Switch to the preview scene instead of the program scene'),
+        Parameter(help='Switch to the preview scene instead of the program scene'),
     ] = False,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Switch to a scene."""
     if preview and not validate.studio_mode_enabled(ctx):
-        console.err.print('Studio mode is not enabled, cannot set the preview scene.')
-        raise typer.Exit(1)
+        raise CycloptsError(
+            'Studio mode is not enabled, cannot set the preview scene.',
+            console=console.err,
+        )
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
+        raise CycloptsError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            console=console.err,
+        )
 
     if preview:
-        ctx.obj['obsws'].set_current_preview_scene(scene_name)
+        ctx.client.set_current_preview_scene(scene_name)
         console.out.print(
             f'Switched to preview scene: {console.highlight(ctx, scene_name)}'
         )
     else:
-        ctx.obj['obsws'].set_current_program_scene(scene_name)
+        ctx.client.set_current_program_scene(scene_name)
         console.out.print(
             f'Switched to program scene: {console.highlight(ctx, scene_name)}'
         )

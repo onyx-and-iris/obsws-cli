@@ -2,6 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-from .app import app
+from .app import run
 
-__all__ = ['app']
+__all__ = ['run']
