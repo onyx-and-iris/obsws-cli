@@ -1,22 +1,30 @@
 """Command line interface for the OBS WebSocket API."""
 
 import importlib
+import logging
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Any
 
 import obsws_python as obsws
 from cyclopts import App, Group, Parameter, config
 
+from obsws_cli.__about__ import __version__ as version
+
 from . import console, styles
 from .context import Context
+from .error import OBSWSCLIError
 
 app = App(
     config=config.Env(
         'OBS_'
     ),  # Environment variable prefix for configuration parameters
+    version=version,
 )
 app.meta.group_parameters = Group('Session Parameters', sort_key=0)
-for sub_app in ('scene',):
+for sub_app in (
+    'filter',
+    'scene',
+):
     module = importlib.import_module(f'.{sub_app}', package=__package__)
     app.command(module.app)
 
@@ -39,6 +47,15 @@ class StyleConfig:
     no_border: bool = False
 
 
+def setup_logging(type_, value: Any):
+    """Set up logging for the application."""
+    log_level = logging.DEBUG if value else logging.CRITICAL
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    )
+
+
 @app.meta.default
 def launcher(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],
@@ -52,6 +69,10 @@ def launcher(
         StyleConfig,
         Parameter(show=False, allow_leading_hyphen=True, help='Style parameters'),
     ],
+    debug: Annotated[
+        bool,
+        Parameter(validator=setup_logging),
+    ] = False,
 ):
     """Initialize the OBS WebSocket client and return the context."""
     with obsws.ReqClient(
@@ -85,5 +106,12 @@ def obs_version(
 
 
 def run():
-    """Run the OBS WebSocket CLI."""
-    app.meta()
+    """Run the OBS WebSocket CLI application.
+
+    Handles exceptions and prints error messages to the console.
+    """
+    try:
+        app.meta()
+    except OBSWSCLIError as e:
+        console.err.print(f'Error: {e}')
+        return e.code
