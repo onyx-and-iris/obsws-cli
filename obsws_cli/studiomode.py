@@ -1,48 +1,57 @@
 """module containing commands for manipulating studio mode in OBS."""
 
-import typer
+from typing import Annotated
+
+from cyclopts import App, Parameter
 
 from . import console
-from .alias import SubTyperAliasGroup
+from .context import Context
 
-app = typer.Typer(cls=SubTyperAliasGroup)
-
-
-@app.callback()
-def main():
-    """Control studio mode in OBS."""
+app = App(name='studiomode', help='Commands for controlling studio mode in OBS.')
 
 
-@app.command('enable | on')
-def enable(ctx: typer.Context):
+@app.command(name=['enable', 'on'])
+def enable(
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
+):
     """Enable studio mode."""
     ctx.obj['obsws'].set_studio_mode_enabled(True)
     console.out.print('Studio mode has been enabled.')
 
 
-@app.command('disable | off')
-def disable(ctx: typer.Context):
+@app.command(name=['disable', 'off'])
+def disable(
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
+):
     """Disable studio mode."""
-    ctx.obj['obsws'].set_studio_mode_enabled(False)
+    ctx.client.set_studio_mode_enabled(False)
     console.out.print('Studio mode has been disabled.')
 
 
-@app.command('toggle | tg')
-def toggle(ctx: typer.Context):
+@app.command(name=['toggle', 'tg'])
+def toggle(
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
+):
     """Toggle studio mode."""
-    resp = ctx.obj['obsws'].get_studio_mode_enabled()
+    resp = ctx.client.get_studio_mode_enabled()
     if resp.studio_mode_enabled:
-        ctx.obj['obsws'].set_studio_mode_enabled(False)
+        ctx.client.set_studio_mode_enabled(False)
         console.out.print('Studio mode is now disabled.')
     else:
-        ctx.obj['obsws'].set_studio_mode_enabled(True)
+        ctx.client.set_studio_mode_enabled(True)
         console.out.print('Studio mode is now enabled.')
 
 
-@app.command('status | ss')
-def status(ctx: typer.Context):
+@app.command(name=['status', 'ss'])
+def status(
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
+):
     """Get the status of studio mode."""
-    resp = ctx.obj['obsws'].get_studio_mode_enabled()
+    resp = ctx.client.get_studio_mode_enabled()
     if resp.studio_mode_enabled:
         console.out.print('Studio mode is enabled.')
     else:
