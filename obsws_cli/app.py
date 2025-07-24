@@ -27,6 +27,7 @@ for sub_app in (
     'hotkey',
     'input',
     'profile',
+    'projector',
     'filter',
     'scene',
 ):
