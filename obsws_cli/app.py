@@ -35,6 +35,7 @@ for sub_app in (
     'scenecollection',
     'sceneitem',
     'screenshot',
+    'stream',
 ):
     module = importlib.import_module(f'.{sub_app}', package=__package__)
     app.command(module.app)
