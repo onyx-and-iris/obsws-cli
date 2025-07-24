@@ -2,42 +2,42 @@
 
 from typing import Annotated, Optional
 
-import typer
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 from rich.text import Text
 
 from . import console, util, validate
-from .alias import SubTyperAliasGroup
+from .context import Context
+from .enum import ExitCode
+from .error import OBSWSCLIError
 from .protocols import DataclassProtocol
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = App(name='group', help='Commands for managing groups in OBS scenes')
 
 
-@app.callback()
-def main():
-    """Control groups in OBS scenes."""
-
-
-@app.command('list | ls')
+@app.command(name=['list', 'ls'])
 def list_(
-    ctx: typer.Context,
     scene_name: Annotated[
         Optional[str],
-        typer.Argument(
-            show_default='The current scene',
-            help='Scene name to list groups for',
+        Argument(
+            hint='Scene name to list groups for',
         ),
     ] = None,
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """List groups in a scene."""
     if not scene_name:
-        scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
+        scene_name = ctx.client.get_current_program_scene().scene_name
 
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(1)
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
+        )
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.client.get_scene_item_list(scene_name)
     groups = [
         (item.get('sceneItemId'), item.get('sourceName'), item.get('sceneItemEnabled'))
         for item in resp.scene_items
@@ -45,20 +45,20 @@ def list_(
     ]
 
     if not groups:
-        console.out.print(
-            f'No groups found in scene {console.highlight(ctx, scene_name)}.'
+        raise OBSWSCLIError(
+            f'No groups found in scene {console.highlight(ctx, scene_name)}.',
+            code=ExitCode.SUCCESS,
         )
-        raise typer.Exit()
 
     table = Table(
         title=f'Groups in Scene: {scene_name}',
         padding=(0, 2),
-        border_style=ctx.obj['style'].border,
+        border_style=ctx.style.border,
     )
 
     columns = [
-        (Text('ID', justify='center'), 'center', ctx.obj['style'].column),
-        (Text('Group Name', justify='center'), 'left', ctx.obj['style'].column),
+        (Text('ID', justify='center'), 'center', ctx.style.column),
+        (Text('Group Name', justify='center'), 'left', ctx.style.column),
         (Text('Enabled', justify='center'), 'center', None),
     ]
     for heading, justify, style in columns:
@@ -87,30 +87,32 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
     return group
 
 
-@app.command('show | sh')
+@app.command(name=['show', 'sh'])
 def show(
-    ctx: typer.Context,
     scene_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Scene name the group is in'),
+        Argument(hint='Scene name the group is in'),
     ],
-    group_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Group name to show')
-    ],
+    group_name: Annotated[str, Argument(hint='Group name to show')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Show a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(1)
-
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-    if (group := _get_group(group_name, resp)) is None:
-        console.err.print(
-            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    resp = ctx.client.get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        raise OBSWSCLIError(
+            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].',
+            code=ExitCode.ERROR,
+        )
+
+    ctx.client.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=True,
@@ -119,29 +121,29 @@ def show(
     console.out.print(f'Group {console.highlight(ctx, group_name)} is now visible.')
 
 
-@app.command('hide | h')
+@app.command(name=['hide', 'h'])
 def hide(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the group is in')
-    ],
-    group_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Group name to hide')
-    ],
+    scene_name: Annotated[str, Argument(hint='Scene name the group is in')],
+    group_name: Annotated[str, Argument(hint='Group name to hide')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Hide a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-    if (group := _get_group(group_name, resp)) is None:
-        console.err.print(
-            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    resp = ctx.client.get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        raise OBSWSCLIError(
+            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].',
+            code=ExitCode.ERROR,
+        )
+
+    ctx.client.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=False,
@@ -150,30 +152,30 @@ def hide(
     console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')
 
 
-@app.command('toggle | tg')
+@app.command(name=['toggle', 'tg'])
 def toggle(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the group is in')
-    ],
-    group_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Group name to toggle')
-    ],
+    scene_name: Annotated[str, Argument(hint='Scene name the group is in')],
+    group_name: Annotated[str, Argument(hint='Group name to toggle')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Toggle a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-    if (group := _get_group(group_name, resp)) is None:
-        console.err.print(
-            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
+
+    resp = ctx.client.get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        raise OBSWSCLIError(
+            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].',
+            code=ExitCode.ERROR,
+        )
 
     new_state = not group.get('sceneItemEnabled')
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.client.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
         enabled=new_state,
@@ -185,29 +187,29 @@ def toggle(
         console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')
 
 
-@app.command('status | ss')
+@app.command(name=['status', 'ss'])
 def status(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the group is in')
-    ],
-    group_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Group name to check status')
-    ],
+    scene_name: Annotated[str, Argument(hint='Scene name the group is in')],
+    group_name: Annotated[str, Argument(hint='Group name to check status')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Get the status of a group in a scene."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
-    if (group := _get_group(group_name, resp)) is None:
-        console.err.print(
-            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    resp = ctx.client.get_scene_item_list(scene_name)
+    if (group := _get_group(group_name, resp)) is None:
+        raise OBSWSCLIError(
+            f'Group [yellow]{group_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow].',
+            code=ExitCode.ERROR,
+        )
+
+    enabled = ctx.client.get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(group.get('sceneItemId')),
     )
