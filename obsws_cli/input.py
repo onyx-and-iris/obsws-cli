@@ -3,33 +3,31 @@
 from typing import Annotated
 
 import obsws_python as obsws
-import typer
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 from rich.text import Text
 
 from . import console, util, validate
-from .alias import SubTyperAliasGroup
+from .context import Context
+from .enum import ExitCode
+from .error import OBSWSCLIError
 
-app = typer.Typer(cls=SubTyperAliasGroup)
-
-
-@app.callback()
-def main():
-    """Control inputs in OBS."""
+app = App(name='input', help='Commands for managing inputs in OBS')
 
 
-@app.command('list | ls')
+@app.command(name=['list', 'ls'])
 def list_(
-    ctx: typer.Context,
-    input: Annotated[bool, typer.Option(help='Filter by input type.')] = False,
-    output: Annotated[bool, typer.Option(help='Filter by output type.')] = False,
-    colour: Annotated[bool, typer.Option(help='Filter by colour source type.')] = False,
-    ffmpeg: Annotated[bool, typer.Option(help='Filter by ffmpeg source type.')] = False,
-    vlc: Annotated[bool, typer.Option(help='Filter by VLC source type.')] = False,
-    uuid: Annotated[bool, typer.Option(help='Show UUIDs of inputs.')] = False,
+    input: Annotated[bool, Parameter(help='Filter by input type.')] = False,
+    output: Annotated[bool, Parameter(help='Filter by output type.')] = False,
+    colour: Annotated[bool, Parameter(help='Filter by colour source type.')] = False,
+    ffmpeg: Annotated[bool, Parameter(help='Filter by ffmpeg source type.')] = False,
+    vlc: Annotated[bool, Parameter(help='Filter by VLC source type.')] = False,
+    uuid: Annotated[bool, Parameter(help='Show UUIDs of inputs.')] = False,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """List all inputs."""
-    resp = ctx.obj['obsws'].get_input_list()
+    resp = ctx.client.get_input_list()
 
     kinds = []
     if input:
@@ -43,7 +41,7 @@ def list_(
     if vlc:
         kinds.append('vlc')
     if not any([input, output, colour, ffmpeg, vlc]):
-        kinds = ctx.obj['obsws'].get_input_kind_list(False).input_kinds
+        kinds = ctx.client.get_input_kind_list(False).input_kinds
 
     inputs = sorted(
         (
@@ -57,21 +55,20 @@ def list_(
     )
 
     if not inputs:
-        console.out.print('No inputs found.')
-        raise typer.Exit()
+        raise OBSWSCLIError('No inputs found.', code=ExitCode.SUCCESS)
 
-    table = Table(title='Inputs', padding=(0, 2), border_style=ctx.obj['style'].border)
+    table = Table(title='Inputs', padding=(0, 2), border_style=ctx.style.border)
     if uuid:
         columns = [
-            (Text('Input Name', justify='center'), 'left', ctx.obj['style'].column),
-            (Text('Kind', justify='center'), 'center', ctx.obj['style'].column),
+            (Text('Input Name', justify='center'), 'left', ctx.style.column),
+            (Text('Kind', justify='center'), 'center', ctx.style.column),
             (Text('Muted', justify='center'), 'center', None),
-            (Text('UUID', justify='center'), 'left', ctx.obj['style'].column),
+            (Text('UUID', justify='center'), 'left', ctx.style.column),
         ]
     else:
         columns = [
-            (Text('Input Name', justify='center'), 'left', ctx.obj['style'].column),
-            (Text('Kind', justify='center'), 'center', ctx.obj['style'].column),
+            (Text('Input Name', justify='center'), 'left', ctx.style.column),
+            (Text('Kind', justify='center'), 'center', ctx.style.column),
             (Text('Muted', justify='center'), 'center', None),
         ]
     for heading, justify, style in columns:
@@ -80,7 +77,7 @@ def list_(
     for input_name, input_kind, input_uuid in inputs:
         input_mark = ''
         try:
-            input_muted = ctx.obj['obsws'].get_input_mute(name=input_name).input_muted
+            input_muted = ctx.client.get_input_mute(name=input_name).input_muted
             input_mark = util.check_mark(input_muted)
         except obsws.error.OBSSDKRequestError as e:
             if e.code == 604:  # Input does not support audio
@@ -105,19 +102,21 @@ def list_(
     console.out.print(table)
 
 
-@app.command('mute | m')
+@app.command(name=['mute', 'm'])
 def mute(
-    ctx: typer.Context,
-    input_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Name of the input to mute.')
-    ],
+    input_name: Annotated[str, Argument(hint='Name of the input to mute.')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Mute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
-        raise typer.Exit(1)
+        raise OBSWSCLIError(
+            f'Input [yellow]{input_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
+        )
 
-    ctx.obj['obsws'].set_input_mute(
+    ctx.client.set_input_mute(
         name=input_name,
         muted=True,
     )
@@ -125,20 +124,21 @@ def mute(
     console.out.print(f'Input {console.highlight(ctx, input_name)} muted.')
 
 
-@app.command('unmute | um')
+@app.command(name=['unmute', 'um'])
 def unmute(
-    ctx: typer.Context,
-    input_name: Annotated[
-        str,
-        typer.Argument(..., show_default=False, help='Name of the input to unmute.'),
-    ],
+    input_name: Annotated[str, Argument(hint='Name of the input to unmute.')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Unmute an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
-        raise typer.Exit(1)
+        raise OBSWSCLIError(
+            f'Input [yellow]{input_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
+        )
 
-    ctx.obj['obsws'].set_input_mute(
+    ctx.client.set_input_mute(
         name=input_name,
         muted=False,
     )
@@ -146,23 +146,27 @@ def unmute(
     console.out.print(f'Input {console.highlight(ctx, input_name)} unmuted.')
 
 
-@app.command('toggle | tg')
+@app.command(name=['toggle', 'tg'])
 def toggle(
-    ctx: typer.Context,
     input_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Name of the input to toggle.'),
+        Argument(hint='Name of the input to toggle.'),
     ],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Toggle an input."""
     if not validate.input_in_inputs(ctx, input_name):
-        console.err.print(f'Input [yellow]{input_name}[/yellow] not found.')
-        raise typer.Exit(1)
+        raise OBSWSCLIError(
+            f'Input [yellow]{input_name}[/yellow] not found.',
+            code=ExitCode.ERROR,
+        )
 
-    resp = ctx.obj['obsws'].get_input_mute(name=input_name)
+    resp = ctx.client.get_input_mute(name=input_name)
     new_state = not resp.input_muted
 
-    ctx.obj['obsws'].set_input_mute(
+    ctx.client.set_input_mute(
         name=input_name,
         muted=new_state,
     )
