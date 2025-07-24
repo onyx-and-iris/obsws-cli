@@ -2,37 +2,33 @@
 
 from typing import Annotated
 
-import typer
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 from rich.text import Text
 
 from . import console
-from .alias import SubTyperAliasGroup
+from .context import Context
 
-app = typer.Typer(cls=SubTyperAliasGroup)
-
-
-@app.callback()
-def main():
-    """Control hotkeys in OBS."""
+app = App(name='hotkey', help='Commands for managing hotkeys in OBS')
 
 
-@app.command('list | ls')
+@app.command(name=['list', 'ls'])
 def list_(
-    ctx: typer.Context,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """List all hotkeys."""
-    resp = ctx.obj['obsws'].get_hotkey_list()
+    resp = ctx.client.get_hotkey_list()
 
     table = Table(
         title='Hotkeys',
         padding=(0, 2),
-        border_style=ctx.obj['style'].border,
+        border_style=ctx.style.border,
     )
     table.add_column(
         Text('Hotkey Name', justify='center'),
         justify='left',
-        style=ctx.obj['style'].column,
+        style=ctx.style.column,
     )
 
     for i, hotkey in enumerate(resp.hotkeys):
@@ -41,40 +37,40 @@ def list_(
     console.out.print(table)
 
 
-@app.command('trigger | tr')
+@app.command(name=['trigger', 'tr'])
 def trigger(
-    ctx: typer.Context,
-    hotkey: Annotated[
-        str, typer.Argument(..., show_default=False, help='The hotkey to trigger')
-    ],
+    hotkey: Annotated[str, Argument(hint='The hotkey to trigger')],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Trigger a hotkey by name."""
-    ctx.obj['obsws'].trigger_hotkey_by_name(hotkey)
+    ctx.client.trigger_hotkey_by_name(hotkey)
 
 
-@app.command('trigger-sequence | trs')
+@app.command(name=['trigger-sequence', 'trs'])
 def trigger_sequence(
-    ctx: typer.Context,
     key_id: Annotated[
         str,
-        typer.Argument(
-            ...,
-            show_default=False,
-            help='The OBS key ID to trigger, see https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#hotkey for more info',
+        Argument(
+            hint='The OBS key ID to trigger, see https://github.com/onyx-and-iris/obsws-cli?tab=readme-ov-file#hotkey for more info',
         ),
     ],
+    /,
     shift: Annotated[
-        bool, typer.Option(..., help='Press shift when triggering the hotkey')
+        bool, Parameter(help='Press shift when triggering the hotkey')
     ] = False,
     ctrl: Annotated[
-        bool, typer.Option(..., help='Press control when triggering the hotkey')
+        bool, Parameter(help='Press control when triggering the hotkey')
     ] = False,
     alt: Annotated[
-        bool, typer.Option(..., help='Press alt when triggering the hotkey')
+        bool, Parameter(help='Press alt when triggering the hotkey')
     ] = False,
     cmd: Annotated[
-        bool, typer.Option(..., help='Press cmd when triggering the hotkey')
+        bool, Parameter(help='Press cmd when triggering the hotkey')
     ] = False,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Trigger a hotkey by sequence."""
-    ctx.obj['obsws'].trigger_hotkey_by_key_sequence(key_id, shift, ctrl, alt, cmd)
+    ctx.client.trigger_hotkey_by_key_sequence(key_id, shift, ctrl, alt, cmd)

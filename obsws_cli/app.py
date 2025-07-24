@@ -24,6 +24,7 @@ app = App(
 app.meta.group_parameters = Group('Options', sort_key=0)
 for sub_app in (
     'group',
+    'hotkey',
     'filter',
     'scene',
 ):
