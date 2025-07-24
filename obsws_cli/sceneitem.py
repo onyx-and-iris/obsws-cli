@@ -13,7 +13,7 @@ from .error import OBSWSCLIError
 app = App(name='sceneitem', help='Commands for controlling scene items in OBS.')
 
 
-@app.command('list | ls')
+@app.command(name=['list', 'ls'])
 def list_(
     scene_name: Annotated[
         Optional[str],
