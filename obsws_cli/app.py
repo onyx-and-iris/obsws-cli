@@ -23,12 +23,13 @@ app = App(
 )
 app.meta.group_parameters = Group('Options', sort_key=0)
 for sub_app in (
+    'filter',
     'group',
     'hotkey',
     'input',
     'profile',
     'projector',
-    'filter',
+    'record',
     'scene',
 ):
     module = importlib.import_module(f'.{sub_app}', package=__package__)
