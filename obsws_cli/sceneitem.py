@@ -2,41 +2,42 @@
 
 from typing import Annotated, Optional
 
-import typer
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 
 from . import console, util, validate
-from .alias import SubTyperAliasGroup
+from .context import Context
+from .enum import ExitCode
+from .error import OBSWSCLIError
 
-app = typer.Typer(cls=SubTyperAliasGroup)
-
-
-@app.callback()
-def main():
-    """Control items in OBS scenes."""
+app = App(name='sceneitem', help='Commands for controlling scene items in OBS.')
 
 
 @app.command('list | ls')
 def list_(
-    ctx: typer.Context,
     scene_name: Annotated[
         Optional[str],
-        typer.Argument(
-            show_default='The current scene',
-            help='Scene name to list items for',
+        Argument(
+            hint='Scene name to list items for',
         ),
     ] = None,
-    uuid: Annotated[bool, typer.Option(help='Show UUIDs of scene items')] = False,
+    /,
+    uuid: Annotated[bool, Parameter(help='Show UUIDs of scene items')] = False,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """List all items in a scene."""
     if not scene_name:
-        scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
+        scene_name = ctx.client.get_current_program_scene().scene_name
 
     if not validate.scene_in_scenes(ctx, scene_name):
         console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            exit_code=ExitCode.ERROR,
+        )
 
-    resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
+    resp = ctx.client.get_scene_item_list(scene_name)
     items = sorted(
         (
             (
@@ -52,10 +53,10 @@ def list_(
     )
 
     if not items:
-        console.out.print(
-            f'No items found in scene {console.highlight(ctx, scene_name)}.'
+        raise OBSWSCLIError(
+            f'No items found in scene [yellow]{scene_name}[/yellow].',
+            exit_code=ExitCode.SUCCESS,
         )
-        raise typer.Exit()
 
     table = Table(
         title=f'Items in Scene: {scene_name}',
@@ -138,36 +139,39 @@ def list_(
 
 
 def _validate_sources(
-    ctx: typer.Context,
+    ctx: Context,
     scene_name: str,
     item_name: str,
     group: Optional[str] = None,
-) -> bool:
+):
     """Validate the scene name and item name."""
     if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        return False
+        raise OBSWSCLIError(
+            f'Scene [yellow]{scene_name}[/yellow] not found.',
+            exit_code=ExitCode.ERROR,
+        )
 
     if group:
         if not validate.item_in_scene_item_list(ctx, scene_name, group):
-            console.err.print(
-                f'Group [yellow]{group}[/yellow] not found in scene [yellow]{scene_name}[/yellow].'
+            raise OBSWSCLIError(
+                f'Group [yellow]{group}[/yellow] not found in scene [yellow]{scene_name}[/yellow].',
+                exit_code=ExitCode.ERROR,
             )
-            return False
     else:
         if not validate.item_in_scene_item_list(ctx, scene_name, item_name):
-            console.err.print(
+            raise OBSWSCLIError(
                 f'Item [yellow]{item_name}[/yellow] not found in scene [yellow]{scene_name}[/yellow]. Is the item in a group? '
                 f'If so use the [yellow]--group[/yellow] option to specify the parent group.\n'
-                'Use [yellow]obsws-cli sceneitem ls[/yellow] for a list of items in the scene.'
+                'Use [yellow]obsws-cli sceneitem ls[/yellow] for a list of items in the scene.',
+                exit_code=ExitCode.ERROR,
             )
-            return False
-
-    return True
 
 
 def _get_scene_name_and_item_id(
-    ctx: typer.Context, scene_name: str, item_name: str, group: Optional[str] = None
+    ctx: Context,
+    scene_name: str,
+    item_name: str,
+    group: Optional[str] = None,
 ):
     """Get the scene name and item ID for the given scene and item name."""
     if group:
@@ -178,10 +182,10 @@ def _get_scene_name_and_item_id(
                 scene_item_id = item.get('sceneItemId')
                 break
         else:
-            console.err.print(
-                f'Item [yellow]{item_name}[/yellow] not found in group [yellow]{group}[/yellow].'
+            raise OBSWSCLIError(
+                f'Item [yellow]{item_name}[/yellow] not found in group [yellow]{group}[/yellow].',
+                exit_code=ExitCode.ERROR,
             )
-            raise typer.Exit(1)
     else:
         resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
         scene_item_id = resp.scene_item_id
@@ -189,21 +193,20 @@ def _get_scene_name_and_item_id(
     return scene_name, scene_item_id
 
 
-@app.command('show | sh')
+@app.command(name=['show', 'sh'])
 def show(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the item is in')
-    ],
+    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
     item_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Item name to show in the scene'),
+        Argument(hint='Item name to show in the scene'),
     ],
-    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    /,
+    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Show an item in a scene."""
-    if not _validate_sources(ctx, scene_name, item_name, group):
-        raise typer.Exit(1)
+    _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
@@ -231,21 +234,20 @@ def show(
         )
 
 
-@app.command('hide | h')
+@app.command(name=['hide', 'h'])
 def hide(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the item is in')
-    ],
+    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
     item_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Item name to hide in the scene'),
+        Argument(hint='Item name to hide in the scene'),
     ],
-    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    /,
+    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Hide an item in a scene."""
-    if not _validate_sources(ctx, scene_name, item_name, group):
-        raise typer.Exit(1)
+    _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
@@ -272,36 +274,30 @@ def hide(
         )
 
 
-@app.command('toggle | tg')
+@app.command(name=['toggle', 'tg'])
 def toggle(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the item is in')
-    ],
-    item_name: Annotated[
-        str,
-        typer.Argument(
-            ..., show_default=False, help='Item name to toggle in the scene'
-        ),
-    ],
-    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
+    item_name: Annotated[str, Argument(hint='Item name to toggle in the scene')],
+    /,
+    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Toggle an item in a scene."""
-    if not _validate_sources(ctx, scene_name, item_name, group):
-        raise typer.Exit(1)
+    _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
         ctx, scene_name, item_name, group
     )
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    enabled = ctx.client.get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
     )
     new_state = not enabled.scene_item_enabled
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.client.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=new_state,
@@ -333,30 +329,26 @@ def toggle(
             )
 
 
-@app.command('visible | v')
+@app.command(name=['visible', 'v'])
 def visible(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the item is in')
-    ],
+    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
     item_name: Annotated[
-        str,
-        typer.Argument(
-            ..., show_default=False, help='Item name to check visibility in the scene'
-        ),
+        str, Argument(hint='Item name to check visibility in the scene')
     ],
-    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    /,
+    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Check if an item in a scene is visible."""
-    if not _validate_sources(ctx, scene_name, item_name, group):
-        raise typer.Exit(1)
+    _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
         ctx, scene_name, item_name, group
     )
 
-    enabled = ctx.obj['obsws'].get_scene_item_enabled(
+    enabled = ctx.client.get_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
     )
@@ -377,68 +369,62 @@ def visible(
         )
 
 
-@app.command('transform | t')
+@app.command(name=['transform', 't'])
 def transform(
-    ctx: typer.Context,
-    scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the item is in')
-    ],
-    item_name: Annotated[
-        str,
-        typer.Argument(
-            ..., show_default=False, help='Item name to transform in the scene'
-        ),
-    ],
-    group: Annotated[Optional[str], typer.Option(help='Parent group name')] = None,
+    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
+    item_name: Annotated[str, Argument(hint='Item name to transform in the scene')],
+    /,
+    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
     alignment: Annotated[
-        Optional[int], typer.Option(help='Alignment of the item in the scene')
+        Optional[int], Parameter(help='Alignment of the item in the scene')
     ] = None,
     bounds_alignment: Annotated[
-        Optional[int], typer.Option(help='Bounds alignment of the item in the scene')
+        Optional[int], Parameter(help='Bounds alignment of the item in the scene')
     ] = None,
     bounds_height: Annotated[
-        Optional[float], typer.Option(help='Height of the item in the scene')
+        Optional[float], Parameter(help='Height of the item in the scene')
     ] = None,
     bounds_type: Annotated[
-        Optional[str], typer.Option(help='Type of bounds for the item in the scene')
+        Optional[str], Parameter(help='Type of bounds for the item in the scene')
     ] = None,
     bounds_width: Annotated[
-        Optional[float], typer.Option(help='Width of the item in the scene')
+        Optional[float], Parameter(help='Width of the item in the scene')
     ] = None,
     crop_to_bounds: Annotated[
-        Optional[bool], typer.Option(help='Crop the item to the bounds')
+        Optional[bool], Parameter(help='Crop the item to the bounds')
     ] = None,
     crop_bottom: Annotated[
-        Optional[float], typer.Option(help='Bottom crop of the item in the scene')
+        Optional[float], Parameter(help='Bottom crop of the item in the scene')
     ] = None,
     crop_left: Annotated[
-        Optional[float], typer.Option(help='Left crop of the item in the scene')
+        Optional[float], Parameter(help='Left crop of the item in the scene')
     ] = None,
     crop_right: Annotated[
-        Optional[float], typer.Option(help='Right crop of the item in the scene')
+        Optional[float], Parameter(help='Right crop of the item in the scene')
     ] = None,
     crop_top: Annotated[
-        Optional[float], typer.Option(help='Top crop of the item in the scene')
+        Optional[float], Parameter(help='Top crop of the item in the scene')
     ] = None,
     position_x: Annotated[
-        Optional[float], typer.Option(help='X position of the item in the scene')
+        Optional[float], Parameter(help='X position of the item in the scene')
     ] = None,
     position_y: Annotated[
-        Optional[float], typer.Option(help='Y position of the item in the scene')
+        Optional[float], Parameter(help='Y position of the item in the scene')
     ] = None,
     rotation: Annotated[
-        Optional[float], typer.Option(help='Rotation of the item in the scene')
+        Optional[float], Parameter(help='Rotation of the item in the scene')
     ] = None,
     scale_x: Annotated[
-        Optional[float], typer.Option(help='X scale of the item in the scene')
+        Optional[float], Parameter(help='X scale of the item in the scene')
     ] = None,
     scale_y: Annotated[
-        Optional[float], typer.Option(help='Y scale of the item in the scene')
+        Optional[float], Parameter(help='Y scale of the item in the scene')
     ] = None,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Set the transform of an item in a scene."""
-    if not _validate_sources(ctx, scene_name, item_name, group):
-        raise typer.Exit(1)
+    _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
     scene_name, scene_item_id = _get_scene_name_and_item_id(
@@ -478,10 +464,12 @@ def transform(
         transform['scaleY'] = scale_y
 
     if not transform:
-        console.err.print('No transform options provided.')
-        raise typer.Exit(1)
+        raise OBSWSCLIError(
+            'No transform options provided. Use at least one of the transform options.',
+            exit_code=ExitCode.ERROR,
+        )
 
-    transform = ctx.obj['obsws'].set_scene_item_transform(
+    transform = ctx.client.set_scene_item_transform(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         transform=transform,

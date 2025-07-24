@@ -33,6 +33,7 @@ for sub_app in (
     'replaybuffer',
     'scene',
     'scenecollection',
+    'sceneitem',
 ):
     module = importlib.import_module(f'.{sub_app}', package=__package__)
     app.command(module.app)
