@@ -30,6 +30,7 @@ for sub_app in (
     'profile',
     'projector',
     'record',
+    'replaybuffer',
     'scene',
 ):
     module = importlib.import_module(f'.{sub_app}', package=__package__)
