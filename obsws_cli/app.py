@@ -26,6 +26,7 @@ for sub_app in (
     'group',
     'hotkey',
     'input',
+    'profile',
     'filter',
     'scene',
 ):
