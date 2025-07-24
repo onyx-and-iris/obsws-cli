@@ -1,11 +1,6 @@
 """module containing validation functions."""
 
-import typer
-
 from .context import Context
-
-# type alias for an option that is skipped when the command is run
-skipped_option = typer.Option(parser=lambda _: _, hidden=True, expose_value=False)
 
 
 def input_in_inputs(ctx: Context, input_name: str) -> bool:
