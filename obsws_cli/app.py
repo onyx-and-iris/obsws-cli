@@ -37,6 +37,7 @@ for sub_app in (
     'screenshot',
     'stream',
     'studiomode',
+    'text',
 ):
     module = importlib.import_module(f'.{sub_app}', package=__package__)
     app.command(module.app)
