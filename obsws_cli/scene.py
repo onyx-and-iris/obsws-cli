@@ -11,7 +11,7 @@ from .context import Context
 from .enum import ExitCode
 from .error import OBSWSCLIError
 
-app = App(name='scene')
+app = App(name='scene', help='Commands for managing OBS scenes')
 
 
 @app.command(name=['list', 'ls'])

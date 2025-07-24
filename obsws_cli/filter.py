@@ -12,7 +12,7 @@ from .context import Context
 from .enum import ExitCode
 from .error import OBSWSCLIError
 
-app = App(name='filter')
+app = App(name='filter', help='Commands for managing filters in OBS sources')
 
 
 @app.command(name=['list', 'ls'])

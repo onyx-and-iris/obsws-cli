@@ -19,9 +19,11 @@ app = App(
         'OBS_'
     ),  # Environment variable prefix for configuration parameters
     version=version,
+    usage='[bold][yellow]Usage:[/yellow] [white]obsws-cli [OPTIONS] COMMAND [ARGS]...[/white][/bold]',
 )
-app.meta.group_parameters = Group('Session Parameters', sort_key=0)
+app.meta.group_parameters = Group('Options', sort_key=0)
 for sub_app in (
+    'group',
     'filter',
     'scene',
 ):
@@ -74,7 +76,7 @@ def launcher(
         Parameter(validator=setup_logging),
     ] = False,
 ):
-    """Initialize the OBS WebSocket client and return the context."""
+    """Command line interface for the OBS WebSocket API."""
     with obsws.ReqClient(
         host=obs_config.host,
         port=obs_config.port,
