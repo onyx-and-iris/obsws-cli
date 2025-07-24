@@ -4,66 +4,57 @@ from pathlib import Path
 from typing import Annotated
 
 import obsws_python as obsws
-import typer
+from cyclopts import App, Argument, Parameter
 
 from . import console
-from .alias import SubTyperAliasGroup
+from .context import Context
+from .enum import ExitCode
+from .error import OBSWSCLIError
 
-app = typer.Typer(cls=SubTyperAliasGroup)
-
-
-@app.callback()
-def main():
-    """Take screenshots using OBS."""
+app = App(name='screenshot', help='Commands for taking screenshots using OBS.')
 
 
-@app.command('save | sv')
+@app.command(name=['save', 'sv'])
 def save(
-    ctx: typer.Context,
     source_name: Annotated[
         str,
-        typer.Argument(
-            ...,
-            show_default=False,
-            help='Name of the source to take a screenshot of.',
+        Argument(
+            hint='Name of the source to take a screenshot of.',
         ),
     ],
     output_path: Annotated[
         Path,
         # Since the CLI and OBS may be running on different platforms,
         # we won't validate the path here.
-        typer.Argument(
-            ...,
-            show_default=False,
-            file_okay=True,
-            dir_okay=False,
-            help='Path to save the screenshot (must include file name and extension).',
+        Argument(
+            hint='Path to save the screenshot (must include file name and extension).',
         ),
     ],
+    /,
     width: Annotated[
         float,
-        typer.Option(
+        Parameter(
             help='Width of the screenshot.',
         ),
     ] = 1920,
     height: Annotated[
         float,
-        typer.Option(
+        Parameter(
             help='Height of the screenshot.',
         ),
     ] = 1080,
     quality: Annotated[
         float,
-        typer.Option(
-            min=-1,
-            max=100,
+        Parameter(
             help='Quality of the screenshot.',
         ),
     ] = -1,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Take a screenshot and save it to a file."""
     try:
-        ctx.obj['obsws'].save_source_screenshot(
+        ctx.client.save_source_screenshot(
             name=source_name,
             img_format=output_path.suffix.lstrip('.').lower(),
             file_path=str(output_path),
@@ -74,16 +65,16 @@ def save(
     except obsws.error.OBSSDKRequestError as e:
         match e.code:
             case 403:
-                console.err.print(
+                raise OBSWSCLIError(
                     'The [yellow]image format[/yellow] (file extension) must be included in the file name, '
                     "for example: '/path/to/screenshot.png'.",
+                    code=ExitCode.ERROR,
                 )
-                raise typer.Exit(1)
             case 600:
-                console.err.print(
-                    f'No source was found by the name of [yellow]{source_name}[/yellow]'
+                raise OBSWSCLIError(
+                    'No source was found by the name of [yellow]{source_name}[/yellow]',
+                    code=ExitCode.ERROR,
                 )
-                raise typer.Exit(1)
             case _:
                 raise
 
