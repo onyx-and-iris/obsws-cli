@@ -2,33 +2,33 @@
 
 from typing import Annotated
 
-import typer
+from cyclopts import App, Argument, Parameter
 from rich.table import Table
 
 from . import console, validate
-from .alias import SubTyperAliasGroup
+from .context import Context
+from .enum import ExitCode
+from .error import OBSWSCLIError
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = App(
+    name='scenecollection', help='Commands for controlling scene collections in OBS.'
+)
 
 
-@app.callback()
-def main():
-    """Control scene collections in OBS."""
-
-
-@app.command('list | ls')
-def list_(ctx: typer.Context):
+@app.command(name=['list', 'ls'])
+def list_(
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
+):
     """List all scene collections."""
-    resp = ctx.obj['obsws'].get_scene_collection_list()
+    resp = ctx.client.get_scene_collection_list()
 
     table = Table(
         title='Scene Collections',
         padding=(0, 2),
-        border_style=ctx.obj['style'].border,
+        border_style=ctx.style.border,
     )
-    table.add_column(
-        'Scene Collection Name', justify='left', style=ctx.obj['style'].column
-    )
+    table.add_column('Scene Collection Name', justify='left', style=ctx.style.column)
 
     for scene_collection_name in resp.scene_collections:
         table.add_row(scene_collection_name)
@@ -36,59 +36,66 @@ def list_(ctx: typer.Context):
     console.out.print(table)
 
 
-@app.command('current | get')
-def current(ctx: typer.Context):
+@app.command(name=['current', 'get'])
+def current(
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
+):
     """Get the current scene collection."""
-    resp = ctx.obj['obsws'].get_scene_collection_list()
+    resp = ctx.client.get_scene_collection_list()
     console.out.print(
         f'Current scene collection: {console.highlight(ctx, resp.current_scene_collection_name)}'
     )
 
 
-@app.command('switch | set')
+@app.command(name=['switch', 'set'])
 def switch(
-    ctx: typer.Context,
     scene_collection_name: Annotated[
-        str, typer.Argument(..., help='Name of the scene collection to switch to')
+        str, Argument(hint='Name of the scene collection to switch to')
     ],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Switch to a scene collection."""
     if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        console.err.print(
-            f'Scene collection [yellow]{scene_collection_name}[/yellow] not found.'
+        raise OBSWSCLIError(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] not found.',
+            exit_code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
 
     current_scene_collection = (
-        ctx.obj['obsws'].get_scene_collection_list().current_scene_collection_name
+        ctx.client.get_scene_collection_list().current_scene_collection_name
     )
     if scene_collection_name == current_scene_collection:
-        console.err.print(
-            f'Scene collection [yellow]{scene_collection_name}[/yellow] is already active.'
+        raise OBSWSCLIError(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] is already active.',
+            exit_code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
 
-    ctx.obj['obsws'].set_current_scene_collection(scene_collection_name)
+    ctx.client.set_current_scene_collection(scene_collection_name)
     console.out.print(
         f'Switched to scene collection {console.highlight(ctx, scene_collection_name)}.'
     )
 
 
-@app.command('create | new')
+@app.command(name=['create', 'new'])
 def create(
-    ctx: typer.Context,
     scene_collection_name: Annotated[
-        str, typer.Argument(..., help='Name of the scene collection to create')
+        str, Argument(hint='Name of the scene collection to create')
     ],
+    /,
+    *,
+    ctx: Annotated[Context, Parameter(parse=False)],
 ):
     """Create a new scene collection."""
     if validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        console.err.print(
-            f'Scene collection [yellow]{scene_collection_name}[/yellow] already exists.'
+        raise OBSWSCLIError(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] already exists.',
+            exit_code=ExitCode.ERROR,
         )
-        raise typer.Exit(1)
 
-    ctx.obj['obsws'].create_scene_collection(scene_collection_name)
+    ctx.client.create_scene_collection(scene_collection_name)
     console.out.print(
         f'Created scene collection {console.highlight(ctx, scene_collection_name)}.'
     )
