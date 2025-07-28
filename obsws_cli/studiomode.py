@@ -15,8 +15,15 @@ def enable(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Enable studio mode."""
-    ctx.obj['obsws'].set_studio_mode_enabled(True)
+    """Enable studio mode.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
+    ctx.client.set_studio_mode_enabled(True)
     console.out.print('Studio mode has been enabled.')
 
 
@@ -25,7 +32,14 @@ def disable(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Disable studio mode."""
+    """Disable studio mode.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     ctx.client.set_studio_mode_enabled(False)
     console.out.print('Studio mode has been disabled.')
 
@@ -35,7 +49,14 @@ def toggle(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle studio mode."""
+    """Toggle studio mode.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     resp = ctx.client.get_studio_mode_enabled()
     if resp.studio_mode_enabled:
         ctx.client.set_studio_mode_enabled(False)
@@ -50,7 +71,14 @@ def status(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the status of studio mode."""
+    """Get the status of studio mode.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     resp = ctx.client.get_studio_mode_enabled()
     if resp.studio_mode_enabled:
         console.out.print('Studio mode is enabled.')

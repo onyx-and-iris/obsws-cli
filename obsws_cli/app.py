@@ -47,7 +47,14 @@ for sub_app in (
 @Parameter(name='*')
 @dataclass
 class OBSConfig:
-    """Dataclass to hold OBS connection parameters."""
+    """Dataclass to hold OBS connection parameters.
+
+    Attributes:
+        host (str): The hostname or IP address of the OBS WebSocket server.
+        port (int): The port number of the OBS WebSocket server.
+        password (str): The password for the OBS WebSocket server, if required.
+
+    """
 
     host: str = 'localhost'
     port: int = 4455
@@ -56,7 +63,13 @@ class OBSConfig:
 
 @dataclass
 class StyleConfig:
-    """Dataclass to hold style parameters."""
+    """Dataclass to hold style parameters.
+
+    Attributes:
+        name (str): The name of the style to use for console output.
+        no_border (bool): Whether to style the borders in the console output.
+
+    """
 
     name: str = 'disabled'
     no_border: bool = False
@@ -74,19 +87,11 @@ def setup_logging(type_, value: Any):
 @app.meta.default
 def launcher(
     *tokens: Annotated[str, Parameter(show=False, allow_leading_hyphen=True)],
-    obs_config: OBSConfig = Annotated[
-        OBSConfig,
-        Parameter(
-            show=False, allow_leading_hyphen=True, help='OBS connection parameters'
-        ),
-    ],
-    style_config: StyleConfig = Annotated[
-        StyleConfig,
-        Parameter(show=False, allow_leading_hyphen=True, help='Style parameters'),
-    ],
+    obs_config: OBSConfig,
+    style_config: StyleConfig,
     debug: Annotated[
         bool,
-        Parameter(validator=setup_logging),
+        Parameter(validator=setup_logging, help='Enable debug logging'),
     ] = False,
 ):
     """Command line interface for the OBS WebSocket API."""

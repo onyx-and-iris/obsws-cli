@@ -19,7 +19,14 @@ def start(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Start the replay buffer."""
+    """Start the replay buffer.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.get_replay_buffer_status()
     if resp.output_active:
         raise OBSWSCLIError('Replay buffer is already active.', ExitCode.ERROR)
@@ -33,7 +40,14 @@ def stop(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Stop the replay buffer."""
+    """Stop the replay buffer.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.get_replay_buffer_status()
     if not resp.output_active:
         raise OBSWSCLIError('Replay buffer is not active.', ExitCode.ERROR)
@@ -47,7 +61,14 @@ def toggle(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle the replay buffer."""
+    """Toggle the replay buffer.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.toggle_replay_buffer()
     if resp.output_active:
         console.out.print('Replay buffer is active.')
@@ -60,7 +81,14 @@ def status(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the status of the replay buffer."""
+    """Get the status of the replay buffer.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.get_replay_buffer_status()
     if resp.output_active:
         console.out.print('Replay buffer is active.')
@@ -73,6 +101,13 @@ def save(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Save the replay buffer."""
+    """Save the replay buffer.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     ctx.client.save_replay_buffer()
     console.out.print('Replay buffer saved.')

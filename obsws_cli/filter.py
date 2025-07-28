@@ -3,7 +3,7 @@
 from typing import Annotated, Optional
 
 import obsws_python as obsws
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 from rich.table import Table
 from rich.text import Text
 
@@ -17,17 +17,21 @@ app = App(name='filter', help='Commands for managing filters in OBS sources')
 
 @app.command(name=['list', 'ls'])
 def list_(
-    source_name: Annotated[
-        Optional[str],
-        Argument(
-            hint='The source to list filters for',
-        ),
-    ] = None,
+    source_name: Optional[str] = None,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List filters for a source."""
+    """List filters for a source.
+
+    Parameters
+    ----------
+    source_name : str, optional
+        The name of the source to list filters for. If not provided, the current program scene's source will be used.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not source_name:
         source_name = ctx.client.get_current_program_scene().scene_name
 
@@ -90,19 +94,24 @@ def _get_filter_enabled(ctx: Context, source_name: str, filter_name: str):
 
 @app.command(name=['enable', 'on'])
 def enable(
-    source_name: Annotated[
-        str,
-        Argument(hint='The source to enable the filter for'),
-    ],
-    filter_name: Annotated[
-        str,
-        Argument(hint='The name of the filter to enable'),
-    ],
+    source_name: str,
+    filter_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Enable a filter for a source."""
+    """Enable a filter for a source.
+
+    Parameters
+    ----------
+    source_name : str
+        The name of the source to enable the filter for.
+    filter_name : str
+        The name of the filter to enable.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if _get_filter_enabled(ctx, source_name, filter_name):
         raise OBSWSCLIError(
             f'Filter [yellow]{filter_name}[/yellow] is already enabled for source [yellow]{source_name}[/yellow]',
@@ -117,19 +126,24 @@ def enable(
 
 @app.command(name=['disable', 'off'])
 def disable(
-    source_name: Annotated[
-        str,
-        Argument(hint='The source to disable the filter for'),
-    ],
-    filter_name: Annotated[
-        str,
-        Argument(hint='The name of the filter to disable'),
-    ],
+    source_name: str,
+    filter_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Disable a filter for a source."""
+    """Disable a filter for a source.
+
+    Parameters
+    ----------
+    source_name : str
+        The name of the source to disable the filter for.
+    filter_name : str
+        The name of the filter to disable.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not _get_filter_enabled(ctx, source_name, filter_name):
         raise OBSWSCLIError(
             f'Filter [yellow]{filter_name}[/yellow] is already disabled for source [yellow]{source_name}[/yellow]',
@@ -144,19 +158,24 @@ def disable(
 
 @app.command(name=['toggle', 'tg'])
 def toggle(
-    source_name: Annotated[
-        str,
-        Argument(hint='The source to toggle the filter for'),
-    ],
-    filter_name: Annotated[
-        str,
-        Argument(hint='The name of the filter to toggle'),
-    ],
+    source_name: str,
+    filter_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle a filter for a source."""
+    """Toggle a filter for a source.
+
+    Parameters
+    ----------
+    source_name : str
+        The name of the source to toggle the filter for.
+    filter_name : str
+        The name of the filter to toggle.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
     new_state = not is_enabled
 
@@ -173,19 +192,24 @@ def toggle(
 
 @app.command(name=['status', 'ss'])
 def status(
-    source_name: Annotated[
-        str,
-        Argument(hint='The source to get the filter status for'),
-    ],
-    filter_name: Annotated[
-        str,
-        Argument(hint='The name of the filter to get the status for'),
-    ],
+    source_name: str,
+    filter_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the status of a filter for a source."""
+    """Get the status of a filter for a source.
+
+    Parameters
+    ----------
+    source_name : str
+        The name of the source to check the filter status for.
+    filter_name : str
+        The name of the filter to check the status for.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     is_enabled = _get_filter_enabled(ctx, source_name, filter_name)
     if is_enabled:
         console.out.print(

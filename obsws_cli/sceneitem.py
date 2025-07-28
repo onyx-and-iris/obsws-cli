@@ -2,7 +2,7 @@
 
 from typing import Annotated, Optional
 
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 from rich.table import Table
 
 from . import console, util, validate
@@ -15,18 +15,25 @@ app = App(name='sceneitem', help='Commands for controlling scene items in OBS.')
 
 @app.command(name=['list', 'ls'])
 def list_(
-    scene_name: Annotated[
-        Optional[str],
-        Argument(
-            hint='Scene name to list items for',
-        ),
-    ] = None,
+    scene_name: Optional[str] = None,
     /,
-    uuid: Annotated[bool, Parameter(help='Show UUIDs of scene items')] = False,
+    uuid: bool = False,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List all items in a scene."""
+    """List all items in a scene.
+
+    Parameters
+    ----------
+    scene_name : str, optional
+        The name of the scene to list items for. If not provided, the current program scene
+        will be used.
+    uuid : bool
+        Show UUIDs of scene items.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     if not scene_name:
         scene_name = ctx.client.get_current_program_scene().scene_name
 
@@ -61,21 +68,21 @@ def list_(
     table = Table(
         title=f'Items in Scene: {scene_name}',
         padding=(0, 2),
-        border_style=ctx.obj['style'].border,
+        border_style=ctx.style.border,
     )
     if uuid:
         columns = [
-            ('Item ID', 'center', ctx.obj['style'].column),
-            ('Item Name', 'left', ctx.obj['style'].column),
-            ('In Group', 'left', ctx.obj['style'].column),
+            ('Item ID', 'center', ctx.style.column),
+            ('Item Name', 'left', ctx.style.column),
+            ('In Group', 'left', ctx.style.column),
             ('Enabled', 'center', None),
-            ('UUID', 'left', ctx.obj['style'].column),
+            ('UUID', 'left', ctx.style.column),
         ]
     else:
         columns = [
-            ('Item ID', 'center', ctx.obj['style'].column),
-            ('Item Name', 'left', ctx.obj['style'].column),
-            ('In Group', 'left', ctx.obj['style'].column),
+            ('Item ID', 'center', ctx.style.column),
+            ('Item Name', 'left', ctx.style.column),
+            ('In Group', 'left', ctx.style.column),
             ('Enabled', 'center', None),
         ]
     # Add columns to the table
@@ -84,7 +91,7 @@ def list_(
 
     for item_id, item_name, is_group, is_enabled, source_uuid in items:
         if is_group:
-            resp = ctx.obj['obsws'].get_group_scene_item_list(item_name)
+            resp = ctx.client.get_group_scene_item_list(item_name)
             group_items = sorted(
                 (
                     (
@@ -175,7 +182,7 @@ def _get_scene_name_and_item_id(
 ):
     """Get the scene name and item ID for the given scene and item name."""
     if group:
-        resp = ctx.obj['obsws'].get_group_scene_item_list(group)
+        resp = ctx.client.get_group_scene_item_list(group)
         for item in resp.scene_items:
             if item.get('sourceName') == item_name:
                 scene_name = group
@@ -187,7 +194,7 @@ def _get_scene_name_and_item_id(
                 exit_code=ExitCode.ERROR,
             )
     else:
-        resp = ctx.obj['obsws'].get_scene_item_id(scene_name, item_name)
+        resp = ctx.client.get_scene_item_id(scene_name, item_name)
         scene_item_id = resp.scene_item_id
 
     return scene_name, scene_item_id
@@ -195,17 +202,27 @@ def _get_scene_name_and_item_id(
 
 @app.command(name=['show', 'sh'])
 def show(
-    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
-    item_name: Annotated[
-        str,
-        Argument(hint='Item name to show in the scene'),
-    ],
+    scene_name: str,
+    item_name: str,
     /,
-    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    group: Optional[str] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Show an item in a scene."""
+    """Show an item in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene the item is in.
+    item_name : str
+        The name of the item to show in the scene.
+    group : str, optional
+        The name of the parent group the item is in, if applicable.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
@@ -213,7 +230,7 @@ def show(
         ctx, scene_name, item_name, group
     )
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.client.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=True,
@@ -236,17 +253,27 @@ def show(
 
 @app.command(name=['hide', 'h'])
 def hide(
-    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
-    item_name: Annotated[
-        str,
-        Argument(hint='Item name to hide in the scene'),
-    ],
+    scene_name: str,
+    item_name: str,
     /,
-    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    group: Optional[str] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Hide an item in a scene."""
+    """Hide an item in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene the item is in.
+    item_name : str
+        The name of the item to hide in the scene.
+    group : str, optional
+        The name of the parent group the item is in, if applicable.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
@@ -254,7 +281,7 @@ def hide(
         ctx, scene_name, item_name, group
     )
 
-    ctx.obj['obsws'].set_scene_item_enabled(
+    ctx.client.set_scene_item_enabled(
         scene_name=scene_name,
         item_id=int(scene_item_id),
         enabled=False,
@@ -276,14 +303,27 @@ def hide(
 
 @app.command(name=['toggle', 'tg'])
 def toggle(
-    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
-    item_name: Annotated[str, Argument(hint='Item name to toggle in the scene')],
+    scene_name: str,
+    item_name: str,
     /,
-    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    group: Optional[str] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle an item in a scene."""
+    """Toggle an item in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene the item is in.
+    item_name : str
+        The name of the item to toggle in the scene.
+    group : str, optional
+        The name of the parent group the item is in, if applicable.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
@@ -331,16 +371,27 @@ def toggle(
 
 @app.command(name=['visible', 'v'])
 def visible(
-    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
-    item_name: Annotated[
-        str, Argument(hint='Item name to check visibility in the scene')
-    ],
+    scene_name: str,
+    item_name: str,
     /,
-    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
+    group: Optional[str] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Check if an item in a scene is visible."""
+    """Check if an item in a scene is visible.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene the item is in.
+    item_name : str
+        The name of the item to check visibility in the scene.
+    group : str, optional
+        The name of the parent group the item is in, if applicable.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name
@@ -371,59 +422,72 @@ def visible(
 
 @app.command(name=['transform', 't'])
 def transform(
-    scene_name: Annotated[str, Argument(hint='Scene name the item is in')],
-    item_name: Annotated[str, Argument(hint='Item name to transform in the scene')],
+    scene_name: str,
+    item_name: str,
     /,
-    group: Annotated[Optional[str], Parameter(help='Parent group name')] = None,
-    alignment: Annotated[
-        Optional[int], Parameter(help='Alignment of the item in the scene')
-    ] = None,
-    bounds_alignment: Annotated[
-        Optional[int], Parameter(help='Bounds alignment of the item in the scene')
-    ] = None,
-    bounds_height: Annotated[
-        Optional[float], Parameter(help='Height of the item in the scene')
-    ] = None,
-    bounds_type: Annotated[
-        Optional[str], Parameter(help='Type of bounds for the item in the scene')
-    ] = None,
-    bounds_width: Annotated[
-        Optional[float], Parameter(help='Width of the item in the scene')
-    ] = None,
-    crop_to_bounds: Annotated[
-        Optional[bool], Parameter(help='Crop the item to the bounds')
-    ] = None,
-    crop_bottom: Annotated[
-        Optional[float], Parameter(help='Bottom crop of the item in the scene')
-    ] = None,
-    crop_left: Annotated[
-        Optional[float], Parameter(help='Left crop of the item in the scene')
-    ] = None,
-    crop_right: Annotated[
-        Optional[float], Parameter(help='Right crop of the item in the scene')
-    ] = None,
-    crop_top: Annotated[
-        Optional[float], Parameter(help='Top crop of the item in the scene')
-    ] = None,
-    position_x: Annotated[
-        Optional[float], Parameter(help='X position of the item in the scene')
-    ] = None,
-    position_y: Annotated[
-        Optional[float], Parameter(help='Y position of the item in the scene')
-    ] = None,
-    rotation: Annotated[
-        Optional[float], Parameter(help='Rotation of the item in the scene')
-    ] = None,
-    scale_x: Annotated[
-        Optional[float], Parameter(help='X scale of the item in the scene')
-    ] = None,
-    scale_y: Annotated[
-        Optional[float], Parameter(help='Y scale of the item in the scene')
-    ] = None,
+    group: Optional[str] = None,
+    alignment: Optional[int] = None,
+    bounds_alignment: Optional[int] = None,
+    bounds_height: Optional[float] = None,
+    bounds_type: Optional[str] = None,
+    bounds_width: Optional[float] = None,
+    crop_to_bounds: Optional[bool] = None,
+    crop_bottom: Optional[float] = None,
+    crop_left: Optional[float] = None,
+    crop_right: Optional[float] = None,
+    crop_top: Optional[float] = None,
+    position_x: Optional[float] = None,
+    position_y: Optional[float] = None,
+    rotation: Optional[float] = None,
+    scale_x: Optional[float] = None,
+    scale_y: Optional[float] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Set the transform of an item in a scene."""
+    """Set the transform of an item in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene the item is in.
+    item_name : str
+        The name of the item to transform in the scene.
+    group : str, optional
+        The name of the parent group the item is in, if applicable.
+    alignment : int, optional
+        Alignment of the item in the scene.
+    bounds_alignment : int, optional
+        Bounds alignment of the item in the scene.
+    bounds_height : float, optional
+        Height of the item in the scene.
+    bounds_type : str, optional
+        Type of bounds for the item in the scene.
+    bounds_width : float, optional
+        Width of the item in the scene.
+    crop_to_bounds : bool, optional
+        Crop the item to the bounds.
+    crop_bottom : float, optional
+        Bottom crop of the item in the scene.
+    crop_left : float, optional
+        Left crop of the item in the scene.
+    crop_right : float, optional
+        Right crop of the item in the scene.
+    crop_top : float, optional
+        Top crop of the item in the scene.
+    position_x : float, optional
+        X position of the item in the scene.
+    position_y : float, optional
+        Y position of the item in the scene.
+    rotation : float, optional
+        Rotation of the item in the scene.
+    scale_x : float, optional
+        X scale of the item in the scene.
+    scale_y : float, optional
+        Y scale of the item in the scene.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     _validate_sources(ctx, scene_name, item_name, group)
 
     old_scene_name = scene_name

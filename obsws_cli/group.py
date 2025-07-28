@@ -2,7 +2,7 @@
 
 from typing import Annotated, Optional
 
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 from rich.table import Table
 from rich.text import Text
 
@@ -17,17 +17,22 @@ app = App(name='group', help='Commands for managing groups in OBS scenes')
 
 @app.command(name=['list', 'ls'])
 def list_(
-    scene_name: Annotated[
-        Optional[str],
-        Argument(
-            hint='Scene name to list groups for',
-        ),
-    ] = None,
+    scene_name: Optional[str] = None,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List groups in a scene."""
+    """List groups in a scene.
+
+    Parameters
+    ----------
+    scene_name : str, optional
+        The name of the scene to list groups for. If not provided, the current program scene
+        will be used.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not scene_name:
         scene_name = ctx.client.get_current_program_scene().scene_name
 
@@ -89,16 +94,24 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
 
 @app.command(name=['show', 'sh'])
 def show(
-    scene_name: Annotated[
-        str,
-        Argument(hint='Scene name the group is in'),
-    ],
-    group_name: Annotated[str, Argument(hint='Group name to show')],
+    scene_name: str,
+    group_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Show a group in a scene."""
+    """Show a group in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene where the group is located.
+    group_name : str
+        The name of the group to show.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not validate.scene_in_scenes(ctx, scene_name):
         raise OBSWSCLIError(
             f'Scene [yellow]{scene_name}[/yellow] not found.',
@@ -123,13 +136,24 @@ def show(
 
 @app.command(name=['hide', 'h'])
 def hide(
-    scene_name: Annotated[str, Argument(hint='Scene name the group is in')],
-    group_name: Annotated[str, Argument(hint='Group name to hide')],
+    scene_name: str,
+    group_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Hide a group in a scene."""
+    """Hide a group in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene where the group is located.
+    group_name : str
+        The name of the group to hide.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not validate.scene_in_scenes(ctx, scene_name):
         raise OBSWSCLIError(
             f'Scene [yellow]{scene_name}[/yellow] not found.',
@@ -154,13 +178,24 @@ def hide(
 
 @app.command(name=['toggle', 'tg'])
 def toggle(
-    scene_name: Annotated[str, Argument(hint='Scene name the group is in')],
-    group_name: Annotated[str, Argument(hint='Group name to toggle')],
+    scene_name: str,
+    group_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle a group in a scene."""
+    """Toggle a group in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene where the group is located.
+    group_name : str
+        The name of the group to toggle.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not validate.scene_in_scenes(ctx, scene_name):
         raise OBSWSCLIError(
             f'Scene [yellow]{scene_name}[/yellow] not found.',
@@ -189,13 +224,24 @@ def toggle(
 
 @app.command(name=['status', 'ss'])
 def status(
-    scene_name: Annotated[str, Argument(hint='Scene name the group is in')],
-    group_name: Annotated[str, Argument(hint='Group name to check status')],
+    scene_name: str,
+    group_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the status of a group in a scene."""
+    """Get the status of a group in a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene where the group is located.
+    group_name : str
+        The name of the group to check.
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     if not validate.scene_in_scenes(ctx, scene_name):
         raise OBSWSCLIError(
             f'Scene [yellow]{scene_name}[/yellow] not found.',

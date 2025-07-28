@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Annotated, Optional
 
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 
 from . import console
 from .context import Context
@@ -24,7 +24,14 @@ def start(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Start recording."""
+    """Start recording.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, paused = _get_recording_status(ctx)
     if active:
         err_msg = 'Recording is already in progress, cannot start.'
@@ -41,7 +48,14 @@ def stop(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Stop recording."""
+    """Stop recording.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, _ = _get_recording_status(ctx)
     if not active:
         raise OBSWSCLIError(
@@ -59,7 +73,14 @@ def toggle(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle recording."""
+    """Toggle recording.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.toggle_record()
     if resp.output_active:
         console.out.print('Recording started successfully.')
@@ -72,7 +93,14 @@ def status(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get recording status."""
+    """Get recording status.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, paused = _get_recording_status(ctx)
     if active:
         if paused:
@@ -88,7 +116,14 @@ def resume(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Resume recording."""
+    """Resume recording.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, paused = _get_recording_status(ctx)
     if not active:
         raise OBSWSCLIError(
@@ -108,7 +143,14 @@ def pause(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Pause recording."""
+    """Pause recording.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, paused = _get_recording_status(ctx)
     if not active:
         raise OBSWSCLIError(
@@ -125,18 +167,22 @@ def pause(
 
 @app.command(name=['directory', 'd'])
 def directory(
-    record_directory: Annotated[
-        Optional[Path],
-        # Since the CLI and OBS may be running on different platforms,
-        # we won't validate the path here.
-        Argument(
-            hint='Directory to set for recording.',
-        ),
-    ] = None,
+    # Since the CLI and OBS may be running on different platforms,
+    # we won't validate the path here.
+    record_directory: Optional[Path] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get or set the recording directory."""
+    """Get or set the recording directory.
+
+    Parameters
+    ----------
+    record_directory: Optional[Path]
+        The directory to set for recording. If not provided, the current recording directory is displayed.
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     if record_directory is not None:
         ctx.client.set_record_directory(str(record_directory))
         console.out.print(
@@ -154,7 +200,14 @@ def split(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Split the current recording."""
+    """Split the current recording.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, paused = _get_recording_status(ctx)
     if not active:
         console.err.print('Recording is not in progress, cannot split.')
@@ -170,16 +223,20 @@ def split(
 
 @app.command(name=['chapter', 'ch'])
 def chapter(
-    chapter_name: Annotated[
-        Optional[str],
-        Argument(
-            hint='Name of the chapter to create.',
-        ),
-    ] = None,
+    chapter_name: Optional[str] = None,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Create a chapter in the current recording."""
+    """Create a chapter in the current recording.
+
+    Parameters
+    ----------
+    chapter_name: Optional[str]
+        The name of the chapter to create. If not provided, an unnamed chapter is created.
+    ctx: Context
+        The context containing the OBS client and other settings.
+
+    """
     active, paused = _get_recording_status(ctx)
     if not active:
         raise OBSWSCLIError(

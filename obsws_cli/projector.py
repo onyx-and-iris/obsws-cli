@@ -1,8 +1,8 @@
 """module containing commands for manipulating projectors in OBS."""
 
-from typing import Annotated
+from typing import Annotated, Optional
 
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter, validators
 from rich.table import Table
 from rich.text import Text
 
@@ -19,7 +19,14 @@ def list_monitors(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List available monitors."""
+    """List available monitors.
+
+    Parameters
+    ----------
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     resp = ctx.client.get_monitor_list()
 
     if not resp.monitors:
@@ -51,21 +58,24 @@ def list_monitors(
 
 @app.command(name=['open', 'o'])
 def open(
-    source_name: Annotated[
-        str,
-        Argument(
-            hint='Name of the source to project.',
-        ),
-    ] = '',
+    source_name: Optional[str] = None,
     /,
-    monitor_index: Annotated[
-        int,
-        Parameter(help='Index of the monitor to open the projector on.'),
-    ] = 0,
+    monitor_index: Annotated[int, Parameter(validator=validators.Number(gte=0))] = 0,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Open a fullscreen projector for a source on a specific monitor."""
+    """Open a fullscreen projector for a source on a specific monitor.
+
+    Parameters
+    ----------
+    source_name : str, optional
+        The name of the source to project. If not provided, the current program scene will be used.
+    monitor_index : int, optional
+        The index of the monitor to open the projector on. Defaults to 0 (the primary monitor).
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     if not source_name:
         source_name = ctx.client.get_current_program_scene().scene_name
 

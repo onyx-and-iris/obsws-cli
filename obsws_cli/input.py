@@ -3,7 +3,7 @@
 from typing import Annotated
 
 import obsws_python as obsws
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 from rich.table import Table
 from rich.text import Text
 
@@ -17,16 +17,35 @@ app = App(name='input', help='Commands for managing inputs in OBS')
 
 @app.command(name=['list', 'ls'])
 def list_(
-    input: Annotated[bool, Parameter(help='Filter by input type.')] = False,
-    output: Annotated[bool, Parameter(help='Filter by output type.')] = False,
-    colour: Annotated[bool, Parameter(help='Filter by colour source type.')] = False,
-    ffmpeg: Annotated[bool, Parameter(help='Filter by ffmpeg source type.')] = False,
-    vlc: Annotated[bool, Parameter(help='Filter by VLC source type.')] = False,
-    uuid: Annotated[bool, Parameter(help='Show UUIDs of inputs.')] = False,
+    input: bool = False,
+    output: bool = False,
+    colour: bool = False,
+    ffmpeg: bool = False,
+    vlc: bool = False,
+    uuid: bool = False,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List all inputs."""
+    """List all inputs.
+
+    Parameters
+    ----------
+    input:
+        Filter by input type.
+    output:
+        Filter by output type.
+    colour:
+        Filter by colour source type.
+    ffmpeg:
+        Filter by ffmpeg source type.
+    vlc:
+        Filter by VLC source type.
+    uuid:
+        Show UUIDs of inputs.
+    ctx:
+        The context containing the client and style.
+
+    """
     resp = ctx.client.get_input_list()
 
     kinds = []
@@ -104,12 +123,21 @@ def list_(
 
 @app.command(name=['mute', 'm'])
 def mute(
-    input_name: Annotated[str, Argument(hint='Name of the input to mute.')],
+    input_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Mute an input."""
+    """Mute an input.
+
+    Parameters
+    ----------
+    input_name: str
+        Name of the input to mute.
+    ctx: Context
+        The context containing the client and style.
+
+    """
     if not validate.input_in_inputs(ctx, input_name):
         raise OBSWSCLIError(
             f'Input [yellow]{input_name}[/yellow] not found.',
@@ -126,12 +154,21 @@ def mute(
 
 @app.command(name=['unmute', 'um'])
 def unmute(
-    input_name: Annotated[str, Argument(hint='Name of the input to unmute.')],
+    input_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Unmute an input."""
+    """Unmute an input.
+
+    Parameters
+    ----------
+    input_name: str
+        Name of the input to unmute.
+    ctx: Context
+        The context containing the client and style.
+
+    """
     if not validate.input_in_inputs(ctx, input_name):
         raise OBSWSCLIError(
             f'Input [yellow]{input_name}[/yellow] not found.',
@@ -148,15 +185,21 @@ def unmute(
 
 @app.command(name=['toggle', 'tg'])
 def toggle(
-    input_name: Annotated[
-        str,
-        Argument(hint='Name of the input to toggle.'),
-    ],
+    input_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle an input."""
+    """Toggle an input.
+
+    Parameters
+    ----------
+    input_name: str
+        Name of the input to toggle.
+    ctx: Context
+        The context containing the client and style.
+
+    """
     if not validate.input_in_inputs(ctx, input_name):
         raise OBSWSCLIError(
             f'Input [yellow]{input_name}[/yellow] not found.',

@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 from rich.table import Table
 from rich.text import Text
 
@@ -19,7 +19,14 @@ def list_(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List profiles."""
+    """List profiles.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the client and style.
+
+    """
     resp = ctx.client.get_profile_list()
 
     table = Table(title='Profiles', padding=(0, 2), border_style=ctx.style.border)
@@ -46,7 +53,14 @@ def current(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the current profile."""
+    """Get the current profile.
+
+    Parameters
+    ----------
+    ctx: Context
+        The context containing the client and style.
+
+    """
     resp = ctx.client.get_profile_list()
     console.out.print(
         f'Current profile: {console.highlight(ctx, resp.current_profile_name)}'
@@ -55,15 +69,21 @@ def current(
 
 @app.command(name=['switch', 'set'])
 def switch(
-    profile_name: Annotated[
-        str,
-        Argument(hint='Name of the profile to switch to'),
-    ],
+    profile_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Switch to a profile."""
+    """Switch to a profile.
+
+    Parameters
+    ----------
+    profile_name: str
+        Name of the profile to switch to.
+    ctx: Context
+        The context containing the client and style.
+
+    """
     if not validate.profile_exists(ctx, profile_name):
         console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
         raise OBSWSCLIError(
@@ -84,15 +104,21 @@ def switch(
 
 @app.command(name=['create', 'new'])
 def create(
-    profile_name: Annotated[
-        str,
-        Argument(hint='Name of the profile to create.'),
-    ],
+    profile_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Create a new profile."""
+    """Create a new profile.
+
+    Parameters
+    ----------
+    profile_name: str
+        Name of the profile to create.
+    ctx: Context
+        The context containing the client and style.
+
+    """
     if validate.profile_exists(ctx, profile_name):
         raise OBSWSCLIError(
             f'Profile [yellow]{profile_name}[/yellow] already exists.',
@@ -105,15 +131,21 @@ def create(
 
 @app.command(name=['remove', 'rm'])
 def remove(
-    profile_name: Annotated[
-        str,
-        Argument(hint='Name of the profile to remove.'),
-    ],
+    profile_name: str,
     /,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Remove a profile."""
+    """Remove a profile.
+
+    Parameters
+    ----------
+    profile_name: str
+        Name of the profile to remove.
+    ctx: Context
+        The context containing the client and style.
+
+    """
     if not validate.profile_exists(ctx, profile_name):
         console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
         raise OBSWSCLIError(

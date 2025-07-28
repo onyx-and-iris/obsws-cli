@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Annotated
 
 import obsws_python as obsws
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter, validators
 
 from . import console
 from .context import Context
@@ -16,43 +16,37 @@ app = App(name='screenshot', help='Commands for taking screenshots using OBS.')
 
 @app.command(name=['save', 'sv'])
 def save(
-    source_name: Annotated[
-        str,
-        Argument(
-            hint='Name of the source to take a screenshot of.',
-        ),
-    ],
-    output_path: Annotated[
-        Path,
-        # Since the CLI and OBS may be running on different platforms,
-        # we won't validate the path here.
-        Argument(
-            hint='Path to save the screenshot (must include file name and extension).',
-        ),
-    ],
+    source_name: str,
+    # Since the CLI and OBS may be running on different platforms,
+    # we won't validate the path here.
+    output_path: Path,
     /,
-    width: Annotated[
-        float,
-        Parameter(
-            help='Width of the screenshot.',
-        ),
-    ] = 1920,
-    height: Annotated[
-        float,
-        Parameter(
-            help='Height of the screenshot.',
-        ),
-    ] = 1080,
+    width: float = 1920,
+    height: float = 1080,
     quality: Annotated[
-        float,
-        Parameter(
-            help='Quality of the screenshot.',
-        ),
-    ] = -1,
+        float, Parameter(validator=validators.Number(gte=-1, lte=100))
+    ] = -1.0,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Take a screenshot and save it to a file."""
+    """Take a screenshot and save it to a file.
+
+    Parameters
+    ----------
+    source_name : str
+        Name of the source to take a screenshot of.
+    output_path : Path
+        Path to save the screenshot (must include file name and extension).
+    width : float
+        Width of the screenshot.
+    height : float
+        Height of the screenshot.
+    quality : float
+        Quality of the screenshot. A value of -1 uses the default quality.
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     try:
         ctx.client.save_source_screenshot(
             name=source_name,

@@ -23,7 +23,14 @@ def start(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Start streaming."""
+    """Start streaming.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     active, _ = _get_streaming_status(ctx)
     if active:
         raise OBSWSCLIError(
@@ -40,7 +47,14 @@ def stop(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Stop streaming."""
+    """Stop streaming.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     active, _ = _get_streaming_status(ctx)
     if not active:
         raise OBSWSCLIError(
@@ -57,7 +71,14 @@ def toggle(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle streaming."""
+    """Toggle streaming.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     resp = ctx.client.toggle_stream()
     if resp.output_active:
         console.out.print('Streaming started successfully.')
@@ -70,7 +91,14 @@ def status(
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get streaming status."""
+    """Get streaming status.
+
+    Parameters
+    ----------
+    ctx : Context
+        Context containing the OBS WebSocket client instance.
+
+    """
     active, duration = _get_streaming_status(ctx)
     if active:
         if duration > 0:

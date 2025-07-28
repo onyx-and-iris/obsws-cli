@@ -12,27 +12,51 @@ app = App(name='virtualcam', help='Commands for controlling the virtual camera i
 
 @app.command(name=['start', 's'])
 def start(
+    *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Start the virtual camera."""
+    """Start the virtual camera.
+
+    Parameters
+    ----------
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     ctx.client.start_virtual_cam()
     console.out.print('Virtual camera started.')
 
 
 @app.command(name=['stop', 'p'])
 def stop(
+    *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Stop the virtual camera."""
+    """Stop the virtual camera.
+
+    Parameters
+    ----------
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     ctx.client.stop_virtual_cam()
     console.out.print('Virtual camera stopped.')
 
 
 @app.command(name=['toggle', 'tg'])
 def toggle(
+    *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Toggle the virtual camera."""
+    """Toggle the virtual camera.
+
+    Parameters
+    ----------
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.toggle_virtual_cam()
     if resp.output_active:
         console.out.print('Virtual camera is enabled.')
@@ -42,9 +66,17 @@ def toggle(
 
 @app.command(name=['status', 'ss'])
 def status(
+    *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the status of the virtual camera."""
+    """Get the status of the virtual camera.
+
+    Parameters
+    ----------
+    ctx : Context
+        The context containing the OBS client and other settings.
+
+    """
     resp = ctx.client.get_virtual_cam_status()
     if resp.output_active:
         console.out.print('Virtual camera is enabled.')

@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from cyclopts import App, Argument, Parameter
+from cyclopts import App, Parameter
 from rich.table import Table
 from rich.text import Text
 
@@ -16,11 +16,20 @@ app = App(name='scene', help='Commands for managing OBS scenes')
 
 @app.command(name=['list', 'ls'])
 def list_(
-    uuid: Annotated[bool, Parameter(help='Show UUIDs of scenes')] = False,
+    uuid: bool = False,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """List all scenes."""
+    """List all scenes.
+
+    Parameters
+    ----------
+    uuid : bool
+        Show UUIDs of scenes.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     resp = ctx.client.get_scene_list()
     scenes = (
         (scene.get('sceneName'), scene.get('sceneUuid'))
@@ -62,13 +71,20 @@ def list_(
 
 @app.command(name=['current', 'get'])
 def current(
-    preview: Annotated[
-        bool, Parameter(help='Get the preview scene instead of the program scene')
-    ] = False,
+    preview: bool = False,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Get the current program scene or preview scene."""
+    """Get the current program scene or preview scene.
+
+    Parameters
+    ----------
+    preview : bool
+        If True, get the preview scene instead of the program scene.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     if preview and not validate.studio_mode_enabled(ctx):
         raise OBSWSCLIError(
             'Studio mode is not enabled, cannot get preview scene.',
@@ -89,16 +105,24 @@ def current(
 
 @app.command(name=['switch', 'set'])
 def switch(
-    scene_name: Annotated[str, Argument(hint='Name of the scene to switch to')],
+    scene_name: str,
     /,
-    preview: Annotated[
-        bool,
-        Parameter(help='Switch to the preview scene instead of the program scene'),
-    ] = False,
+    preview: bool = False,
     *,
     ctx: Annotated[Context, Parameter(parse=False)],
 ):
-    """Switch to a scene."""
+    """Switch to a scene.
+
+    Parameters
+    ----------
+    scene_name : str
+        The name of the scene to switch to.
+    preview : bool
+        If True, switch to the preview scene instead of the program scene.
+    ctx : Context
+        The context containing the OBS client and configuration.
+
+    """
     if preview and not validate.studio_mode_enabled(ctx):
         raise OBSWSCLIError(
             'Studio mode is not enabled, cannot switch to preview scene.',
