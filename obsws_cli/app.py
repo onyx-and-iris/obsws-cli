@@ -103,17 +103,6 @@ def main(
             show_default=5,
         ),
     ] = settings.get('timeout'),
-    version: Annotated[
-        bool,
-        typer.Option(
-            '--version',
-            '-v',
-            is_eager=True,
-            help='Show the CLI version and exit',
-            show_default=False,
-            callback=version_callback,
-        ),
-    ] = False,
     style: Annotated[
         str,
         typer.Option(
@@ -135,6 +124,17 @@ def main(
             show_default=False,
         ),
     ] = settings.get('style_no_border'),
+    version: Annotated[
+        bool,
+        typer.Option(
+            '--version',
+            '-v',
+            is_eager=True,
+            help='Show the CLI version and exit',
+            show_default=False,
+            callback=version_callback,
+        ),
+    ] = False,
     debug: Annotated[
         bool,
         typer.Option(
@@ -151,7 +151,9 @@ def main(
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     ctx.ensure_object(dict)
-    ctx.obj['obsws'] = ctx.with_resource(obsws.ReqClient(**ctx.params))
+    ctx.obj['obsws'] = ctx.with_resource(
+        obsws.ReqClient(host=host, port=port, password=password, timeout=timeout)
+    )
     ctx.obj['style'] = styles.request_style_obj(style, no_border)
 
 
