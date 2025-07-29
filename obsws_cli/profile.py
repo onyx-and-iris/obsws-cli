@@ -37,6 +37,10 @@ def list_(
     for heading, justify, style in columns:
         table.add_column(heading, justify=justify, style=style)
 
+    if not resp.profiles:
+        console.out.print('No profiles found.')
+        return
+
     for profile in resp.profiles:
         table.add_row(
             profile,

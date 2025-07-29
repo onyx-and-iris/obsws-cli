@@ -36,6 +36,10 @@ def list_(
         for scene in reversed(resp.scenes)
     )
 
+    if not scenes:
+        console.out.print('No scenes found.')
+        return
+
     active_scene = ctx.client.get_current_program_scene().scene_name
 
     table = Table(title='Scenes', padding=(0, 2), border_style=ctx.style.border)

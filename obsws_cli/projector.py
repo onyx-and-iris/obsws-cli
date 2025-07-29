@@ -38,6 +38,10 @@ def list_monitors(
         key=lambda m: m[0],
     )
 
+    if not monitors:
+        console.out.print('No monitors available.')
+        return
+
     table = Table(
         title='Available Monitors',
         padding=(0, 2),

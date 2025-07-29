@@ -50,10 +50,10 @@ def list_(
     ]
 
     if not groups:
-        raise OBSWSCLIError(
-            f'No groups found in scene {console.highlight(ctx, scene_name)}.',
-            code=ExitCode.SUCCESS,
+        console.out.print(
+            f'No groups found in scene {console.highlight(ctx, scene_name)}.'
         )
+        return
 
     table = Table(
         title=f'Groups in Scene: {scene_name}',

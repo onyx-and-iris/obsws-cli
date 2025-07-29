@@ -37,6 +37,10 @@ def list_(
     )
     table.add_column('Scene Collection Name', justify='left', style=ctx.style.column)
 
+    if not resp.scene_collections:
+        console.out.print('No scene collections found.')
+        return
+
     for scene_collection_name in resp.scene_collections:
         table.add_row(scene_collection_name)
 

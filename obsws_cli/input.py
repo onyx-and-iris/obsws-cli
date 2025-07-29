@@ -74,7 +74,8 @@ def list_(
     )
 
     if not inputs:
-        raise OBSWSCLIError('No inputs found.', code=ExitCode.SUCCESS)
+        console.out.print('No inputs found matching the specified filters.')
+        return
 
     table = Table(title='Inputs', padding=(0, 2), border_style=ctx.style.border)
     if uuid:

@@ -60,10 +60,10 @@ def list_(
     )
 
     if not items:
-        raise OBSWSCLIError(
-            f'No items found in scene [yellow]{scene_name}[/yellow].',
-            exit_code=ExitCode.SUCCESS,
+        console.out.print(
+            f'No items found in scene {console.highlight(ctx, scene_name)}.'
         )
+        return
 
     table = Table(
         title=f'Items in Scene: {scene_name}',
