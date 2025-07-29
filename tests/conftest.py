@@ -1,6 +1,7 @@
 """pytest configuration file."""
 
 import os
+import time
 
 import obsws_python as obsws
 from dotenv import find_dotenv, load_dotenv
@@ -44,9 +45,54 @@ def pytest_sessionstart(session):
         },
     )
 
-    session.obsws.set_current_scene_collection('test-collection')
-
+    session.obsws.create_profile('pytest_profile')
+    time.sleep(0.1)  # Wait for the profile to be created
+    session.obsws.set_profile_parameter(
+        'SimpleOutput',
+        'RecRB',
+        'true',
+    )
+    # hack to ensure the replay buffer is enabled
+    session.obsws.set_current_profile('Untitled')
+    session.obsws.set_current_profile('pytest_profile')
     session.obsws.create_scene('pytest_scene')
+
+    # Ensure Desktop Audio is created.
+    desktop_audio_kinds = {
+        'windows': 'wasapi_output_capture',
+        'linux': 'pulse_output_capture',
+        'darwin': 'coreaudio_output_capture',
+    }
+    platform = os.environ.get('OBS_TESTS_PLATFORM', os.uname().sysname.lower())
+    try:
+        session.obsws.create_input(
+            sceneName='pytest_scene',
+            inputName='Desktop Audio',
+            inputKind=desktop_audio_kinds[platform],
+            inputSettings={'device_id': 'default'},
+            sceneItemEnabled=True,
+        )
+    except obsws.error.OBSSDKRequestError as e:
+        if e.code == 601:
+            """input already exists, continue."""
+    # Ensure Mic/Aux is created.
+    mic_kinds = {
+        'windows': 'wasapi_input_capture',
+        'linux': 'pulse_input_capture',
+        'darwin': 'coreaudio_input_capture',
+    }
+    try:
+        session.obsws.create_input(
+            sceneName='pytest_scene',
+            inputName='Mic/Aux',
+            inputKind=mic_kinds[platform],
+            inputSettings={'device_id': 'default'},
+            sceneItemEnabled=True,
+        )
+    except obsws.error.OBSSDKRequestError as e:
+        if e.code == 601:
+            """input already exists, continue."""
+
     session.obsws.create_input(
         sceneName='pytest_scene',
         inputName='pytest_input',
@@ -131,7 +177,7 @@ def pytest_sessionfinish(session, exitstatus):
 
     session.obsws.remove_scene('pytest_scene')
 
-    session.obsws.set_current_scene_collection('default')
+    session.obsws.set_current_scene_collection('Untitled')
 
     resp = session.obsws.get_stream_status()
     if resp.output_active:
@@ -148,6 +194,8 @@ def pytest_sessionfinish(session, exitstatus):
     resp = session.obsws.get_studio_mode_enabled()
     if resp.studio_mode_enabled:
         session.obsws.set_studio_mode_enabled(False)
+
+    session.obsws.remove_profile('pytest_profile')
 
     # Close the OBS WebSocket client connection
     session.obsws.disconnect()

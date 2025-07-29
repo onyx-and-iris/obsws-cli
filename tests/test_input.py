@@ -4,7 +4,7 @@ from typer.testing import CliRunner
 
 from obsws_cli.app import app
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
 
 
 def test_input_list():
@@ -13,10 +13,7 @@ def test_input_list():
     assert result.exit_code == 0
     assert 'Desktop Audio' in result.stdout
     assert 'Mic/Aux' in result.stdout
-    assert all(
-        item in result.stdout
-        for item in ('Colour Source', 'Colour Source 2', 'Colour Source 3')
-    )
+    assert all(item in result.stdout for item in ('pytest_input', 'pytest_input_2'))
 
 
 def test_input_list_filter_input():
@@ -39,9 +36,6 @@ def test_input_list_filter_colour():
     """Test the input list command with colour filter."""
     result = runner.invoke(app, ['input', 'list', '--colour'])
     assert result.exit_code == 0
-    assert all(
-        item in result.stdout
-        for item in ('Colour Source', 'Colour Source 2', 'Colour Source 3')
-    )
+    assert all(item in result.stdout for item in ('pytest_input', 'pytest_input_2'))
     assert 'Desktop Audio' not in result.stdout
     assert 'Mic/Aux' not in result.stdout

@@ -4,7 +4,7 @@ from typer.testing import CliRunner
 
 from obsws_cli.app import app
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
 
 
 def test_text_update():

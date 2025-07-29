@@ -1,10 +1,18 @@
 """Unit tests for the group command in the OBS WebSocket CLI."""
 
+import os
+
+import pytest
 from typer.testing import CliRunner
 
 from obsws_cli.app import app
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
+
+if os.environ.get('OBS_TESTS_SKIP_GROUP_TESTS'):
+    pytest.skip(
+        'Skipping group tests as per environment variable', allow_module_level=True
+    )
 
 
 def test_group_list():

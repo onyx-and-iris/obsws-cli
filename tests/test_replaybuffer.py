@@ -1,10 +1,19 @@
 """Unit tests for the replaybuffer command in the OBS WebSocket CLI."""
 
+import os
+
+import pytest
 from typer.testing import CliRunner
 
 from obsws_cli.app import app
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
+
+if os.environ.get('OBS_TESTS_SKIP_REPLAYBUFFER_TESTS'):
+    pytest.skip(
+        'Skipping replaybuffer tests as per environment variable',
+        allow_module_level=True,
+    )
 
 
 def test_replaybuffer_start():
