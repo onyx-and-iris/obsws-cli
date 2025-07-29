@@ -22,6 +22,10 @@ def list_(ctx: typer.Context):
     """List profiles."""
     resp = ctx.obj['obsws'].get_profile_list()
 
+    if not resp.profiles:
+        console.out.print('No profiles found.')
+        raise typer.Exit()
+
     table = Table(
         title='Profiles', padding=(0, 2), border_style=ctx.obj['style'].border
     )

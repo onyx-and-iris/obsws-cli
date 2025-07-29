@@ -24,6 +24,10 @@ def list_(
     """List all hotkeys."""
     resp = ctx.obj['obsws'].get_hotkey_list()
 
+    if not resp.hotkeys:
+        console.out.print('No hotkeys found.')
+        raise typer.Exit()
+
     table = Table(
         title='Hotkeys',
         padding=(0, 2),

@@ -29,6 +29,10 @@ def list_(
         for scene in reversed(resp.scenes)
     )
 
+    if not scenes:
+        console.out.print('No scenes found.')
+        raise typer.Exit()
+
     active_scene = ctx.obj['obsws'].get_current_program_scene().scene_name
 
     table = Table(title='Scenes', padding=(0, 2), border_style=ctx.obj['style'].border)

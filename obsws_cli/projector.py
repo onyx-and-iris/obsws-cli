@@ -21,15 +21,14 @@ def main():
 def list_monitors(ctx: typer.Context):
     """List available monitors."""
     resp = ctx.obj['obsws'].get_monitor_list()
-
-    if not resp.monitors:
-        console.out.print('No monitors found.')
-        return
-
     monitors = sorted(
         ((m['monitorIndex'], m['monitorName']) for m in resp.monitors),
         key=lambda m: m[0],
     )
+
+    if not monitors:
+        console.out.print('No monitors found.')
+        raise typer.Exit()
 
     table = Table(
         title='Available Monitors',

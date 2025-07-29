@@ -21,6 +21,10 @@ def list_(ctx: typer.Context):
     """List all scene collections."""
     resp = ctx.obj['obsws'].get_scene_collection_list()
 
+    if not resp.scene_collections:
+        console.out.print('No scene collections found.')
+        raise typer.Exit()
+
     table = Table(
         title='Scene Collections',
         padding=(0, 2),
