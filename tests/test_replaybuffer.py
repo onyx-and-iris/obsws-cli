@@ -1,6 +1,7 @@
 """Unit tests for the replaybuffer command in the OBS WebSocket CLI."""
 
 import os
+import time
 
 import pytest
 from typer.testing import CliRunner
@@ -23,6 +24,9 @@ def test_replaybuffer_start():
     active = 'Replay buffer is active.' in resp.stdout
 
     resp = runner.invoke(app, ['replaybuffer', 'start'])
+
+    time.sleep(0.5)  # Wait for the replay buffer to start
+
     if active:
         assert resp.exit_code != 0
         assert 'Replay buffer is already active.' in resp.stderr
@@ -38,6 +42,9 @@ def test_replaybuffer_stop():
     active = 'Replay buffer is active.' in resp.stdout
 
     resp = runner.invoke(app, ['replaybuffer', 'stop'])
+
+    time.sleep(0.5)  # Wait for the replay buffer to stop
+
     if not active:
         assert resp.exit_code != 0
         assert 'Replay buffer is not active.' in resp.stderr
@@ -53,9 +60,11 @@ def test_replaybuffer_toggle():
     active = 'Replay buffer is active.' in resp.stdout
 
     resp = runner.invoke(app, ['replaybuffer', 'toggle'])
+    assert resp.exit_code == 0
+
+    time.sleep(0.5)  # Wait for the replay buffer to toggle
+
     if active:
-        assert resp.exit_code == 0
         assert 'Replay buffer is not active.' in resp.stdout
     else:
-        assert resp.exit_code == 0
         assert 'Replay buffer is active.' in resp.stdout

@@ -49,7 +49,9 @@ def test_record_toggle():
 
     result = runner.invoke(app, ['record', 'toggle'])
     assert result.exit_code == 0
+
     time.sleep(0.5)  # Wait for the recording to toggle
+
     if active:
         assert 'Recording stopped successfully.' in result.stdout
     else:

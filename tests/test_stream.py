@@ -23,7 +23,7 @@ def test_stream_start():
     else:
         assert result.exit_code == 0
         assert 'Streaming started successfully.' in result.stdout
-        time.sleep(1)  # Wait for the streaming to start
+        time.sleep(0.5)  # Wait for the streaming to start
 
 
 def test_stream_stop():
@@ -37,7 +37,7 @@ def test_stream_stop():
     if active:
         assert result.exit_code == 0
         assert 'Streaming stopped successfully.' in result.stdout
-        time.sleep(1)  # Wait for the streaming to stop
+        time.sleep(0.5)  # Wait for the streaming to stop
     else:
         assert result.exit_code != 0
         assert 'Streaming is not in progress, cannot stop.' in result.stderr
@@ -52,7 +52,7 @@ def test_stream_toggle():
     result = runner.invoke(app, ['stream', 'toggle'])
     assert result.exit_code == 0
 
-    time.sleep(1)  # Wait for the stream to toggle
+    time.sleep(0.5)  # Wait for the stream to toggle
 
     if active:
         assert 'Streaming stopped successfully.' in result.stdout
