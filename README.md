@@ -298,6 +298,20 @@ obsws-cli group status START "test_group"
 
 #### Input
 
+-   create: Create a new input.
+    -   args: <input_name> <input_kind>
+
+```console
+obsws-cli input create 'stream mix' 'wasapi_input_capture'
+```
+
+-   remove: Remove an input.
+    -   args: <input_name>
+
+```console
+obsws-cli input remove 'stream mix' 
+```
+
 -   list: List all inputs.
     -   flags:
 
@@ -313,6 +327,12 @@ obsws-cli group status START "test_group"
 obsws-cli input list
 
 obsws-cli input list --input --colour
+```
+
+-   list-kinds: List all input kinds.
+
+```console
+obsws-cli input list-kinds
 ```
 
 -   mute: Mute an input.
@@ -334,6 +354,32 @@ obsws-cli input unmute "Mic/Aux"
 ```console
 obsws-cli input toggle "Mic/Aux"
 ```
+
+-   volume: Set the volume of an input.
+    -   args: <input_name> <volume>
+
+```console
+obsws-cli input volume -- 'Desktop Audio' -38.9
+```
+
+-   show: Show information for an input in the current scene.
+    -   args: <input_name>
+    -   flags:
+
+        *optional*
+        -   --verbose: List all available input devices.
+
+```console
+obsws-cli input show 'Mic/Aux' --verbose
+```
+
+-   update: Name of the input to update.
+    -   args: <input_name> <device_name>
+
+```console
+obsws-cli input update 'Mic/Aux' 'Voicemeeter Out B1 (VB-Audio Voicemeeter VAIO)'
+```
+
 
 #### Text
 
