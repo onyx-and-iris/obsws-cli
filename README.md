@@ -722,6 +722,61 @@ obsws-cli projector open --monitor-index=1 "test_group"
 obsws-cli screenshot save --width=2560 --height=1440 "Scene" "C:\Users\me\Videos\screenshot.png"
 ```
 
+#### Settings
+
+-   show: Show current OBS settings.
+    -   flags:
+
+        *optional*
+        -   --video: Show video settings.
+        -   --record: Show recording settings.
+        -   --profile: Show profile settings.
+
+```console
+obsws-cli settings show --video --record
+```
+
+-   profile: Get/set OBS profile settings.
+    -   args: <category> <name> <value>
+
+```console
+obsws-cli settings profile SimpleOutput VBitrate
+
+obsws-cli settings profile SimpleOutput VBitrate 6000
+```
+
+-   stream-service: Get/set OBS stream service settings.
+    -   flags:
+        -   --key: Stream key.
+        -   --server: Stream server URL.
+
+    *optional*
+    -   args: <type>
+
+```console
+obsws-cli settings stream-service
+
+obsws-cli settings stream-service --key='live_xyzxyzxyzxyz' rtmp_common
+```
+
+-   video: Get/set OBS video settings.
+    -   flags:
+
+        *optional*
+        -   --base-width: Base (canvas) width.
+        -   --base-height: Base (canvas) height.
+        -   --output-width: Output (scaled) width.
+        -   --output-height: Output (scaled) height.
+        -   --fps-num: Frames per second numerator.
+        -   --fps-den: Frames per second denominator.
+
+```console
+obsws-cli settings video
+
+obsws-cli settings video --base-width=1920 --base-height=1080
+```
+
+
 ## License
 
 `obsws-cli` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
