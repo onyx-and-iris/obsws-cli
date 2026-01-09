@@ -62,15 +62,14 @@ def switch(
     profile_name: Annotated[
         str,
         typer.Argument(
-            ..., show_default=False, help='Name of the profile to switch to'
+            ...,
+            show_default=False,
+            help='Name of the profile to switch to',
+            callback=validate.profile_exists,
         ),
     ],
 ):
     """Switch to a profile."""
-    if not validate.profile_exists(ctx, profile_name):
-        console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
     resp = ctx.obj['obsws'].get_profile_list()
     if resp.current_profile_name == profile_name:
         console.err.print(
@@ -87,14 +86,15 @@ def create(
     ctx: typer.Context,
     profile_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Name of the profile to create.'),
+        typer.Argument(
+            ...,
+            show_default=False,
+            help='Name of the profile to create.',
+            callback=validate.profile_not_exists,
+        ),
     ],
 ):
     """Create a new profile."""
-    if validate.profile_exists(ctx, profile_name):
-        console.err.print(f'Profile [yellow]{profile_name}[/yellow] already exists.')
-        raise typer.Exit(1)
-
     ctx.obj['obsws'].create_profile(profile_name)
     console.out.print(f'Created profile {console.highlight(ctx, profile_name)}.')
 
@@ -104,13 +104,14 @@ def remove(
     ctx: typer.Context,
     profile_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Name of the profile to remove.'),
+        typer.Argument(
+            ...,
+            show_default=False,
+            help='Name of the profile to remove.',
+            callback=validate.profile_exists,
+        ),
     ],
 ):
     """Remove a profile."""
-    if not validate.profile_exists(ctx, profile_name):
-        console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
     ctx.obj['obsws'].remove_profile(profile_name)
     console.out.print(f'Removed profile {console.highlight(ctx, profile_name)}.')

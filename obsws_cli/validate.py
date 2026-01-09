@@ -79,10 +79,22 @@ def item_in_scene_item_list(
     return any(item.get('sourceName') == item_name for item in resp.scene_items)
 
 
-def profile_exists(ctx: typer.Context, profile_name: str) -> bool:
-    """Check if a profile exists."""
+def profile_exists(ctx: typer.Context, profile_name: str) -> str:
+    """Ensure a profile exists."""
     resp = ctx.obj['obsws'].get_profile_list()
-    return any(profile == profile_name for profile in resp.profiles)
+    if not any(profile == profile_name for profile in resp.profiles):
+        console.err.print(f'Profile [yellow]{profile_name}[/yellow] not found.')
+        raise typer.Exit(1)
+    return profile_name
+
+
+def profile_not_exists(ctx: typer.Context, profile_name: str) -> str:
+    """Ensure a profile does not exist."""
+    resp = ctx.obj['obsws'].get_profile_list()
+    if any(profile == profile_name for profile in resp.profiles):
+        console.err.print(f'Profile [yellow]{profile_name}[/yellow] already exists.')
+        raise typer.Exit(1)
+    return profile_name
 
 
 def monitor_exists(ctx: typer.Context, monitor_index: int) -> bool:
