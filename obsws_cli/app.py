@@ -30,6 +30,7 @@ for sub_typer in (
     'studiomode',
     'text',
     'virtualcam',
+    'settings',
 ):
     module = importlib.import_module(f'.{sub_typer}', package=__package__)
     app.add_typer(module.app, name=sub_typer)
