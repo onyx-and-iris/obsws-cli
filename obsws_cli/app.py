@@ -9,7 +9,7 @@ import typer
 
 from obsws_cli.__about__ import __version__ as version
 
-from . import console, settings, styles
+from . import config, console, styles
 from .alias import RootTyperAliasGroup
 
 app = typer.Typer(cls=RootTyperAliasGroup)
@@ -72,7 +72,7 @@ def main(
             help='WebSocket host',
             show_default='localhost',
         ),
-    ] = settings.get('host'),
+    ] = config.get('host'),
     port: Annotated[
         int,
         typer.Option(
@@ -82,7 +82,7 @@ def main(
             help='WebSocket port',
             show_default=4455,
         ),
-    ] = settings.get('port'),
+    ] = config.get('port'),
     password: Annotated[
         str,
         typer.Option(
@@ -92,7 +92,7 @@ def main(
             help='WebSocket password',
             show_default=False,
         ),
-    ] = settings.get('password'),
+    ] = config.get('password'),
     timeout: Annotated[
         int,
         typer.Option(
@@ -102,7 +102,7 @@ def main(
             help='WebSocket timeout',
             show_default=5,
         ),
-    ] = settings.get('timeout'),
+    ] = config.get('timeout'),
     style: Annotated[
         str,
         typer.Option(
@@ -113,7 +113,7 @@ def main(
             show_default='disabled',
             callback=validate_style,
         ),
-    ] = settings.get('style'),
+    ] = config.get('style'),
     no_border: Annotated[
         bool,
         typer.Option(
@@ -123,7 +123,7 @@ def main(
             help='Disable table border styling in the CLI output',
             show_default=False,
         ),
-    ] = settings.get('style_no_border'),
+    ] = config.get('style_no_border'),
     version: Annotated[
         bool,
         typer.Option(
@@ -147,7 +147,7 @@ def main(
             callback=setup_logging,
             hidden=True,
         ),
-    ] = settings.get('debug'),
+    ] = config.get('debug'),
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     ctx.ensure_object(dict)

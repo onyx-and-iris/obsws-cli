@@ -5,21 +5,21 @@ from pathlib import Path
 
 from dotenv import dotenv_values
 
-SettingsValue = str | int
+ConfigValue = str | int
 
 
-class Settings(UserDict):
-    """A class to manage settings for obsws-cli.
+class Config(UserDict):
+    """A class to manage config for obsws-cli.
 
-    This class extends UserDict to provide a dictionary-like interface for settings.
-    It loads settings from environment variables and .env files.
-    The settings are expected to be in uppercase and should start with 'OBS_'.
+    This class extends UserDict to provide a dictionary-like interface for config.
+    It loads config from environment variables and .env files.
+    The config values are expected to be in uppercase and should start with 'OBS_'.
 
     Example:
     -------
-        settings = Settings()
-        host = settings['OBS_HOST']
-        settings['OBS_PORT'] = 4455
+        config = Config()
+        host = config['OBS_HOST']
+        config['OBS_PORT'] = 4455
 
     """
 
@@ -35,22 +35,22 @@ class Settings(UserDict):
         )
         super().__init__(*args, **kwargs)
 
-    def __getitem__(self, key: str) -> SettingsValue:
+    def __getitem__(self, key: str) -> ConfigValue:
         """Get a setting value by key."""
         key = key.upper()
-        if not key.startswith(Settings.PREFIX):
-            key = f'{Settings.PREFIX}{key}'
+        if not key.startswith(Config.PREFIX):
+            key = f'{Config.PREFIX}{key}'
         return self.data[key]
 
-    def __setitem__(self, key: str, value: SettingsValue):
+    def __setitem__(self, key: str, value: ConfigValue):
         """Set a setting value by key."""
         key = key.upper()
-        if not key.startswith(Settings.PREFIX):
-            key = f'{Settings.PREFIX}{key}'
+        if not key.startswith(Config.PREFIX):
+            key = f'{Config.PREFIX}{key}'
         self.data[key] = value
 
 
-_settings = Settings(
+_config = Config(
     OBS_HOST='localhost',
     OBS_PORT=4455,
     OBS_PASSWORD='',
@@ -61,20 +61,20 @@ _settings = Settings(
 )
 
 
-def get(key: str) -> SettingsValue:
+def get(key: str) -> ConfigValue:
     """Get a setting value by key.
 
     Args:
     ----
-        key (str): The key of the setting to retrieve.
+        key (str): The key of the config to retrieve.
 
     Returns:
     -------
-        The value of the setting.
+        The value of the config.
 
     Raises:
     ------
-        KeyError: If the key does not exist in the settings.
+        KeyError: If the key does not exist in the config.
 
     """
-    return _settings[key]
+    return _config[key]
