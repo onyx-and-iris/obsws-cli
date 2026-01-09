@@ -2,14 +2,28 @@
 
 import typer
 
+from . import console
+
 # type alias for an option that is skipped when the command is run
 skipped_option = typer.Option(parser=lambda _: _, hidden=True, expose_value=False)
 
 
 def input_in_inputs(ctx: typer.Context, input_name: str) -> bool:
-    """Check if an input is in the input list."""
-    inputs = ctx.obj['obsws'].get_input_list().inputs
-    return any(input_.get('inputName') == input_name for input_ in inputs)
+    """Ensure the given input exists in the list of inputs."""
+    resp = ctx.obj['obsws'].get_input_list()
+    if not any(input.get('inputName') == input_name for input in resp.inputs):
+        console.err.print(f'Input [yellow]{input_name}[/yellow] does not exist.')
+        raise typer.Exit(1)
+    return input_name
+
+
+def input_not_in_inputs(ctx: typer.Context, input_name: str) -> bool:
+    """Ensure an input does not already exist in the list of inputs."""
+    resp = ctx.obj['obsws'].get_input_list()
+    if any(input.get('inputName') == input_name for input in resp.inputs):
+        console.err.print(f'Input [yellow]{input_name}[/yellow] already exists.')
+        raise typer.Exit(1)
+    return input_name
 
 
 def scene_in_scenes(ctx: typer.Context, scene_name: str) -> bool:
@@ -52,3 +66,12 @@ def monitor_exists(ctx: typer.Context, monitor_index: int) -> bool:
     """Check if a monitor exists."""
     resp = ctx.obj['obsws'].get_monitor_list()
     return any(monitor['monitorIndex'] == monitor_index for monitor in resp.monitors)
+
+
+def kind_in_input_kinds(ctx: typer.Context, input_kind: str) -> str:
+    """Check if an input kind is valid."""
+    resp = ctx.obj['obsws'].get_input_kind_list(False)
+    if not any(kind == input_kind for kind in resp.input_kinds):
+        console.err.print(f'Input kind [yellow]{input_kind}[/yellow] not found.')
+        raise typer.Exit(1)
+    return input_kind
