@@ -24,6 +24,7 @@ def list_(
         typer.Argument(
             show_default='The current scene',
             help='Scene name to list items for',
+            callback=validate.scene_in_scenes,
         ),
     ] = None,
     uuid: Annotated[bool, typer.Option(help='Show UUIDs of scene items')] = False,
@@ -31,10 +32,6 @@ def list_(
     """List all items in a scene."""
     if not scene_name:
         scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
-
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
 
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     items = sorted(

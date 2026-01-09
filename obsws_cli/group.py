@@ -26,16 +26,13 @@ def list_(
         typer.Argument(
             show_default='The current scene',
             help='Scene name to list groups for',
+            callback=validate.scene_in_scenes,
         ),
     ] = None,
 ):
     """List groups in a scene."""
     if not scene_name:
         scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
-
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(1)
 
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     groups = [
@@ -92,17 +89,18 @@ def show(
     ctx: typer.Context,
     scene_name: Annotated[
         str,
-        typer.Argument(..., show_default=False, help='Scene name the group is in'),
+        typer.Argument(
+            ...,
+            show_default=False,
+            help='Scene name the group is in',
+            callback=validate.scene_in_scenes,
+        ),
     ],
     group_name: Annotated[
         str, typer.Argument(..., show_default=False, help='Group name to show')
     ],
 ):
     """Show a group in a scene."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f"Scene '{scene_name}' not found.")
-        raise typer.Exit(1)
-
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
@@ -123,17 +121,19 @@ def show(
 def hide(
     ctx: typer.Context,
     scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the group is in')
+        str,
+        typer.Argument(
+            ...,
+            show_default=False,
+            help='Scene name the group is in',
+            callback=validate.scene_in_scenes,
+        ),
     ],
     group_name: Annotated[
         str, typer.Argument(..., show_default=False, help='Group name to hide')
     ],
 ):
     """Hide a group in a scene."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
@@ -154,17 +154,19 @@ def hide(
 def toggle(
     ctx: typer.Context,
     scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the group is in')
+        str,
+        typer.Argument(
+            ...,
+            show_default=False,
+            help='Scene name the group is in',
+            callback=validate.scene_in_scenes,
+        ),
     ],
     group_name: Annotated[
         str, typer.Argument(..., show_default=False, help='Group name to toggle')
     ],
 ):
     """Toggle a group in a scene."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(
@@ -189,17 +191,19 @@ def toggle(
 def status(
     ctx: typer.Context,
     scene_name: Annotated[
-        str, typer.Argument(..., show_default=False, help='Scene name the group is in')
+        str,
+        typer.Argument(
+            ...,
+            show_default=False,
+            help='Scene name the group is in',
+            callback=validate.scene_in_scenes,
+        ),
     ],
     group_name: Annotated[
         str, typer.Argument(..., show_default=False, help='Group name to check status')
     ],
 ):
     """Get the status of a group in a scene."""
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
-        raise typer.Exit(1)
-
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
     if (group := _get_group(group_name, resp)) is None:
         console.err.print(

@@ -94,7 +94,12 @@ def current(
 def switch(
     ctx: typer.Context,
     scene_name: Annotated[
-        str, typer.Argument(..., help='Name of the scene to switch to')
+        str,
+        typer.Argument(
+            ...,
+            help='Name of the scene to switch to',
+            callback=validate.scene_in_scenes,
+        ),
     ],
     preview: Annotated[
         bool,
@@ -104,10 +109,6 @@ def switch(
     """Switch to a scene."""
     if preview and not validate.studio_mode_enabled(ctx):
         console.err.print('Studio mode is not enabled, cannot set the preview scene.')
-        raise typer.Exit(1)
-
-    if not validate.scene_in_scenes(ctx, scene_name):
-        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
         raise typer.Exit(1)
 
     if preview:

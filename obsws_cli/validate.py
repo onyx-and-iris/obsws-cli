@@ -26,10 +26,13 @@ def input_not_in_inputs(ctx: typer.Context, input_name: str) -> bool:
     return input_name
 
 
-def scene_in_scenes(ctx: typer.Context, scene_name: str) -> bool:
+def scene_in_scenes(ctx: typer.Context, scene_name: str) -> str:
     """Check if a scene exists in the list of scenes."""
     resp = ctx.obj['obsws'].get_scene_list()
-    return any(scene.get('sceneName') == scene_name for scene in resp.scenes)
+    if not any(scene.get('sceneName') == scene_name for scene in resp.scenes):
+        console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
+        raise typer.Exit(1)
+    return scene_name
 
 
 def studio_mode_enabled(ctx: typer.Context) -> bool:
