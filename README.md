@@ -776,6 +776,44 @@ obsws-cli settings video
 obsws-cli settings video --base-width=1920 --base-height=1080
 ```
 
+#### Media
+
+-   cursor: Get/set the cursor position of a media input.
+    -   args: InputName
+
+        *optional*
+        -   TimeString
+
+```console
+obsws-cli media cursor "Media"
+
+obsws-cli media cursor "Media" "00:08:30"
+```
+
+-   play: Plays a media input.
+
+```console
+obsws-cli media play "Media"
+```
+
+-   pause: Pauses a media input.
+
+```console
+obsws-cli media pause "Media"
+```
+
+-   stop: Stops a media input.
+
+```console
+obsws-cli media stop "Media"
+```
+
+-   restart: Restarts a media input.
+
+```console
+obsws-cli media restart "Media"
+```
+
 
 ## License
 
