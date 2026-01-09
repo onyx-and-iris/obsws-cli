@@ -43,12 +43,32 @@ def studio_mode_enabled(ctx: typer.Context) -> bool:
 
 def scene_collection_in_scene_collections(
     ctx: typer.Context, scene_collection_name: str
-) -> bool:
-    """Check if a scene collection exists."""
+) -> str:
+    """Ensure a scene collection exists in the list of scene collections."""
     resp = ctx.obj['obsws'].get_scene_collection_list()
-    return any(
+    if not any(
         collection == scene_collection_name for collection in resp.scene_collections
-    )
+    ):
+        console.err.print(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] not found.'
+        )
+        raise typer.Exit(1)
+    return scene_collection_name
+
+
+def scene_collection_not_in_scene_collections(
+    ctx: typer.Context, scene_collection_name: str
+) -> str:
+    """Ensure a scene collection does not already exist in the list of scene collections."""
+    resp = ctx.obj['obsws'].get_scene_collection_list()
+    if any(
+        collection == scene_collection_name for collection in resp.scene_collections
+    ):
+        console.err.print(
+            f'Scene collection [yellow]{scene_collection_name}[/yellow] already exists.'
+        )
+        raise typer.Exit(1)
+    return scene_collection_name
 
 
 def item_in_scene_item_list(

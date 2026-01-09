@@ -53,16 +53,15 @@ def current(ctx: typer.Context):
 def switch(
     ctx: typer.Context,
     scene_collection_name: Annotated[
-        str, typer.Argument(..., help='Name of the scene collection to switch to')
+        str,
+        typer.Argument(
+            ...,
+            help='Name of the scene collection to switch to',
+            callback=validate.scene_collection_in_scene_collections,
+        ),
     ],
 ):
     """Switch to a scene collection."""
-    if not validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        console.err.print(
-            f'Scene collection [yellow]{scene_collection_name}[/yellow] not found.'
-        )
-        raise typer.Exit(1)
-
     current_scene_collection = (
         ctx.obj['obsws'].get_scene_collection_list().current_scene_collection_name
     )
@@ -82,16 +81,15 @@ def switch(
 def create(
     ctx: typer.Context,
     scene_collection_name: Annotated[
-        str, typer.Argument(..., help='Name of the scene collection to create')
+        str,
+        typer.Argument(
+            ...,
+            help='Name of the scene collection to create',
+            callback=validate.scene_collection_not_in_scene_collections,
+        ),
     ],
 ):
     """Create a new scene collection."""
-    if validate.scene_collection_in_scene_collections(ctx, scene_collection_name):
-        console.err.print(
-            f'Scene collection [yellow]{scene_collection_name}[/yellow] already exists.'
-        )
-        raise typer.Exit(1)
-
     ctx.obj['obsws'].create_scene_collection(scene_collection_name)
     console.out.print(
         f'Created scene collection {console.highlight(ctx, scene_collection_name)}.'
