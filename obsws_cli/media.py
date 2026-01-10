@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 
 import typer
 
-from . import console, util
+from . import console, util, validate
 from .alias import SubTyperAliasGroup
 
 app = typer.Typer(cls=SubTyperAliasGroup)
@@ -24,7 +24,9 @@ def cursor(
     timecode: Annotated[
         Optional[str],
         typer.Argument(
-            ..., help='The timecode to set the cursor to (format: HH:MM:SS).'
+            ...,
+            help='The timecode to set the cursor to (format: HH:MM:SS).',
+            callback=validate.timecode_format,
         ),
     ] = None,
 ):

@@ -1,5 +1,7 @@
 """module containing validation functions."""
 
+from typing import Optional
+
 import typer
 
 from . import console
@@ -26,8 +28,11 @@ def input_not_in_inputs(ctx: typer.Context, input_name: str) -> bool:
     return input_name
 
 
-def scene_in_scenes(ctx: typer.Context, scene_name: str) -> str:
+def scene_in_scenes(ctx: typer.Context, scene_name: Optional[str]) -> str | None:
     """Check if a scene exists in the list of scenes."""
+    if scene_name is None:
+        return scene_name
+
     resp = ctx.obj['obsws'].get_scene_list()
     if not any(scene.get('sceneName') == scene_name for scene in resp.scenes):
         console.err.print(f'Scene [yellow]{scene_name}[/yellow] not found.')
@@ -104,3 +109,29 @@ def kind_in_input_kinds(ctx: typer.Context, input_kind: str) -> str:
         console.err.print(f'Input kind [yellow]{input_kind}[/yellow] not found.')
         raise typer.Exit(1)
     return input_kind
+
+
+def timecode_format(ctx: typer.Context, timecode: Optional[str]) -> str | None:
+    """Validate that a timecode is in HH:MM:SS or MM:SS format."""
+    if timecode is None:
+        return timecode
+
+    match timecode.split(':'):
+        case [mm, ss]:
+            if not (mm.isdigit() and ss.isdigit()):
+                console.err.print(
+                    f'Timecode [yellow]{timecode}[/yellow] is not valid. Use MM:SS or HH:MM:SS format.'
+                )
+                raise typer.Exit(1)
+        case [hh, mm, ss]:
+            if not (hh.isdigit() and mm.isdigit() and ss.isdigit()):
+                console.err.print(
+                    f'Timecode [yellow]{timecode}[/yellow] is not valid. Use MM:SS or HH:MM:SS format.'
+                )
+                raise typer.Exit(1)
+        case _:
+            console.err.print(
+                f'Timecode [yellow]{timecode}[/yellow] is not valid. Use MM:SS or HH:MM:SS format.'
+            )
+            raise typer.Exit(1)
+    return timecode
