@@ -34,8 +34,6 @@ class RootTyperAliasGroup(typer.core.TyperGroup):
                 cmd_name = 'record'
             case 'rb':
                 cmd_name = 'replaybuffer'
-            case 'set':
-                cmd_name = 'settings'
             case 'sc':
                 cmd_name = 'scene'
             case 'scc':
@@ -44,6 +42,8 @@ class RootTyperAliasGroup(typer.core.TyperGroup):
                 cmd_name = 'sceneitem'
             case 'ss':
                 cmd_name = 'screenshot'
+            case 'set':
+                cmd_name = 'settings'
             case 'st':
                 cmd_name = 'stream'
             case 'sm':
