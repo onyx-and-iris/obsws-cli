@@ -24,6 +24,8 @@ class RootTyperAliasGroup(typer.core.TyperGroup):
                 cmd_name = 'hotkey'
             case 'i':
                 cmd_name = 'input'
+            case 'm':
+                cmd_name = 'media'
             case 'prf':
                 cmd_name = 'profile'
             case 'prj':
@@ -32,6 +34,8 @@ class RootTyperAliasGroup(typer.core.TyperGroup):
                 cmd_name = 'record'
             case 'rb':
                 cmd_name = 'replaybuffer'
+            case 'set':
+                cmd_name = 'settings'
             case 'sc':
                 cmd_name = 'scene'
             case 'scc':
