@@ -30,7 +30,7 @@ def list_(
     uuid: Annotated[bool, typer.Option(help='Show UUIDs of scene items')] = False,
 ):
     """List all items in a scene."""
-    if not scene_name:
+    if scene_name is None:
         scene_name = ctx.obj['obsws'].get_current_program_scene().scene_name
 
     resp = ctx.obj['obsws'].get_scene_item_list(scene_name)
