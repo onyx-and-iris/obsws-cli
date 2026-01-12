@@ -10,7 +10,7 @@ from . import console
 skipped_option = typer.Option(parser=lambda _: _, hidden=True, expose_value=False)
 
 
-def input_in_inputs(ctx: typer.Context, input_name: str) -> bool:
+def input_in_inputs(ctx: typer.Context, input_name: str) -> str:
     """Ensure the given input exists in the list of inputs."""
     resp = ctx.obj['obsws'].get_input_list()
     if not any(input.get('inputName') == input_name for input in resp.inputs):
@@ -19,7 +19,7 @@ def input_in_inputs(ctx: typer.Context, input_name: str) -> bool:
     return input_name
 
 
-def input_not_in_inputs(ctx: typer.Context, input_name: str) -> bool:
+def input_not_in_inputs(ctx: typer.Context, input_name: str) -> str:
     """Ensure an input does not already exist in the list of inputs."""
     resp = ctx.obj['obsws'].get_input_list()
     if any(input.get('inputName') == input_name for input in resp.inputs):
@@ -31,7 +31,7 @@ def input_not_in_inputs(ctx: typer.Context, input_name: str) -> bool:
 def scene_in_scenes(ctx: typer.Context, scene_name: Optional[str]) -> str | None:
     """Check if a scene exists in the list of scenes."""
     if scene_name is None:
-        return scene_name
+        return
 
     resp = ctx.obj['obsws'].get_scene_list()
     if not any(scene.get('sceneName') == scene_name for scene in resp.scenes):
@@ -114,7 +114,7 @@ def kind_in_input_kinds(ctx: typer.Context, input_kind: str) -> str:
 def timecode_format(ctx: typer.Context, timecode: Optional[str]) -> str | None:
     """Validate that a timecode is in HH:MM:SS or MM:SS format."""
     if timecode is None:
-        return timecode
+        return
 
     match timecode.split(':'):
         case [mm, ss]:
