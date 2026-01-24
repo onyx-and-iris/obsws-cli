@@ -40,10 +40,15 @@ def scene_in_scenes(ctx: typer.Context, scene_name: Optional[str]) -> str | None
     return scene_name
 
 
-def studio_mode_enabled(ctx: typer.Context) -> bool:
-    """Check if studio mode is enabled."""
+def studio_mode_enabled(ctx: typer.Context, preview: bool) -> bool:
+    """Ensure studio mode is enabled if preview option is used."""
     resp = ctx.obj['obsws'].get_studio_mode_enabled()
-    return resp.studio_mode_enabled
+    if preview and not resp.studio_mode_enabled:
+        console.err.print(
+            'Studio mode is disabled. This action requires it to be enabled.'
+        )
+        raise typer.Exit(1)
+    return preview
 
 
 def scene_collection_in_scene_collections(

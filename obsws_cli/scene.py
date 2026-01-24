@@ -70,14 +70,14 @@ def list_(
 def current(
     ctx: typer.Context,
     preview: Annotated[
-        bool, typer.Option(help='Get the preview scene instead of the program scene')
+        bool,
+        typer.Option(
+            help='Get the preview scene instead of the program scene',
+            callback=validate.studio_mode_enabled,
+        ),
     ] = False,
 ):
     """Get the current program scene or preview scene."""
-    if preview and not validate.studio_mode_enabled(ctx):
-        console.err.print('Studio mode is not enabled, cannot get preview scene.')
-        raise typer.Exit(1)
-
     if preview:
         resp = ctx.obj['obsws'].get_current_preview_scene()
         console.out.print(
@@ -103,14 +103,13 @@ def switch(
     ],
     preview: Annotated[
         bool,
-        typer.Option(help='Switch to the preview scene instead of the program scene'),
+        typer.Option(
+            help='Switch to the preview scene instead of the program scene',
+            callback=validate.studio_mode_enabled,
+        ),
     ] = False,
 ):
     """Switch to a scene."""
-    if preview and not validate.studio_mode_enabled(ctx):
-        console.err.print('Studio mode is not enabled, cannot set the preview scene.')
-        raise typer.Exit(1)
-
     if preview:
         ctx.obj['obsws'].set_current_preview_scene(scene_name)
         console.out.print(
