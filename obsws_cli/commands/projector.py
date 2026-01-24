@@ -6,8 +6,8 @@ import typer
 from rich.table import Table
 from rich.text import Text
 
-from . import console
-from .alias import SubTyperAliasGroup
+from obsws_cli import console
+from obsws_cli.alias import SubTyperAliasGroup
 
 app = typer.Typer(cls=SubTyperAliasGroup)
 

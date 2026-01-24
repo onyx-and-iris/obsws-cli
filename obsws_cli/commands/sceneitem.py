@@ -5,8 +5,8 @@ from typing import Annotated, Optional
 import typer
 from rich.table import Table
 
-from . import console, util, validate
-from .alias import SubTyperAliasGroup
+from obsws_cli import console, util, validate
+from obsws_cli.alias import SubTyperAliasGroup
 
 app = typer.Typer(cls=SubTyperAliasGroup)
 

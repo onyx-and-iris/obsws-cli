@@ -2,6 +2,7 @@
 
 import importlib
 import logging
+import pkgutil
 from typing import Annotated
 
 import obsws_python as obsws
@@ -9,32 +10,15 @@ import typer
 
 from obsws_cli.__about__ import __version__ as version
 
-from . import config, console, styles
+from . import commands, config, console, styles
 from .alias import RootTyperAliasGroup
 
 app = typer.Typer(cls=RootTyperAliasGroup)
-for sub_typer in (
-    'filter',
-    'group',
-    'hotkey',
-    'input',
-    'media',
-    'profile',
-    'projector',
-    'record',
-    'replaybuffer',
-    'scene',
-    'scenecollection',
-    'sceneitem',
-    'screenshot',
-    'settings',
-    'stream',
-    'studiomode',
-    'text',
-    'virtualcam',
+for importer, modname, ispkg in pkgutil.iter_modules(
+    commands.__path__, commands.__name__ + '.'
 ):
-    module = importlib.import_module(f'.{sub_typer}', package=__package__)
-    app.add_typer(module.app, name=sub_typer)
+    subtyper = importlib.import_module(modname)
+    app.add_typer(subtyper.app, name=modname.split('.')[-1])
 
 
 def version_callback(value: bool):

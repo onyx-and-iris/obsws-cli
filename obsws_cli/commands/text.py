@@ -4,8 +4,8 @@ from typing import Annotated, Optional
 
 import typer
 
-from . import console, validate
-from .alias import SubTyperAliasGroup
+from obsws_cli import console, validate
+from obsws_cli.alias import SubTyperAliasGroup
 
 app = typer.Typer(cls=SubTyperAliasGroup)
 

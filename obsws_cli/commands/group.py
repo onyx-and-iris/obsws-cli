@@ -6,9 +6,9 @@ import typer
 from rich.table import Table
 from rich.text import Text
 
-from . import console, util, validate
-from .alias import SubTyperAliasGroup
-from .protocols import DataclassProtocol
+from obsws_cli import console, util, validate
+from obsws_cli.alias import SubTyperAliasGroup
+from obsws_cli.protocols import DataclassProtocol
 
 app = typer.Typer(cls=SubTyperAliasGroup)
 
