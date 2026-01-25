@@ -21,9 +21,9 @@ def pytest_sessionstart(session):
     """
     # Initialize the OBS WebSocket client
     session.obsws = obsws.ReqClient(
-        host=os.environ['OBS_HOST'],
-        port=os.environ['OBS_PORT'],
-        password=os.environ['OBS_PASSWORD'],
+        host=os.environ['OBSWS_CLI_HOST'],
+        port=os.environ['OBSWS_CLI_PORT'],
+        password=os.environ['OBSWS_CLI_PASSWORD'],
         timeout=5,
     )
     resp = session.obsws.get_version()

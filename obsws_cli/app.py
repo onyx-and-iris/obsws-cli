@@ -10,7 +10,7 @@ import typer
 
 from obsws_cli.__about__ import __version__ as version
 
-from . import commands, config, console, styles
+from . import commands, console, envconfig, styles
 from .alias import RootTyperAliasGroup
 
 app = typer.Typer(cls=RootTyperAliasGroup)
@@ -54,62 +54,62 @@ def main(
         typer.Option(
             '--host',
             '-H',
-            envvar='OBS_HOST',
+            envvar='OBSWS_CLI_HOST',
             help='WebSocket host',
             show_default='localhost',
         ),
-    ] = config.get('host'),
+    ] = envconfig.get('host'),
     port: Annotated[
         int,
         typer.Option(
             '--port',
             '-P',
-            envvar='OBS_PORT',
+            envvar='OBSWS_CLI_PORT',
             help='WebSocket port',
             show_default=4455,
         ),
-    ] = config.get('port'),
+    ] = envconfig.get('port'),
     password: Annotated[
         str,
         typer.Option(
             '--password',
             '-p',
-            envvar='OBS_PASSWORD',
+            envvar='OBSWS_CLI_PASSWORD',
             help='WebSocket password',
             show_default=False,
         ),
-    ] = config.get('password'),
+    ] = envconfig.get('password'),
     timeout: Annotated[
         int,
         typer.Option(
             '--timeout',
             '-T',
-            envvar='OBS_TIMEOUT',
+            envvar='OBSWS_CLI_TIMEOUT',
             help='WebSocket timeout',
             show_default=5,
         ),
-    ] = config.get('timeout'),
+    ] = envconfig.get('timeout'),
     style: Annotated[
         str,
         typer.Option(
             '--style',
             '-s',
-            envvar='OBS_STYLE',
+            envvar='OBSWS_CLI_STYLE',
             help='Set the style for the CLI output',
             show_default='disabled',
             callback=validate_style,
         ),
-    ] = config.get('style'),
+    ] = envconfig.get('style'),
     no_border: Annotated[
         bool,
         typer.Option(
             '--no-border',
             '-b',
-            envvar='OBS_STYLE_NO_BORDER',
+            envvar='OBSWS_CLI_STYLE_NO_BORDER',
             help='Disable table border styling in the CLI output',
             show_default=False,
         ),
-    ] = config.get('style_no_border'),
+    ] = envconfig.get('style_no_border'),
     version: Annotated[
         bool,
         typer.Option(
@@ -126,14 +126,14 @@ def main(
         typer.Option(
             '--debug',
             '-d',
-            envvar='OBS_DEBUG',
+            envvar='OBSWS_CLI_DEBUG',
             is_eager=True,
             help='Enable debug logging',
             show_default=False,
             callback=setup_logging,
             hidden=True,
         ),
-    ] = config.get('debug'),
+    ] = envconfig.get('debug'),
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     ctx.ensure_object(dict)
