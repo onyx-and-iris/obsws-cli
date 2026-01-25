@@ -62,9 +62,9 @@ Store and load environment variables from:
 -   `user home directory / .config / obsws-cli / obsws.env`
 
 ```env
-OBS_HOST=localhost
-OBS_PORT=4455
-OBS_PASSWORD=<websocket password>
+OBSWS_CLI_HOST=localhost
+OBSWS_CLI_PORT=4455
+OBSWS_CLI_PASSWORD=<websocket password>
 ```
 
 Flags can be used to override environment variables.
@@ -96,8 +96,8 @@ obsws-cli --style="cyan" --no-border sceneitem list
 Or with environment variables:
 
 ```env
-OBS_STYLE=cyan
-OBS_STYLE_NO_BORDER=true
+OBSWS_CLI_STYLE=cyan
+OBSWS_CLI_STYLE_NO_BORDER=true
 ```
 
 ## Root Typer
