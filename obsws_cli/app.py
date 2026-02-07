@@ -28,11 +28,15 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
-def setup_logging(debug: bool):
+def setup_logging(loglevel: str):
     """Set up logging for the application."""
-    log_level = logging.DEBUG if debug else logging.CRITICAL
+    loglevel = loglevel.upper()
+    if loglevel not in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+        raise typer.BadParameter(
+            f'Invalid log level: {loglevel}. Choose from DEBUG, INFO, WARNING, ERROR, CRITICAL.'
+        )
     logging.basicConfig(
-        level=log_level,
+        level=loglevel,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     )
 
@@ -121,19 +125,18 @@ def main(
             callback=version_callback,
         ),
     ] = False,
-    debug: Annotated[
-        bool,
+    loglevel: Annotated[
+        str,
         typer.Option(
-            '--debug',
-            '-d',
-            envvar='OBSWS_CLI_DEBUG',
+            '--loglevel',
+            '-l',
+            envvar='OBSWS_CLI_LOGLEVEL',
             is_eager=True,
-            help='Enable debug logging',
+            help='Set the logging level',
             show_default=False,
             callback=setup_logging,
-            hidden=True,
         ),
-    ] = envconfig.get('debug'),
+    ] = envconfig.get('loglevel'),
 ):
     """obsws_cli is a command line interface for the OBS WebSocket API."""
     ctx.ensure_object(dict)

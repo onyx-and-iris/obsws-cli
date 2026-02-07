@@ -124,7 +124,7 @@ _envconfig = EnvConfig(
     OBSWS_CLI_PORT=4455,
     OBSWS_CLI_PASSWORD='',
     OBSWS_CLI_TIMEOUT=5,
-    OBSWS_CLI_DEBUG=False,
+    OBSWS_CLI_LOGLEVEL='WARNING',
     OBSWS_CLI_STYLE='disabled',
     OBSWS_CLI_STYLE_NO_BORDER=False,
 )
