@@ -16,6 +16,7 @@ For an outline of past/future changes refer to: [CHANGELOG](CHANGELOG.md)
 - [Configuration](#configuration)
 - [Style](#style)
 - [Commands](#root-typer)
+- [Shell Completion](#shell-completion)
 - [License](#license)
 
 ## Requirements
@@ -812,6 +813,12 @@ obsws-cli media stop "Media"
 
 ```console
 obsws-cli media restart "Media"
+```
+
+## Shell Completion
+
+```console
+obsws-cli --install-completion
 ```
 
 
