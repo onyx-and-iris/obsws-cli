@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [0.24.8] - 2026-02-07
+
+### Changed
+
+-   --debug flag removed and replaced with --loglevel. See [Flags](https://github.com/onyx-and-iris/obsws-cli/tree/main?tab=readme-ov-file#flags). This gives the user more control over the level of logging. The default level has been set to WARNING.
+
+### Fixed
+
+-   shell completion now works, see [Shell Completion](https://github.com/onyx-and-iris/obsws-cli/tree/main?tab=readme-ov-file#shell-completion). Unfortunately, command aliases in the help output are no longer present as it was breaking shell completion. However, the aliases do still work. See [issue #3](https://github.com/onyx-and-iris/obsws-cli/issues/3)
+
 # [0.24.6] - 2026-01-26
 
 ### Changed
