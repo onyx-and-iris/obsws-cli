@@ -7,9 +7,8 @@ import obsws_python as obsws
 import typer
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -17,7 +16,8 @@ def main():
     """Take screenshots using OBS."""
 
 
-@app.command('save | sv')
+@app.command('save')
+@app.command('s', hidden=True)
 def save(
     ctx: typer.Context,
     source_name: Annotated[

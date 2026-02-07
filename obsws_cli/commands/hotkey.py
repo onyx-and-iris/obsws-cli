@@ -7,9 +7,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -17,7 +16,8 @@ def main():
     """Control hotkeys in OBS."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(
     ctx: typer.Context,
 ):
@@ -45,7 +45,8 @@ def list_(
     console.out.print(table)
 
 
-@app.command('trigger | tr')
+@app.command('trigger')
+@app.command('tr', hidden=True)
 def trigger(
     ctx: typer.Context,
     hotkey: Annotated[
@@ -56,7 +57,8 @@ def trigger(
     ctx.obj['obsws'].trigger_hotkey_by_name(hotkey)
 
 
-@app.command('trigger-sequence | trs')
+@app.command('trigger-sequence')
+@app.command('trs', hidden=True)
 def trigger_sequence(
     ctx: typer.Context,
     key_id: Annotated[

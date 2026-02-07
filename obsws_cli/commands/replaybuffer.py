@@ -3,9 +3,8 @@
 import typer
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -13,7 +12,8 @@ def main():
     """Control profiles in OBS."""
 
 
-@app.command('start | s')
+@app.command('start')
+@app.command('s', hidden=True)
 def start(ctx: typer.Context):
     """Start the replay buffer."""
     resp = ctx.obj['obsws'].get_replay_buffer_status()
@@ -25,7 +25,8 @@ def start(ctx: typer.Context):
     console.out.print('Replay buffer started.')
 
 
-@app.command('stop | st')
+@app.command('stop')
+@app.command('st', hidden=True)
 def stop(ctx: typer.Context):
     """Stop the replay buffer."""
     resp = ctx.obj['obsws'].get_replay_buffer_status()
@@ -37,7 +38,8 @@ def stop(ctx: typer.Context):
     console.out.print('Replay buffer stopped.')
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(ctx: typer.Context):
     """Toggle the replay buffer."""
     resp = ctx.obj['obsws'].toggle_replay_buffer()
@@ -47,7 +49,8 @@ def toggle(ctx: typer.Context):
         console.out.print('Replay buffer is not active.')
 
 
-@app.command('status | ss')
+@app.command('status')
+@app.command('ss', hidden=True)
 def status(ctx: typer.Context):
     """Get the status of the replay buffer."""
     resp = ctx.obj['obsws'].get_replay_buffer_status()
@@ -57,7 +60,8 @@ def status(ctx: typer.Context):
         console.out.print('Replay buffer is not active.')
 
 
-@app.command('save | sv')
+@app.command('save')
+@app.command('sv', hidden=True)
 def save(ctx: typer.Context):
     """Save the replay buffer."""
     ctx.obj['obsws'].save_replay_buffer()

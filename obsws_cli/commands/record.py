@@ -6,9 +6,8 @@ from typing import Annotated, Optional
 import typer
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -22,7 +21,8 @@ def _get_recording_status(ctx: typer.Context) -> tuple:
     return resp.output_active, resp.output_paused
 
 
-@app.command('start | s')
+@app.command('start')
+@app.command('s', hidden=True)
 def start(ctx: typer.Context):
     """Start recording."""
     active, paused = _get_recording_status(ctx)
@@ -38,7 +38,8 @@ def start(ctx: typer.Context):
     console.out.print('Recording started successfully.')
 
 
-@app.command('stop | st')
+@app.command('stop')
+@app.command('st', hidden=True)
 def stop(ctx: typer.Context):
     """Stop recording."""
     active, _ = _get_recording_status(ctx)
@@ -52,7 +53,8 @@ def stop(ctx: typer.Context):
     )
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(ctx: typer.Context):
     """Toggle recording."""
     resp = ctx.obj['obsws'].toggle_record()
@@ -62,7 +64,8 @@ def toggle(ctx: typer.Context):
         console.out.print('Recording stopped successfully.')
 
 
-@app.command('status | ss')
+@app.command('status')
+@app.command('ss', hidden=True)
 def status(ctx: typer.Context):
     """Get recording status."""
     active, paused = _get_recording_status(ctx)
@@ -75,7 +78,8 @@ def status(ctx: typer.Context):
         console.out.print('Recording is not in progress.')
 
 
-@app.command('resume | r')
+@app.command('resume')
+@app.command('r', hidden=True)
 def resume(ctx: typer.Context):
     """Resume recording."""
     active, paused = _get_recording_status(ctx)
@@ -90,7 +94,8 @@ def resume(ctx: typer.Context):
     console.out.print('Recording resumed successfully.')
 
 
-@app.command('pause | p')
+@app.command('pause')
+@app.command('p', hidden=True)
 def pause(ctx: typer.Context):
     """Pause recording."""
     active, paused = _get_recording_status(ctx)
@@ -105,7 +110,8 @@ def pause(ctx: typer.Context):
     console.out.print('Recording paused successfully.')
 
 
-@app.command('directory | d')
+@app.command('directory')
+@app.command('d', hidden=True)
 def directory(
     ctx: typer.Context,
     record_directory: Annotated[
@@ -132,7 +138,8 @@ def directory(
         )
 
 
-@app.command('split | sp')
+@app.command('split')
+@app.command('sp', hidden=True)
 def split(ctx: typer.Context):
     """Split the current recording."""
     active, paused = _get_recording_status(ctx)
@@ -147,7 +154,8 @@ def split(ctx: typer.Context):
     console.out.print('Recording split successfully.')
 
 
-@app.command('chapter | ch')
+@app.command('chapter')
+@app.command('ch', hidden=True)
 def chapter(
     ctx: typer.Context,
     chapter_name: Annotated[

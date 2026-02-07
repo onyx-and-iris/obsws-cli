@@ -7,9 +7,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console, util, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -17,7 +16,8 @@ def main():
     """Control OBS scenes."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(
     ctx: typer.Context,
     uuid: Annotated[bool, typer.Option(help='Show UUIDs of scenes')] = False,
@@ -66,7 +66,8 @@ def list_(
     console.out.print(table)
 
 
-@app.command('current | get')
+@app.command('current')
+@app.command('get', hidden=True)
 def current(
     ctx: typer.Context,
     preview: Annotated[
@@ -90,7 +91,8 @@ def current(
         )
 
 
-@app.command('switch | set')
+@app.command('switch')
+@app.command('set', hidden=True)
 def switch(
     ctx: typer.Context,
     scene_name: Annotated[

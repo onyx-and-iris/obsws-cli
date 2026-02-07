@@ -3,9 +3,8 @@
 import typer
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -13,21 +12,24 @@ def main():
     """Control virtual camera in OBS."""
 
 
-@app.command('start | s')
+@app.command('start')
+@app.command('s', hidden=True)
 def start(ctx: typer.Context):
     """Start the virtual camera."""
     ctx.obj['obsws'].start_virtual_cam()
     console.out.print('Virtual camera started.')
 
 
-@app.command('stop | p')
+@app.command('stop')
+@app.command('p', hidden=True)
 def stop(ctx: typer.Context):
     """Stop the virtual camera."""
     ctx.obj['obsws'].stop_virtual_cam()
     console.out.print('Virtual camera stopped.')
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(ctx: typer.Context):
     """Toggle the virtual camera."""
     resp = ctx.obj['obsws'].toggle_virtual_cam()
@@ -37,7 +39,8 @@ def toggle(ctx: typer.Context):
         console.out.print('Virtual camera is disabled.')
 
 
-@app.command('status | ss')
+@app.command('status')
+@app.command('ss', hidden=True)
 def status(ctx: typer.Context):
     """Get the status of the virtual camera."""
     resp = ctx.obj['obsws'].get_virtual_cam_status()

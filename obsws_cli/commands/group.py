@@ -7,10 +7,9 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console, util, validate
-from obsws_cli.alias import SubTyperAliasGroup
 from obsws_cli.protocols import DataclassProtocol
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -18,7 +17,8 @@ def main():
     """Control groups in OBS scenes."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -84,7 +84,8 @@ def _get_group(group_name: str, resp: DataclassProtocol) -> dict | None:
     return group
 
 
-@app.command('show | sh')
+@app.command('show')
+@app.command('sh', hidden=True)
 def show(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -117,7 +118,8 @@ def show(
     console.out.print(f'Group {console.highlight(ctx, group_name)} is now visible.')
 
 
-@app.command('hide | h')
+@app.command('hide')
+@app.command('h', hidden=True)
 def hide(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -150,7 +152,8 @@ def hide(
     console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -187,7 +190,8 @@ def toggle(
         console.out.print(f'Group {console.highlight(ctx, group_name)} is now hidden.')
 
 
-@app.command('status | ss')
+@app.command('status')
+@app.command('ss', hidden=True)
 def status(
     ctx: typer.Context,
     scene_name: Annotated[

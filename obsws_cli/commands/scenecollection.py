@@ -6,9 +6,8 @@ import typer
 from rich.table import Table
 
 from obsws_cli import console, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -16,7 +15,8 @@ def main():
     """Control scene collections in OBS."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(ctx: typer.Context):
     """List all scene collections."""
     resp = ctx.obj['obsws'].get_scene_collection_list()
@@ -40,7 +40,8 @@ def list_(ctx: typer.Context):
     console.out.print(table)
 
 
-@app.command('current | get')
+@app.command('current')
+@app.command('get', hidden=True)
 def current(ctx: typer.Context):
     """Get the current scene collection."""
     resp = ctx.obj['obsws'].get_scene_collection_list()
@@ -49,7 +50,8 @@ def current(ctx: typer.Context):
     )
 
 
-@app.command('switch | set')
+@app.command('switch')
+@app.command('set', hidden=True)
 def switch(
     ctx: typer.Context,
     scene_collection_name: Annotated[
@@ -77,7 +79,8 @@ def switch(
     )
 
 
-@app.command('create | new')
+@app.command('create')
+@app.command('new', hidden=True)
 def create(
     ctx: typer.Context,
     scene_collection_name: Annotated[

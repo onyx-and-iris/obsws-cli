@@ -7,9 +7,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -17,7 +16,8 @@ def main():
     """Control projectors in OBS."""
 
 
-@app.command('list-monitors | ls-m')
+@app.command('list-monitors')
+@app.command('ls-m', hidden=True)
 def list_monitors(ctx: typer.Context):
     """List available monitors."""
     resp = ctx.obj['obsws'].get_monitor_list()
@@ -48,7 +48,8 @@ def list_monitors(ctx: typer.Context):
     console.out.print(table)
 
 
-@app.command('open | o')
+@app.command('open')
+@app.command('o', hidden=True)
 def open(
     ctx: typer.Context,
     monitor_index: Annotated[

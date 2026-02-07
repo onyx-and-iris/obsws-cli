@@ -8,9 +8,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console, util, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -18,7 +17,8 @@ def main():
     """Control inputs in OBS."""
 
 
-@app.command('create | add')
+@app.command('create')
+@app.command('cr', hidden=True)
 def create(
     ctx: typer.Context,
     input_name: Annotated[
@@ -62,7 +62,8 @@ def create(
     )
 
 
-@app.command('remove | rm')
+@app.command('remove')
+@app.command('rm', hidden=True)
 def remove(
     ctx: typer.Context,
     input_name: Annotated[
@@ -81,7 +82,8 @@ def remove(
     console.out.print(f'Input {console.highlight(ctx, input_name)} removed.')
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(
     ctx: typer.Context,
     input: Annotated[bool, typer.Option(help='Filter by input type.')] = False,
@@ -168,7 +170,8 @@ def list_(
     console.out.print(table)
 
 
-@app.command('list-kinds | ls-k')
+@app.command('list-kinds')
+@app.command('ls-k', hidden=True)
 def list_kinds(
     ctx: typer.Context,
 ):
@@ -195,7 +198,8 @@ def list_kinds(
     console.out.print(table)
 
 
-@app.command('mute | m')
+@app.command('mute')
+@app.command('m', hidden=True)
 def mute(
     ctx: typer.Context,
     input_name: Annotated[
@@ -217,7 +221,8 @@ def mute(
     console.out.print(f'Input {console.highlight(ctx, input_name)} muted.')
 
 
-@app.command('unmute | um')
+@app.command('unmute')
+@app.command('um', hidden=True)
 def unmute(
     ctx: typer.Context,
     input_name: Annotated[
@@ -239,7 +244,8 @@ def unmute(
     console.out.print(f'Input {console.highlight(ctx, input_name)} unmuted.')
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(
     ctx: typer.Context,
     input_name: Annotated[
@@ -271,7 +277,8 @@ def toggle(
         )
 
 
-@app.command('volume | vol')
+@app.command('volume')
+@app.command('vol', hidden=True)
 def volume(
     ctx: typer.Context,
     input_name: Annotated[
@@ -305,7 +312,8 @@ def volume(
     )
 
 
-@app.command('show | s')
+@app.command('show')
+@app.command('s', hidden=True)
 def show(
     ctx: typer.Context,
     input_name: Annotated[
@@ -398,7 +406,8 @@ def show(
         console.out.print(table)
 
 
-@app.command('update | upd')
+@app.command('update')
+@app.command('upd', hidden=True)
 def update(
     ctx: typer.Context,
     input_name: Annotated[

@@ -3,9 +3,8 @@
 import typer
 
 from obsws_cli import console
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -19,7 +18,8 @@ def _get_streaming_status(ctx: typer.Context) -> tuple:
     return resp.output_active, resp.output_duration
 
 
-@app.command('start | s')
+@app.command('start')
+@app.command('s', hidden=True)
 def start(ctx: typer.Context):
     """Start streaming."""
     active, _ = _get_streaming_status(ctx)
@@ -31,7 +31,8 @@ def start(ctx: typer.Context):
     console.out.print('Streaming started successfully.')
 
 
-@app.command('stop | st')
+@app.command('stop')
+@app.command('st', hidden=True)
 def stop(ctx: typer.Context):
     """Stop streaming."""
     active, _ = _get_streaming_status(ctx)
@@ -43,7 +44,8 @@ def stop(ctx: typer.Context):
     console.out.print('Streaming stopped successfully.')
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(ctx: typer.Context):
     """Toggle streaming."""
     resp = ctx.obj['obsws'].toggle_stream()
@@ -53,7 +55,8 @@ def toggle(ctx: typer.Context):
         console.out.print('Streaming stopped successfully.')
 
 
-@app.command('status | ss')
+@app.command('status')
+@app.command('ss', hidden=True)
 def status(ctx: typer.Context):
     """Get streaming status."""
     active, duration = _get_streaming_status(ctx)

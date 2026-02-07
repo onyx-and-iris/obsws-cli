@@ -5,9 +5,8 @@ from typing import Annotated, Optional
 import typer
 
 from obsws_cli import console, util, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -15,7 +14,8 @@ def main():
     """Commands for media inputs."""
 
 
-@app.command('cursor | c')
+@app.command('cursor')
+@app.command('cur', hidden=True)
 def cursor(
     ctx: typer.Context,
     input_name: Annotated[
@@ -45,7 +45,8 @@ def cursor(
     )
 
 
-@app.command('play | p')
+@app.command('play')
+@app.command('p', hidden=True)
 def play(
     ctx: typer.Context,
     input_name: Annotated[
@@ -59,7 +60,8 @@ def play(
     console.out.print(f'Playing media input {console.highlight(ctx, input_name)}.')
 
 
-@app.command('pause | pa')
+@app.command('pause')
+@app.command('pa', hidden=True)
 def pause(
     ctx: typer.Context,
     input_name: Annotated[
@@ -73,7 +75,8 @@ def pause(
     console.out.print(f'Paused media input {console.highlight(ctx, input_name)}.')
 
 
-@app.command('stop | s')
+@app.command('stop')
+@app.command('s', hidden=True)
 def stop(
     ctx: typer.Context,
     input_name: Annotated[
@@ -87,7 +90,8 @@ def stop(
     console.out.print(f'Stopped media input {console.highlight(ctx, input_name)}.')
 
 
-@app.command('restart | r')
+@app.command('restart')
+@app.command('r', hidden=True)
 def restart(
     ctx: typer.Context,
     input_name: Annotated[

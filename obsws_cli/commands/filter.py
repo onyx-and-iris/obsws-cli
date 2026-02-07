@@ -8,9 +8,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console, util
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -18,7 +17,8 @@ def main():
     """Control filters in OBS scenes."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(
     ctx: typer.Context,
     source_name: Annotated[
@@ -90,7 +90,8 @@ def _get_filter_enabled(ctx: typer.Context, source_name: str, filter_name: str):
     return resp.filter_enabled
 
 
-@app.command('enable | on')
+@app.command('enable')
+@app.command('on', hidden=True)
 def enable(
     ctx: typer.Context,
     source_name: Annotated[
@@ -119,7 +120,8 @@ def enable(
     )
 
 
-@app.command('disable | off')
+@app.command('disable')
+@app.command('off', hidden=True)
 def disable(
     ctx: typer.Context,
     source_name: Annotated[
@@ -148,7 +150,8 @@ def disable(
     )
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(
     ctx: typer.Context,
     source_name: Annotated[
@@ -181,7 +184,8 @@ def toggle(
         )
 
 
-@app.command('status | ss')
+@app.command('status')
+@app.command('ss', hidden=True)
 def status(
     ctx: typer.Context,
     source_name: Annotated[

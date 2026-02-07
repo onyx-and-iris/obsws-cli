@@ -6,9 +6,8 @@ import typer
 from rich.table import Table
 
 from obsws_cli import console, util, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -16,7 +15,8 @@ def main():
     """Control items in OBS scenes."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -186,7 +186,8 @@ def _get_scene_name_and_item_id(
     return scene_name, scene_item_id
 
 
-@app.command('show | sh')
+@app.command('show')
+@app.command('sh', hidden=True)
 def show(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -228,7 +229,8 @@ def show(
         )
 
 
-@app.command('hide | h')
+@app.command('hide')
+@app.command('h', hidden=True)
 def hide(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -269,7 +271,8 @@ def hide(
         )
 
 
-@app.command('toggle | tg')
+@app.command('toggle')
+@app.command('tg', hidden=True)
 def toggle(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -330,7 +333,8 @@ def toggle(
             )
 
 
-@app.command('visible | v')
+@app.command('visible')
+@app.command('v', hidden=True)
 def visible(
     ctx: typer.Context,
     scene_name: Annotated[
@@ -374,7 +378,8 @@ def visible(
         )
 
 
-@app.command('transform | t')
+@app.command('transform')
+@app.command('t', hidden=True)
 def transform(
     ctx: typer.Context,
     scene_name: Annotated[

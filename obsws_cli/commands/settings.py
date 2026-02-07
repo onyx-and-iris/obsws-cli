@@ -7,9 +7,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console, util
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -17,7 +16,8 @@ def main():
     """Manage OBS settings."""
 
 
-@app.command('show | sh')
+@app.command('show')
+@app.command('sh', hidden=True)
 def show(
     ctx: typer.Context,
     video: Annotated[
@@ -136,7 +136,8 @@ def show(
         console.out.print(profile_table)
 
 
-@app.command('profile | pr')
+@app.command('profile')
+@app.command('pr', hidden=True)
 def profile(
     ctx: typer.Context,
     category: Annotated[
@@ -182,7 +183,8 @@ def profile(
         )
 
 
-@app.command('stream-service | ss')
+@app.command('stream-service')
+@app.command('ss', hidden=True)
 def stream_service(
     ctx: typer.Context,
     type_: Annotated[
@@ -249,7 +251,8 @@ def stream_service(
         console.out.print('Stream service settings updated.')
 
 
-@app.command('video | vi')
+@app.command('video')
+@app.command('vi', hidden=True)
 def video(
     ctx: typer.Context,
     base_width: Annotated[

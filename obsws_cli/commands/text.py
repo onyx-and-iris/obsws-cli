@@ -5,9 +5,8 @@ from typing import Annotated, Optional
 import typer
 
 from obsws_cli import console, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -15,7 +14,8 @@ def main():
     """Control text inputs in OBS."""
 
 
-@app.command('current | get')
+@app.command('current')
+@app.command('get', hidden=True)
 def current(
     ctx: typer.Context,
     input_name: Annotated[
@@ -41,7 +41,8 @@ def current(
     )
 
 
-@app.command('update | set')
+@app.command('update')
+@app.command('set', hidden=True)
 def update(
     ctx: typer.Context,
     input_name: Annotated[

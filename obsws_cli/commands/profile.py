@@ -7,9 +7,8 @@ from rich.table import Table
 from rich.text import Text
 
 from obsws_cli import console, util, validate
-from obsws_cli.alias import SubTyperAliasGroup
 
-app = typer.Typer(cls=SubTyperAliasGroup)
+app = typer.Typer()
 
 
 @app.callback()
@@ -17,7 +16,8 @@ def main():
     """Control profiles in OBS."""
 
 
-@app.command('list | ls')
+@app.command('list')
+@app.command('ls', hidden=True)
 def list_(ctx: typer.Context):
     """List profiles."""
     resp = ctx.obj['obsws'].get_profile_list()
@@ -47,7 +47,8 @@ def list_(ctx: typer.Context):
     console.out.print(table)
 
 
-@app.command('current | get')
+@app.command('current')
+@app.command('get', hidden=True)
 def current(ctx: typer.Context):
     """Get the current profile."""
     resp = ctx.obj['obsws'].get_profile_list()
@@ -56,7 +57,8 @@ def current(ctx: typer.Context):
     )
 
 
-@app.command('switch | set')
+@app.command('switch')
+@app.command('set', hidden=True)
 def switch(
     ctx: typer.Context,
     profile_name: Annotated[
@@ -81,7 +83,8 @@ def switch(
     console.out.print(f'Switched to profile {console.highlight(ctx, profile_name)}.')
 
 
-@app.command('create | new')
+@app.command('create')
+@app.command('new', hidden=True)
 def create(
     ctx: typer.Context,
     profile_name: Annotated[
@@ -99,7 +102,8 @@ def create(
     console.out.print(f'Created profile {console.highlight(ctx, profile_name)}.')
 
 
-@app.command('remove | rm')
+@app.command('remove')
+@app.command('rm', hidden=True)
 def remove(
     ctx: typer.Context,
     profile_name: Annotated[
