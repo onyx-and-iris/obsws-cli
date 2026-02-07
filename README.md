@@ -821,6 +821,8 @@ obsws-cli media restart "Media"
 obsws-cli --install-completion
 ```
 
+Currently supported shells: *bash* *zsh* *fish* *powershell*
+
 
 ## License
 
