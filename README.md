@@ -49,6 +49,8 @@ The CLI should now be discoverable as `obsws-cli`
 -   --password/-p: Websocket password
 -   --timeout/-T: Websocket timeout
 -   --version/-v: Print the obsws-cli version
+-   --loglevel/-l: Set the application's logging level
+    -   One of *DEBUG, INFO, WARNING, ERROR, CRITICAL*
 
 Pass `--host`, `--port` and `--password` as flags on the root command, for example:
 
@@ -66,6 +68,7 @@ Store and load environment variables from:
 OBSWS_CLI_HOST=localhost
 OBSWS_CLI_PORT=4455
 OBSWS_CLI_PASSWORD=<websocket password>
+OBSWS_CLI_LOGLEVEL=DEBUG
 ```
 
 Flags can be used to override environment variables.
