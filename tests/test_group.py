@@ -9,7 +9,7 @@ from obsws_cli.app import app
 
 runner = CliRunner()
 
-if os.environ.get('OBS_TESTS_SKIP_GROUP_TESTS'):
+if os.environ.get('OBSWS_CLI_TESTS_SKIP_GROUP_TESTS'):
     pytest.skip(
         'Skipping group tests as per environment variable', allow_module_level=True
     )
