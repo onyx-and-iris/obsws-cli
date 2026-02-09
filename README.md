@@ -50,7 +50,7 @@ The CLI should now be discoverable as `obsws-cli`
 -   --timeout/-T: Websocket timeout
 -   --version/-v: Print the obsws-cli version
 -   --loglevel/-l: Set the application's logging level
-    -   One of *CRITICAL, FATAL, ERROR, WARNING, INFO, DEBUG*
+    -   One of *NOTSET, DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL, FATAL*
 
 Pass `--host`, `--port` and `--password` as flags on the root command, for example:
 

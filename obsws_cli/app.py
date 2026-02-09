@@ -30,13 +30,19 @@ def version_callback(value: bool):
 
 def setup_logging(loglevel: str):
     """Set up logging for the application."""
-    numeric_loglevel = logging.getLevelNamesMapping().get(loglevel.upper())
-    if numeric_loglevel is None:
-        raise typer.BadParameter(
-            f'Invalid log level: {loglevel}. Valid options are: {", ".join(logging.getLevelNamesMapping().keys())}'
+    level_map = logging.getLevelNamesMapping()
+    try:
+        level_int = level_map[loglevel.upper()]
+    except KeyError:
+        possible_levels = ', '.join(
+            sorted(level_map.keys(), key=lambda k: level_map[k])
         )
+        raise typer.BadParameter(
+            f'Invalid log level: {loglevel}. Valid options are: {possible_levels}'
+        ) from None
+
     logging.basicConfig(
-        level=numeric_loglevel,
+        level=level_int,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     )
 
