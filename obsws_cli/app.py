@@ -30,13 +30,13 @@ def version_callback(value: bool):
 
 def setup_logging(loglevel: str):
     """Set up logging for the application."""
-    loglevel = loglevel.upper()
-    if loglevel not in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+    numeric_loglevel = logging.getLevelNamesMapping().get(loglevel.upper())
+    if numeric_loglevel is None:
         raise typer.BadParameter(
-            f'Invalid log level: {loglevel}. Choose from DEBUG, INFO, WARNING, ERROR, CRITICAL.'
+            f'Invalid log level: {loglevel}. Valid options are: {", ".join(logging.getLevelNamesMapping().keys())}'
         )
     logging.basicConfig(
-        level=loglevel,
+        level=numeric_loglevel,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     )
 
