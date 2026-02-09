@@ -4,7 +4,6 @@ import os
 import time
 
 import obsws_python as obsws
-from dotenv import find_dotenv, load_dotenv
 
 
 def pytest_configure(config):
@@ -34,14 +33,12 @@ def pytest_sessionstart(session):
     )
     print(' '.join(out))
 
-    load_dotenv(find_dotenv('.test.env'))
-
     session.obsws.set_stream_service_settings(
         'rtmp_common',
         {
             'service': 'Twitch',
             'server': 'auto',
-            'key': os.environ['OBS_STREAM_KEY'],
+            'key': os.environ['OBSWS_CLI_TESTS_STREAM_KEY'],
         },
     )
 
@@ -63,7 +60,7 @@ def pytest_sessionstart(session):
         'linux': 'pulse_output_capture',
         'darwin': 'coreaudio_output_capture',
     }
-    platform = os.environ.get('OBS_TESTS_PLATFORM', os.uname().sysname.lower())
+    platform = os.environ['OBSWS_CLI_TESTS_PLATFORM']
     try:
         session.obsws.create_input(
             sceneName='pytest_scene',
