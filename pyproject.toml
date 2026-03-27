@@ -39,6 +39,7 @@ path = "obsws_cli/__about__.py"
 requires = ["hatch-dotenv"]
 
 [tool.hatch.envs.default]
+workspace.members = [{ path = "../obsws-python" }]
 dependencies = ["click-man>=0.5.1"]
 
 [tool.hatch.envs.default.scripts]
