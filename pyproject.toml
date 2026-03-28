@@ -42,13 +42,14 @@ dependencies = ["click-man>=0.5.1"]
 [tool.hatch.envs.default.scripts]
 man = "python man/generate.py --output=./man"
 
-[tool.hatch.envs.hatch-test]
-randomize = true
+[tool.hatch.env]
 requires = ["hatch-dotenv"]
 
 [tool.hatch.env.collectors.dotenv.hatch-test]
 env-files = [".env", ".test.env"]
-fail-on-missing = true
+
+[tool.hatch.envs.hatch-test]
+randomize = true
 
 [tool.hatch.envs.types]
 extra-dependencies = ["mypy>=1.0.0"]
