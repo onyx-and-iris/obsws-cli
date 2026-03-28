@@ -35,9 +35,6 @@ obsws-cli = "obsws_cli:app"
 [tool.hatch.version]
 path = "obsws_cli/__about__.py"
 
-[tool.hatch.env]
-requires = ["hatch-dotenv"]
-
 [tool.hatch.envs.default]
 workspace.members = [{ path = "../obsws-python" }]
 dependencies = ["click-man>=0.5.1"]
@@ -47,6 +44,7 @@ man = "python man/generate.py --output=./man"
 
 [tool.hatch.envs.hatch-test]
 randomize = true
+requires = ["hatch-dotenv"]
 
 [tool.hatch.env.collectors.dotenv.hatch-test]
 env-files = [".env", ".test.env"]
