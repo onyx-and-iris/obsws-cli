@@ -9,7 +9,7 @@ app = typer.Typer()
 
 @app.callback()
 def main():
-    """Control profiles in OBS."""
+    """Control the replay buffer in OBS."""
 
 
 @app.command('start')
